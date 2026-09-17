@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class Fhahli extends Player {
 
     public Fhahli(float x, float y) {
-        super(new SpriteSheet(ImageLoader.load("Fhahli.png"), 24, 24), x, y, "STAND_RIGHT");
+        super(new SpriteSheet(ImageLoader.load("Fhahli.png"), 32, 32), x, y, "STAND_RIGHT");
         gravity = .5f;
         terminalVelocityY = 10f;
         jumpHeight = 14.5f;
