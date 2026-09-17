@@ -15,10 +15,10 @@ public class Fhahli extends Player {
     public Fhahli(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Fhahli.png"), 24, 24), x, y, "STAND_RIGHT");
         gravity = .5f;
-        terminalVelocityY = 6f;
+        terminalVelocityY = 10f;
         jumpHeight = 14.5f;
         jumpDegrade = .5f;
-        walkSpeed = 2.3f;
+        walkSpeed = 4f;
         momentumYIncrease = .5f;
     }
 
