@@ -35,14 +35,47 @@ public class Fhahli extends Player {
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<String, Frame[]>() {{
             put("STAND_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(0, 0))
+                    new FrameBuilder(spriteSheet.getSprite(0, 0),14)
+                            .withScale(3)
+                            .withBounds(8, 9, 8, 9)
+                            .build(),
+
+                    new FrameBuilder(spriteSheet.getSprite(0, 1),14)
+                            .withScale(3)
+                            .withBounds(8, 9, 8, 9)
+                            .build(),
+
+                    new FrameBuilder(spriteSheet.getSprite(0, 2),14)
+                            .withScale(3)
+                            .withBounds(8, 9, 8, 9)
+                            .build(),
+
+                    new FrameBuilder(spriteSheet.getSprite(0,3),14)
                             .withScale(3)
                             .withBounds(8, 9, 8, 9)
                             .build()
             });
 
             put("STAND_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(0, 0))
+                    new FrameBuilder(spriteSheet.getSprite(0, 0),14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 9, 8, 9)
+                            .build(),
+
+                new FrameBuilder(spriteSheet.getSprite(0, 1),14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 9, 8, 9)
+                            .build(),
+
+                    new FrameBuilder(spriteSheet.getSprite(0, 2),14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 9, 8, 9)
+                            .build(),
+
+                    new FrameBuilder(spriteSheet.getSprite(0,3),14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(8, 9, 8, 9)
@@ -121,14 +154,14 @@ public class Fhahli extends Player {
                             .build()
             });
 
-            put("CROUCH_RIGHT", new Frame[] {
+            put("CLIMB_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(4, 0))
                             .withScale(3)
                             .withBounds(8, 12, 8, 6)
                             .build()
             });
 
-            put("CROUCH_LEFT", new Frame[] {
+            put("CLIMB_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(4, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
@@ -136,7 +169,7 @@ public class Fhahli extends Player {
                             .build()
             });
 
-            put("DEATH_RIGHT", new Frame[] {
+            put("PREPTHROW_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(5, 0), 8)
                             .withScale(3)
                             .build(),
@@ -148,7 +181,7 @@ public class Fhahli extends Player {
                             .build()
             });
 
-            put("DEATH_LEFT", new Frame[] {
+            put("PREPTHROW_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(5, 0), 8)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
@@ -163,14 +196,14 @@ public class Fhahli extends Player {
                             .build()
             });
 
-            put("SWIM_STAND_RIGHT", new Frame[] {
+            put("THROW_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(6, 0))
                             .withScale(3)
                             .withBounds(8, 9, 8, 9)
                             .build()
             });
 
-            put("SWIM_STAND_LEFT", new Frame[] {
+            put("THROW_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(6, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
