@@ -43,6 +43,7 @@ public abstract class Player extends GameObject {
     protected Key MOVE_LEFT_KEY = Key.A;
     protected Key MOVE_RIGHT_KEY = Key.D;
     protected Key CROUCH_KEY = Key.S;
+    protected Key CLIMB_KEY = Key.L;
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
@@ -115,6 +116,9 @@ public abstract class Player extends GameObject {
                 break;
             case JUMPING:
                 playerJumping();
+                break;
+            case CLIMBING:
+                playerClimbing();
                 break;
         }
     }
@@ -227,6 +231,18 @@ public abstract class Player extends GameObject {
         else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
             playerState = PlayerState.STANDING;
         }
+    }
+
+    
+
+    protected void playerClimbing() {
+        // if player is facing a wall, allow them to hold on to the wall.
+        if ((Keyboard.isKeyDown(CLIMB_KEY)) && (TileType.NOT_PASSABLE)) {
+            playerState = PlayerState.CLIMBING;
+            moveAmountX = 0;
+            moveAmountY = 0;
+        }
+        
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
