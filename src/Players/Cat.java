@@ -17,10 +17,10 @@ public class Cat extends Player {
     public Cat(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Cat.png"), 24, 24), x, y, "STAND_RIGHT");
         gravity = .5f;
-        terminalVelocityY = 6f;
+        terminalVelocityY = 12f;
         jumpHeight = 14.5f;
         jumpDegrade = .5f;
-        walkSpeed = 2.3f;
+        walkSpeed = 4f;
         momentumYIncrease = .5f;
     }
 

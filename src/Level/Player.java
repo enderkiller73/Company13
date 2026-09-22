@@ -5,8 +5,10 @@ import Engine.KeyLocker;
 import Engine.Keyboard;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
+import Level.MapEntity;
 import Utils.AirGroundState;
 import Utils.Direction;
+import Utils.AirWallState;
 
 import java.util.ArrayList;
 
@@ -19,12 +21,15 @@ public abstract class Player extends GameObject {
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
+    protected float prevTerminalVelocityY = terminalVelocityY;
+    protected float prevGravity = gravity;
 
     // values used to handle player movement
     protected float jumpForce = 0;
     protected float momentumY = 0;
     protected float moveAmountX, moveAmountY;
     protected float lastAmountMovedX, lastAmountMovedY;
+    
 
     // values used to keep track of player's current state
     protected PlayerState playerState;
@@ -32,6 +37,8 @@ public abstract class Player extends GameObject {
     protected Direction facingDirection;
     protected AirGroundState airGroundState;
     protected AirGroundState previousAirGroundState;
+    protected AirWallState airWallState;
+    protected AirWallState previousAirWallState;
     protected LevelState levelState;
 
     // classes that listen to player events can be added to this list
@@ -43,7 +50,8 @@ public abstract class Player extends GameObject {
     protected Key MOVE_LEFT_KEY = Key.A;
     protected Key MOVE_RIGHT_KEY = Key.D;
     protected Key CROUCH_KEY = Key.S;
-    protected Key PLACE_KEY = Key.L;
+    protected Key CLIMB_KEY = Key.L;
+
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
 
@@ -55,6 +63,8 @@ public abstract class Player extends GameObject {
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         levelState = LevelState.RUNNING;
+        airWallState = AirWallState.AIR;
+        previousAirWallState = airWallState;
     }
 
     public void update() {
@@ -72,6 +82,7 @@ public abstract class Player extends GameObject {
             } while (previousPlayerState != playerState);
 
             previousAirGroundState = airGroundState;
+            previousAirWallState = airWallState;
 
             // move player with respect to map collisions based on how much player needs to move this frame
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
@@ -116,6 +127,9 @@ public abstract class Player extends GameObject {
             case JUMPING:
                 playerJumping();
                 break;
+            case CLIMBING:
+                playerClimbing();
+                break;
         }
     }
 
@@ -135,6 +149,10 @@ public abstract class Player extends GameObject {
         // if crouch key is pressed, player enters CROUCHING state
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
+        }
+
+        else if (Keyboard.isKeyDown(CLIMB_KEY) && airWallState == AirWallState.WALL) {
+            playerState = PlayerState.CLIMBING;
         }
     }
 
@@ -215,6 +233,8 @@ public abstract class Player extends GameObject {
                 moveAmountX -= walkSpeed;
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
                 moveAmountX += walkSpeed;
+            } else if (Keyboard.isKeyDown(CLIMB_KEY) && airWallState == AirWallState.WALL) {
+                playerState = PlayerState.CLIMBING;
             }
 
             // if player is falling, increases momentum as player falls so it falls faster over time
@@ -223,9 +243,33 @@ public abstract class Player extends GameObject {
             }
         }
 
+         else if (Keyboard.isKeyDown(CLIMB_KEY) && airWallState == AirWallState.WALL) {
+            playerState = PlayerState.CLIMBING;
+        }
+
         // if player last frame was in air and this frame is now on ground, player enters STANDING state
         else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
             playerState = PlayerState.STANDING;
+        }
+    }
+
+    
+
+    protected void playerClimbing() {
+        // if player is facing a wall, allow them to hold on to the wall.
+        if ((airWallState == AirWallState.WALL)) {
+            if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                playerState = PlayerState.CLIMBING;
+                if (AirGroundState.AIR == airGroundState) {
+                    terminalVelocityY = 0;
+                    gravity = 0;
+                }
+            }
+        }
+        if (Keyboard.isKeyUp(CLIMB_KEY)) {
+            playerState = PlayerState.JUMPING;
+            terminalVelocityY = prevTerminalVelocityY;
+            gravity = prevGravity;
         }
     }
 
@@ -274,10 +318,29 @@ public abstract class Player extends GameObject {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
             }
         }
+        else if (playerState == PlayerState.CLIMBING) {
+            this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+        }
     }
 
     @Override
-    public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) { }
+    public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
+        if (direction == Direction.LEFT) {
+            if (hasCollided) {
+                moveAmountX = 0;
+                airWallState = AirWallState.WALL;
+                System.out.println("Player collided with wall on left");
+            }
+        } else if (direction == Direction.RIGHT) {
+                if (hasCollided) {
+                moveAmountX = 0;
+                airWallState = AirWallState.WALL;
+                System.out.println("Player collided with wall on right");
+            }
+        } else {
+            airWallState = AirWallState.AIR;
+        }
+    }
 
     @Override
     public void onEndCollisionCheckY(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
