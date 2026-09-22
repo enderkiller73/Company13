@@ -53,6 +53,7 @@ public abstract class Player extends GameObject {
     protected Key CROUCH_KEY = Key.S;
     protected Key CLIMB_KEY = Key.L;
     protected Key DASH_KEY = Key.F;
+    protected Key PLACE_KEY = Key.K;
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
