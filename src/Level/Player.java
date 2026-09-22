@@ -124,6 +124,12 @@ public abstract class Player extends GameObject {
         }
     }
 
+    protected void disableGravity() {
+        gravity = 0;
+        momentumY = 0;
+        terminalVelocityY = 0;
+    }
+
     // based on player's current state, call appropriate player state handling method
     protected void handlePlayerState() {
         switch (playerState) {
@@ -163,7 +169,8 @@ public abstract class Player extends GameObject {
             playerState = PlayerState.CROUCHING;
         }
 
-        else if (Keyboard.isKeyDown(CLIMB_KEY) && airWallState == AirWallState.WALL) {
+        else if (Keyboard.isKeyDown(CLIMB_KEY) && !keyLocker.isKeyLocked(CLIMB_KEY)) {
+           // keyLocker.lockKey(CLIMB_KEY);
             playerState = PlayerState.CLIMBING;
         }
     }
@@ -270,18 +277,19 @@ public abstract class Player extends GameObject {
     protected void playerClimbing() {
         // if player is facing a wall, allow them to hold on to the wall.
         if ((airWallState == AirWallState.WALL)) {
-            if (Keyboard.isKeyDown(CLIMB_KEY)) {
+            if (Keyboard.isKeyDown(CLIMB_KEY))  {
                 playerState = PlayerState.CLIMBING;
                 if (AirGroundState.AIR == airGroundState) {
-                    terminalVelocityY = 0;
-                    gravity = 0;
+                    disableGravity();
+                    walkSpeed = 0;
                 }
             }
         }
         if (Keyboard.isKeyUp(CLIMB_KEY)) {
-            playerState = PlayerState.JUMPING;
-            terminalVelocityY = prevTerminalVelocityY;
+            playerState = PlayerState.CLIMBING;
             gravity = prevGravity;
+            terminalVelocityY = prevTerminalVelocityY;
+            applyGravity();
         }
     }
 
