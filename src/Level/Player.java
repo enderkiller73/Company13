@@ -16,6 +16,7 @@ public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
     protected float walkSpeed = 0;
+    protected float dashSpeed = 100f;
     protected float gravity = 0;
     protected float jumpHeight = 0;
     protected float jumpDegrade = 0;
@@ -51,6 +52,7 @@ public abstract class Player extends GameObject {
     protected Key MOVE_RIGHT_KEY = Key.D;
     protected Key CROUCH_KEY = Key.S;
     protected Key CLIMB_KEY = Key.L;
+    protected Key DASH_KEY = Key.F;
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
@@ -81,6 +83,8 @@ public abstract class Player extends GameObject {
                 handlePlayerState();
             } while (previousPlayerState != playerState);
 
+            handleDash();
+
             previousAirGroundState = airGroundState;
             previousAirWallState = airWallState;
 
@@ -110,6 +114,13 @@ public abstract class Player extends GameObject {
     // add gravity to player, which is a downward force
     protected void applyGravity() {
         moveAmountY += gravity + momentumY;
+    }
+
+    protected void handleDash() {
+        if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
+            keyLocker.lockKey(DASH_KEY);
+            moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+        }
     }
 
     protected void disableGravity() {
@@ -292,6 +303,9 @@ public abstract class Player extends GameObject {
     protected void updateLockedKeys() {
         if (Keyboard.isKeyUp(JUMP_KEY)) {
             keyLocker.unlockKey(JUMP_KEY);
+        }
+        if (Keyboard.isKeyUp(DASH_KEY)) {
+            keyLocker.unlockKey(DASH_KEY);
         }
     }
 
