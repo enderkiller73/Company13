@@ -506,6 +506,12 @@ public abstract class Player extends GameObject {
             int targetX = Math.round(this.getLastFrameXPos());
             int targetY = Math.round(this.getLastFrameYPos()) + 96;
 
+            try {
+                map.getTileByPosition(targetX, targetY).getTileType();
+            } catch (Exception e) {
+                System.out.println(e);
+                return;
+            }
             if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE) {
                 System.out.println(map.getTileByPosition(targetX, targetY).getTileType());
                 CommonTileset commonTileset = new CommonTileset();
