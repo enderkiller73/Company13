@@ -161,7 +161,22 @@ public class Fhahli extends Player {
                             .build()
             });
 
+            put("CROUCH_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(4, 0))
+                            .withScale(3)
+                            .withBounds(8, 12, 8, 6)
+                            .build()
+            });
+
             put("CLIMB_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(4, 0))
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 12, 8, 6)
+                            .build()
+            });
+
+            put("CROUCH_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(4, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
