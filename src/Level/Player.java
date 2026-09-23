@@ -509,7 +509,7 @@ public abstract class Player extends GameObject {
             try {
                 map.getTileByPosition(targetX, targetY).getTileType();
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println("placing out of bounds");
                 return;
             }
             if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE) {
@@ -518,5 +518,5 @@ public abstract class Player extends GameObject {
                 map.setMapTile(targetX / 48, targetY/ 48, commonTileset.defineTiles().get(2).build(targetX, targetY));
             }
         }
-}
+    }
 }
