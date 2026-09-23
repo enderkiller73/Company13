@@ -3,14 +3,22 @@ package Level;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
 import Level.MapEntity;
+import MapEditor.TileBuilder;
+import Tilesets.CommonTileset;
+import Tilesets.GrasslandTileset;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.AirWallState;
 
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import Builders.MapTileBuilder;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -87,7 +95,7 @@ public abstract class Player extends GameObject {
             } while (previousPlayerState != playerState);
 
             handleDash();
-
+            placePlatform();
             previousAirGroundState = airGroundState;
             previousAirWallState = airWallState;
 
@@ -314,6 +322,9 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyUp(DASH_KEY)) {
             keyLocker.unlockKey(DASH_KEY);
         }
+        if(Keyboard.isKeyUp(PLACE_KEY)) {
+            keyLocker.unlockKey(PLACE_KEY);
+        }
     }
 
     // anything extra the player should do based on interactions can be handled here
@@ -494,4 +505,24 @@ public abstract class Player extends GameObject {
         drawBounds(graphicsHandler, new Color(255, 0, 0, 100));
     }
     */
+    protected void placePlatform() {
+        if (Keyboard.isKeyDown(PLACE_KEY)) {
+            keyLocker.lockKey(PLACE_KEY);
+
+            int targetX = Math.round(this.getLastFrameXPos());
+            int targetY = Math.round(this.getLastFrameYPos()) + 96;
+
+            try {
+                map.getTileByPosition(targetX, targetY).getTileType();
+            } catch (Exception e) {
+                System.out.println(e);
+                return;
+            }
+            if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE) {
+                System.out.println(map.getTileByPosition(targetX, targetY).getTileType());
+                CommonTileset commonTileset = new CommonTileset();
+                map.setMapTile(targetX / 48, targetY/ 48, commonTileset.defineTiles().get(2).build(targetX, targetY));
+            }
+        }
+}
 }

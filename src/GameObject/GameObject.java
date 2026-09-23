@@ -341,4 +341,11 @@ public class GameObject extends AnimatedSprite {
             super.drawBounds(graphicsHandler, color);
         }
     }
+    // getter methods for a game object's last frame postion before an update; 
+    public float getLastFrameXPos() {
+        return this.previousX;
+    }
+    public float getLastFrameYPos() {
+        return this.previousY;
+    }
 }
