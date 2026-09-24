@@ -31,7 +31,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         this.map = new TestMap();
 
         // setup player
-        this.player = new Fhahli(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
+        this.player = new Flahli (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
         this.player.setMap(map);
         this.player.addListener(this);
 

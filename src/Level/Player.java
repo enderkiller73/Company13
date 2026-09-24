@@ -163,6 +163,9 @@ public abstract class Player extends GameObject {
             case CLIMBING:
                 playerClimbing();
                 break;
+            case THROWING:
+                placePlatform();
+                break;
         }
     }
 
@@ -524,5 +527,5 @@ public abstract class Player extends GameObject {
                 map.setMapTile(targetX / 48, targetY/ 48, commonTileset.defineTiles().get(2).build(targetX, targetY));
             }
         }
-}
+    }
 }
