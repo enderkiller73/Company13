@@ -24,13 +24,13 @@ public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
     protected float walkSpeed = 0;
-    protected float dashSpeed = 100f;
+    protected float dashSpeed = 75f;
     protected float gravity = 0;
     protected float jumpHeight = 0;
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
-    protected float prevTerminalVelocityY;
+    protected float prevMoveAmountY;
     protected float prevGravity;
 
     // values used to handle player movement
@@ -302,12 +302,18 @@ public abstract class Player extends GameObject {
 
     protected void playerClimbing() {
         // if player is facing a wall, allow them to hold on to the wall.
+        if (prevMoveAmountY != 0) {
+            prevMoveAmountY = moveAmountY;
+        }
         if (Keyboard.isKeyDown(CLIMB_KEY))  {
-            reducedFallSpeed = true;
+            keyLocker.lockKey(CLIMB_KEY);
+            moveAmountY = 0;
             playerState = PlayerState.CLIMBING;
             //fallGravity();
         }
         playerState = PlayerState.STANDING;
+        
+        moveAmountY = prevMoveAmountY;
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -512,6 +518,7 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(PLACE_KEY)) {
             keyLocker.lockKey(PLACE_KEY);
 
+            playerState = PlayerState.THROWING;
             int targetX = Math.round(this.getLastFrameXPos());
             int targetY = Math.round(this.getLastFrameYPos()) + 96;
 
