@@ -523,10 +523,15 @@ public abstract class Player extends GameObject {
     protected void placePlatform() {
         if (Keyboard.isKeyDown(PLACE_KEY)) {
             keyLocker.lockKey(PLACE_KEY);
-            
+            int targetX; 
             playerState = PlayerState.THROWING;
-            int targetX = Math.round(this.x) / 48 * 48;
-            int targetY = (Math.round(this.y) + 96) / 48 * 48;
+            if (this.facingDirection == Direction.RIGHT) {
+                targetX = (Math.round(this.x) + 96) / 48 * 48;
+            }
+            else {
+                targetX = (Math.round(this.x) - 96) / 48 * 48;
+            }
+            int targetY = (Math.round(this.y)-32) / 48 * 48;
 
 
             try {
@@ -535,13 +540,17 @@ public abstract class Player extends GameObject {
                 System.out.println("placing out of bounds");
                 return;
             }
-            if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE) {
+            if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && this.x != targetX) {
                 MapTile newTile = commonTileset.defineTiles().get(2).build(targetX, targetY);
                 newTile.setMap(map);
                 map.setMapTile(targetX/48, targetY/48, newTile);
                 placedTiles.add(map.getTileByPosition(targetX, targetY));
                 System.out.println("placed");
                 placedAtFrame.add(framecount);
+
+            }
+            if(playerState == PlayerState.THROWING && airGroundState == AirGroundState.GROUND) {
+                playerState = PlayerState.STANDING;
             }
         }
     }
