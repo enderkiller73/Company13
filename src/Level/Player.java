@@ -525,8 +525,9 @@ public abstract class Player extends GameObject {
             keyLocker.lockKey(PLACE_KEY);
             
             playerState = PlayerState.THROWING;
-            int targetX = Math.round(this.x);
-            int targetY = Math.round(this.y)+ 96;
+            int targetX = Math.round(this.x) / 48 * 48;
+            int targetY = (Math.round(this.y) + 96) / 48 * 48;
+
 
             try {
                 map.getTileByPosition(targetX, targetY).getTileType();
@@ -535,7 +536,9 @@ public abstract class Player extends GameObject {
                 return;
             }
             if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE) {
-                map.setMapTile(targetX/48, targetY/48, commonTileset.defineTiles().get(2).build(targetX, targetY));
+                MapTile newTile = commonTileset.defineTiles().get(2).build(targetX, targetY);
+                newTile.setMap(map);
+                map.setMapTile(targetX/48, targetY/48, newTile);
                 placedTiles.add(map.getTileByPosition(targetX, targetY));
                 System.out.println("placed");
                 placedAtFrame.add(framecount);
@@ -544,7 +547,9 @@ public abstract class Player extends GameObject {
     }
     protected void unPlacePlatform() {
         if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0)>= 180){
-            map.setMapTile( Math.round(placedTiles.get(0).getX())/48, Math.round(placedTiles.get(0).getY())/48, commonTileset.defineTiles().get(1).build(placedTiles.get(0).getX(), placedTiles.get(0).getY()));
+            MapTile oldTile = commonTileset.defineTiles().get(1).build(placedTiles.get(0).getX(), placedTiles.get(0).getY());
+            oldTile.setMap(map);
+            map.setMapTile(Math.round(placedTiles.get(0).getX())/48, Math.round(placedTiles.get(0).getY())/48, oldTile);
             System.out.println("unplaced");
             placedTiles.remove(0);
             placedAtFrame.remove(0);
