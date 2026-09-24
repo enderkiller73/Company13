@@ -524,7 +524,7 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(PLACE_KEY)) {
             keyLocker.lockKey(PLACE_KEY);
             
-            playerState = PlayerState.THROWING
+            playerState = PlayerState.THROWING;
             int targetX = Math.round(this.x);
             int targetY = Math.round(this.y)+ 96;
 
