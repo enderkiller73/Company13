@@ -66,6 +66,11 @@ public abstract class Player extends GameObject {
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
 
+    // Recsources for Placeable Tiles 
+    CommonTileset commonTileset = new CommonTileset();
+    ArrayList<MapTile> placedTiles = new ArrayList<>();
+    int framecount = 0;
+    ArrayList<Integer> placedAtFrame =  new ArrayList<>();
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
         facingDirection = Direction.RIGHT;
@@ -91,9 +96,10 @@ public abstract class Player extends GameObject {
                 previousPlayerState = playerState;
                 handlePlayerState();
             } while (previousPlayerState != playerState);
-
+            framecount++;
             handleDash();
             placePlatform();
+            unPlacePlatform();
             previousAirGroundState = airGroundState;
             previousAirWallState = airWallState;
 
@@ -503,8 +509,8 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(PLACE_KEY)) {
             keyLocker.lockKey(PLACE_KEY);
 
-            int targetX = Math.round(this.getLastFrameXPos());
-            int targetY = Math.round(this.getLastFrameYPos()) + 96;
+            int targetX = Math.round(this.x);
+            int targetY = Math.round(this.y)+ 96;
 
             try {
                 map.getTileByPosition(targetX, targetY).getTileType();
@@ -513,10 +519,19 @@ public abstract class Player extends GameObject {
                 return;
             }
             if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE) {
-                System.out.println(map.getTileByPosition(targetX, targetY).getTileType());
-                CommonTileset commonTileset = new CommonTileset();
-                map.setMapTile(targetX / 48, targetY/ 48, commonTileset.defineTiles().get(2).build(targetX, targetY));
+                map.setMapTile(targetX/48, targetY/48, commonTileset.defineTiles().get(2).build(targetX, targetY));
+                placedTiles.add(map.getTileByPosition(targetX, targetY));
+                System.out.println("placed");
+                placedAtFrame.add(framecount);
             }
         }
     }
-}
+    protected void unPlacePlatform() {
+        if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0)>= 180){
+            map.setMapTile( Math.round(placedTiles.get(0).getX())/48, Math.round(placedTiles.get(0).getY())/48, commonTileset.defineTiles().get(1).build(placedTiles.get(0).getX(), placedTiles.get(0).getY()));
+            System.out.println("unplaced");
+            placedTiles.remove(0);
+            placedAtFrame.remove(0);
+        }
+    }
+} 
