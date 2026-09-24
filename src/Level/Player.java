@@ -24,14 +24,14 @@ public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
     protected float walkSpeed = 0;
-    protected float dashSpeed = 100f;
+    protected float dashSpeed = 75f;
     protected float gravity = 0;
     protected float jumpHeight = 0;
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
-    protected float prevTerminalVelocityY = terminalVelocityY;
-    protected float prevGravity = gravity;
+    protected float prevMoveAmountY;
+    protected float prevGravity;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -60,11 +60,13 @@ public abstract class Player extends GameObject {
     protected Key MOVE_RIGHT_KEY = Key.D;
     protected Key CROUCH_KEY = Key.S;
     protected Key CLIMB_KEY = Key.L;
-    protected Key DASH_KEY = Key.F;
+    protected Key DASH_KEY = Key.J;
     protected Key PLACE_KEY = Key.K;
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
+    protected boolean reducedFallSpeed = false;
+
 
     // Recsources for Placeable Tiles 
     CommonTileset commonTileset = new CommonTileset();
@@ -138,10 +140,15 @@ public abstract class Player extends GameObject {
         }
     }
 
-    protected void disableGravity() {
-        gravity = 0;
-        momentumY = 0;
-        terminalVelocityY = 0;
+    protected void fallGravity() {
+        if (reducedFallSpeed) {
+            gravity = gravity / 2;
+            terminalVelocityY = terminalVelocityY / 2;
+        }
+        else {
+            gravity *= 2;
+            terminalVelocityY *= 2;
+        }
     }
 
     // based on player's current state, call appropriate player state handling method
@@ -161,6 +168,9 @@ public abstract class Player extends GameObject {
                 break;
             case CLIMBING:
                 playerClimbing();
+                break;
+            case THROWING:
+                placePlatform();
                 break;
         }
     }
@@ -247,9 +257,18 @@ public abstract class Player extends GameObject {
                 jumpForce -= jumpDegrade;
                 if (jumpForce < 0) {
                     jumpForce = 0;
+                    if (Keyboard.isKeyDown(CLIMB_KEY) && airWallState == AirWallState.WALL) {
+                        playerState = PlayerState.CLIMBING;
+                    }
                 }
             }
+            if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                playerState = PlayerState.CLIMBING;
+            }
         }
+       
+
+    
 
         // if player is in air (currently in a jump) and has more jumpForce, continue sending player upwards
         else if (airGroundState == AirGroundState.AIR) {
@@ -266,9 +285,10 @@ public abstract class Player extends GameObject {
                 moveAmountX -= walkSpeed;
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
                 moveAmountX += walkSpeed;
-            } else if (Keyboard.isKeyDown(CLIMB_KEY) && airWallState == AirWallState.WALL) {
+            } else if (Keyboard.isKeyDown(CLIMB_KEY)) {
                 playerState = PlayerState.CLIMBING;
             }
+    
 
             // if player is falling, increases momentum as player falls so it falls faster over time
             if (moveAmountY > 0) {
@@ -276,9 +296,7 @@ public abstract class Player extends GameObject {
             }
         }
 
-         else if (Keyboard.isKeyDown(CLIMB_KEY) && airWallState == AirWallState.WALL) {
-            playerState = PlayerState.CLIMBING;
-        }
+        
 
         // if player last frame was in air and this frame is now on ground, player enters STANDING state
         else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
@@ -290,21 +308,18 @@ public abstract class Player extends GameObject {
 
     protected void playerClimbing() {
         // if player is facing a wall, allow them to hold on to the wall.
-        if ((airWallState == AirWallState.WALL)) {
-            if (Keyboard.isKeyDown(CLIMB_KEY))  {
-                playerState = PlayerState.CLIMBING;
-                if (AirGroundState.AIR == airGroundState) {
-                    disableGravity();
-                    walkSpeed = 0;
-                }
-            }
+        if (prevMoveAmountY != 0) {
+            prevMoveAmountY = moveAmountY;
         }
-        if (Keyboard.isKeyUp(CLIMB_KEY)) {
+        if (Keyboard.isKeyDown(CLIMB_KEY))  {
+            keyLocker.lockKey(CLIMB_KEY);
+            moveAmountY = 0;
             playerState = PlayerState.CLIMBING;
-            gravity = prevGravity;
-            terminalVelocityY = prevTerminalVelocityY;
-            applyGravity();
+            //fallGravity();
         }
+        playerState = PlayerState.STANDING;
+        
+        moveAmountY = prevMoveAmountY;
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -366,13 +381,13 @@ public abstract class Player extends GameObject {
     @Override
     public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
         if (direction == Direction.LEFT) {
-            if (hasCollided) {
+            if ((hasCollided) && (entityCollidedWith.getMapEntityStatus() == MapEntityStatus.ACTIVE)) {
                 moveAmountX = 0;
                 airWallState = AirWallState.WALL;
                 System.out.println("Player collided with wall on left");
             }
         } else if (direction == Direction.RIGHT) {
-                if (hasCollided) {
+                if ((hasCollided) && (entityCollidedWith.getMapEntityStatus() == MapEntityStatus.ACTIVE)) {
                 moveAmountX = 0;
                 airWallState = AirWallState.WALL;
                 System.out.println("Player collided with wall on right");
@@ -508,7 +523,8 @@ public abstract class Player extends GameObject {
     protected void placePlatform() {
         if (Keyboard.isKeyDown(PLACE_KEY)) {
             keyLocker.lockKey(PLACE_KEY);
-
+            
+            playerState = PlayerState.THROWING
             int targetX = Math.round(this.x);
             int targetY = Math.round(this.y)+ 96;
 
