@@ -15,17 +15,17 @@ import java.util.ArrayList;
 public class GrasslandTileset extends Tileset {
 
     public GrasslandTileset() {
-        super(ImageLoader.load("GrasslandTileset.png"), 32, 32, 3);
+        super(ImageLoader.load("GrasslandTileset.png"), 32, 32, 1);
     }
     @Override
     public ArrayList<MapTileBuilder> defineTiles() {
         ArrayList<MapTileBuilder> mapTiles = new ArrayList<>();
 
-        Frame grassFrame = new FrameBuilder(getSubImage(0, 0))
+        Frame grass1Frame = new FrameBuilder(getSubImage(0, 0))
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder grassTile = new MapTileBuilder(grassFrame)
+        MapTileBuilder grassTile = new MapTileBuilder(grass1Frame)
                 .withTileType(TileType.NOT_PASSABLE);
 
         mapTiles.add(grassTile);

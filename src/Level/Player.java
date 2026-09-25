@@ -24,14 +24,14 @@ public abstract class Player extends GameObject {
     // values that affect player movement
     // these should be set in a subclass
     protected float walkSpeed = 0;
-    protected float dashSpeed = 75f;
+    protected float dashSpeed = 0;
     protected float gravity = 0;
     protected float jumpHeight = 0;
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
     protected float prevMoveAmountY;
-    protected float prevGravity;
+    protected float dashDegrade = 0;
 
     // values used to handle player movement
     protected float jumpForce = 0;
