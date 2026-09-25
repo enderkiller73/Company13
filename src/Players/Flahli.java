@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class Flahli extends Player {
 
     public Flahli(float x, float y) {
-        super(new SpriteSheet(ImageLoader.load("Flahli.png"), 32, 32), x, y, "STAND_RIGHT");
+        super(new SpriteSheet(ImageLoader.load("Flahli.png"), 31, 31), x, y, "STAND_RIGHT");
         gravity = .5f;
         terminalVelocityY = 10f;
         jumpHeight = 14.5f;
@@ -35,99 +35,99 @@ public class Flahli extends Player {
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<String, Frame[]>() {{
             put("STAND_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(0, 0),14)
+                    new FrameBuilder(spriteSheet.getSprite(0, 0),9)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
 
-                    new FrameBuilder(spriteSheet.getSprite(0, 1),14)
+                    new FrameBuilder(spriteSheet.getSprite(0, 1),9)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
 
-                    new FrameBuilder(spriteSheet.getSprite(0, 2),14)
+                    new FrameBuilder(spriteSheet.getSprite(0, 2),9)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
 
-                    new FrameBuilder(spriteSheet.getSprite(0,3),14)
+                    new FrameBuilder(spriteSheet.getSprite(0,3),9)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("STAND_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(0, 0),14)
+                    new FrameBuilder(spriteSheet.getSprite(0, 0),9)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
 
-                new FrameBuilder(spriteSheet.getSprite(0, 1),14)
+                new FrameBuilder(spriteSheet.getSprite(0, 1),9)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
 
-                    new FrameBuilder(spriteSheet.getSprite(0, 2),14)
+                    new FrameBuilder(spriteSheet.getSprite(0, 2),9)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
 
-                    new FrameBuilder(spriteSheet.getSprite(0,3),14)
+                    new FrameBuilder(spriteSheet.getSprite(0,3),9)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("WALK_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 9)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 9)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 2), 14)
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 9)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 3), 14)
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 9)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("WALK_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 9)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 9)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 2), 14)
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 9)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 3), 14)
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 9)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("JUMP_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(2, 0))
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
@@ -135,14 +135,14 @@ public class Flahli extends Player {
                     new FrameBuilder(spriteSheet.getSprite(2, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("FALL_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(3, 0))
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
@@ -150,21 +150,21 @@ public class Flahli extends Player {
                     new FrameBuilder(spriteSheet.getSprite(3, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("CLIMB_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(4, 0))
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("CROUCH_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(4, 0))
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
@@ -172,7 +172,7 @@ public class Flahli extends Player {
                     new FrameBuilder(spriteSheet.getSprite(4, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
@@ -180,22 +180,22 @@ public class Flahli extends Player {
                     new FrameBuilder(spriteSheet.getSprite(4, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("PREPTHROW_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(5, 0), 8)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(5, 1), 8)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(5, 2), -1)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
@@ -203,24 +203,24 @@ public class Flahli extends Player {
                     new FrameBuilder(spriteSheet.getSprite(5, 0), 8)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(5, 1), 8)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(5, 2), -1)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                        .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
             put("THROW_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(6, 0))
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
             });
 
@@ -228,14 +228,14 @@ public class Flahli extends Player {
                     new FrameBuilder(spriteSheet.getSprite(6, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build()
                 
             });
             put("DEATH_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0),14)
                             .withScale(3)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
             });
 
@@ -243,7 +243,7 @@ public class Flahli extends Player {
                     new FrameBuilder(spriteSheet.getSprite(0, 0),14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(16, 17, 16, 17)
+                            .withBounds(16, 16, 16, 16)
                             .build(),
             });
         }};
