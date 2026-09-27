@@ -25,19 +25,25 @@ public abstract class Player extends GameObject {
     // these should be set in a subclass
     protected float walkSpeed = 0;
     protected float dashSpeed = 0;
+    protected float currentDashSpeed = 0;
+    protected float dashDestinationX = 0f;
     protected float gravity = 0;
     protected float jumpHeight = 0;
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
+    protected float momentumXIncrease = 0;
     protected float prevMoveAmountY;
     protected float dashDegrade = 0;
 
     // values used to handle player movement
     protected float jumpForce = 0;
+    protected float momentumX = 0;
     protected float momentumY = 0;
     protected float moveAmountX, moveAmountY;
     protected float lastAmountMovedX, lastAmountMovedY;
+    protected int dashAmount;
+    protected int dashCap;
     
 
     // values used to keep track of player's current state
@@ -66,6 +72,7 @@ public abstract class Player extends GameObject {
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
     protected boolean reducedFallSpeed = false;
+    protected boolean isDashing = false;
 
 
     // Recsources for Placeable Tiles 
@@ -136,9 +143,46 @@ public abstract class Player extends GameObject {
     protected void handleDash() {
         if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
             keyLocker.lockKey(DASH_KEY);
-            moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+
+            //if (dashAmount != 0) {
+                if (airGroundState == AirGroundState.AIR) {
+                    if (dashAmount <= dashCap) {
+                        moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+                        dashAmount --;
+                    }
+                }
+                else if (airGroundState == AirGroundState.GROUND) {
+                    //if (dashAmount <= dashCap) {
+                        moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+                        dashAmount++;
+                    //}
+                }
+            //}
         }
     }
+
+    // protected void updateDash() {
+    //     if (!isDashing) return;
+
+    //     float direction = (facingDirection == Direction.RIGHT) ? 1f : -1f;
+
+    //     // Apply momentum to position
+    //     moveAmountX += momentumX;
+
+    //     if (momentumX > 0) momentumX -= momentumXIncrease;
+    //     if (momentumX < 0) momentumX += momentumXIncrease;
+
+    //     currentDashSpeed -= dashDegrade;
+    //     if (currentDashSpeed < 0) currentDashSpeed = 0;
+
+    //     boolean reachedDestination =
+    //         (direction > 0 && moveAmountX >= dashDestinationX) ||
+    //         (direction < 0 && moveAmountX <= dashDestinationX);
+
+    //     if (reachedDestination || Math.abs(momentumX) <= 0.01f) {
+    //         isDashing = false;
+    //     }
+    // }
 
     protected void fallGravity() {
         if (reducedFallSpeed) {
@@ -292,7 +336,7 @@ public abstract class Player extends GameObject {
 
             // if player is falling, increases momentum as player falls so it falls faster over time
             if (moveAmountY > 0) {
-                increaseMomentum();
+                increaseMomentumY();
             }
         }
 
@@ -313,7 +357,7 @@ public abstract class Player extends GameObject {
         }
         if (Keyboard.isKeyDown(CLIMB_KEY))  {
             keyLocker.lockKey(CLIMB_KEY);
-            moveAmountY = 0;
+            //moveAmountY;
             playerState = PlayerState.CLIMBING;
             //fallGravity();
         }
@@ -323,11 +367,15 @@ public abstract class Player extends GameObject {
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
-    protected void increaseMomentum() {
+    protected void increaseMomentumY() {
         momentumY += momentumYIncrease;
         if (momentumY > terminalVelocityY) {
             momentumY = terminalVelocityY;
         }
+    }
+
+    protected void increaseMomentumX() {
+        momentumX += momentumXIncrease;
     }
 
     protected void updateLockedKeys() {
@@ -383,12 +431,14 @@ public abstract class Player extends GameObject {
         if (direction == Direction.LEFT) {
             if ((hasCollided) && (entityCollidedWith.getMapEntityStatus() == MapEntityStatus.ACTIVE)) {
                 moveAmountX = 0;
+                momentumX = 0;
                 airWallState = AirWallState.WALL;
                 System.out.println("Player collided with wall on left");
             }
         } else if (direction == Direction.RIGHT) {
                 if ((hasCollided) && (entityCollidedWith.getMapEntityStatus() == MapEntityStatus.ACTIVE)) {
                 moveAmountX = 0;
+                momentumX = 0;
                 airWallState = AirWallState.WALL;
                 System.out.println("Player collided with wall on right");
             }
@@ -440,7 +490,7 @@ public abstract class Player extends GameObject {
         if (airGroundState != AirGroundState.GROUND && map.getCamera().containsDraw(this)) {
             currentAnimationName = "FALL_RIGHT";
             applyGravity();
-            increaseMomentum();
+            increaseMomentumY();
             super.update();
             moveYHandleCollision(moveAmountY);
         }
