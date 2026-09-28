@@ -143,25 +143,23 @@ public abstract class Player extends GameObject {
     protected void handleDash() {
         if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
             keyLocker.lockKey(DASH_KEY);
-
             //if (dashAmount != 0) {
-                if (airGroundState == AirGroundState.AIR) {
-                    if (dashAmount <= dashCap) {
-                        moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
-                        dashAmount --;
-                    }
+            if (airGroundState == AirGroundState.AIR) {
+               if (dashAmount <= dashCap) {
+                    moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+                    dashAmount ++;
                 }
-                else if (airGroundState == AirGroundState.GROUND) {
-                    //if (dashAmount <= dashCap) {
-                        moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
-                        dashAmount++;
-                    //}
-                }
-            //}
+            }
+            else if (airGroundState == AirGroundState.GROUND) {
+                //if (dashAmount <= dashCap) {
+                moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+                dashAmount --;
+                //}
+            }
         }
     }
 
-    // protected void updateDash() {
+    protected void updateDash() {
     //     if (!isDashing) return;
 
     //     float direction = (facingDirection == Direction.RIGHT) ? 1f : -1f;
@@ -182,7 +180,7 @@ public abstract class Player extends GameObject {
     //     if (reachedDestination || Math.abs(momentumX) <= 0.01f) {
     //         isDashing = false;
     //     }
-    // }
+    }
 
     protected void fallGravity() {
         if (reducedFallSpeed) {
