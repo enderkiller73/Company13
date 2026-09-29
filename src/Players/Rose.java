@@ -10,9 +10,9 @@ import Level.Player;
 
 import java.util.HashMap;
 
-public class Flahli extends Player {
+public class Rose extends Player {
 
-    public Flahli(float x, float y) {
+    public Rose(float x, float y) {
         super(new SpriteSheet(ImageLoader.load("Flahli.png"), 31, 33), x, y, "STAND_RIGHT");
         gravity = .5f;
         terminalVelocityY = 10f;

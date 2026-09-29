@@ -9,7 +9,7 @@ import Level.Player;
 import Level.PlayerListener;
 import Maps.TestMap;
 import Players.Cat;
-import Players.Flahli;
+import Players.Rose;
 
 // This class is for when the platformer game is actually being played
 public class PlayLevelScreen extends Screen implements PlayerListener {
@@ -31,7 +31,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         this.map = new TestMap();
 
         // setup player
-        this.player = new Flahli (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
+        this.player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
         this.player.setMap(map);
         this.player.addListener(this);
 
