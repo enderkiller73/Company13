@@ -3,6 +3,8 @@ package SpriteFont;
 import Engine.GraphicsHandler;
 
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 // This class represents a sprite font, which is graphic text (text drawn to the screen as if it were an image)
 public class SpriteFont {
@@ -136,6 +138,22 @@ public class SpriteFont {
 				graphicsHandler.drawString(line, Math.round(x), drawLocationY, font, color);
 			}
 			drawLocationY += font.getSize() + gapBetweenLines;
+		}
+	}
+
+		public static Font loadCustomFont(float size) {
+		try {
+			File fontFile = new File("Resources/Henny_Penny/HennyPenny-Regular.ttf");
+			Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(customFont);
+
+			return customFont.deriveFont(size);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Font("Serif", Font.PLAIN, (int) size);
 		}
 	}
 }
