@@ -15,19 +15,19 @@ public class TutorialMap extends Map {
 
     public TutorialMap() {
         super("tutorial_map.txt", new GrasslandTileset());
-        this.playerStartPosition = getMapTile(1, 9).getLocation();
+        //this.playerStartPosition = getMapTile(1, 9).getLocation();
     }
 
     @Override
     public ArrayList<Enemy> loadEnemies() {
-        // ArrayList<Enemy> enemies = new ArrayList<>();
+         ArrayList<Enemy> enemies = new ArrayList<>();
 
         return enemies;
     }
 
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
-                // ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
+                ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
                 // HorizontalMovingPlatform hmp = new HorizontalMovingPlatform(
                 //         ImageLoader.load("GreenPlatform.png"),
@@ -48,7 +48,7 @@ public class TutorialMap extends Map {
 
     @Override
     public ArrayList<NPC> loadNPCs() {
-        // ArrayList<NPC> npcs = new ArrayList<>();
+        ArrayList<NPC> npcs = new ArrayList<>();
         return npcs;
     }
 }
