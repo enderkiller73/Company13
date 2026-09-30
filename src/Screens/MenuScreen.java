@@ -39,7 +39,7 @@ public class MenuScreen extends Screen {
         keyPressTimer = 0;
         menuItemSelected = -1;
         keyLocker.lockKey(Key.SPACE);
-        title = new SpriteFont("Grim Rose", 100, 50, "Arial", 50, new Color(49, 207, 240));
+        title = new SpriteFont("Grim Rose", 100, 50, "Henny Penny", 50, new Color(0, 0, 0));
 
     }
 
