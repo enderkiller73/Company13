@@ -13,7 +13,7 @@ import Tilesets.GrasslandTileset;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.AirWallState;
-
+import Tilesets.PetalPlatformTileset;
 import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,6 +80,8 @@ public abstract class Player extends GameObject {
     ArrayList<MapTile> placedTiles = new ArrayList<>();
     int framecount = 0;
     ArrayList<Integer> placedAtFrame =  new ArrayList<>();
+    PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
+
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
         facingDirection = Direction.RIGHT;
@@ -614,14 +616,14 @@ public abstract class Player extends GameObject {
 
             }
             else if (placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4){
-                MapTile newTile = commonTileset.defineTiles().get(0).build(targetX, targetY);
+                MapTile newTile = petalPlatformTileset.defineTiles().get(0).build(targetX, targetY);
                 newTile.setMap(map);
                 map.setMapTile(targetX/48, targetY/48, newTile);
                 placedTiles.add(map.getTileByPosition(targetX, targetY));
                 System.out.println("placed");
                 placedAtFrame.add(framecount);
 
-                MapTile newTile2 = commonTileset.defineTiles().get(0).build(targetX2, targetY);
+                MapTile newTile2 = petalPlatformTileset.defineTiles().get(0).build(targetX2, targetY);
                 newTile2.setMap(map);
                 map.setMapTile(targetX2/48, targetY/48, newTile2);
                 placedTiles.add(map.getTileByPosition(targetX2, targetY));
