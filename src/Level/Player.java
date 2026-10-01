@@ -613,7 +613,7 @@ public abstract class Player extends GameObject {
                 placedAtFrame.add(framecount);
 
             }
-            else if (placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150){
+            else if (placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4){
                 MapTile newTile = commonTileset.defineTiles().get(0).build(targetX, targetY);
                 newTile.setMap(map);
                 map.setMapTile(targetX/48, targetY/48, newTile);
