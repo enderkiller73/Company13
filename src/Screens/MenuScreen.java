@@ -31,14 +31,14 @@ public class MenuScreen extends Screen {
 
     @Override
     public void initialize() {
-        playGame = new SpriteFont("PLAY GAME", 100, 150, "Serif", 30, new Color(49, 0, 100));
+        playGame = new SpriteFont("PLAY GAME", 100, 190, "Georgia", 30, new Color(49, 0, 100));
         playGame.setOutlineColor(Color.black);
         playGame.setOutlineThickness(3);
-        controls = new SpriteFont("CREDITS", 100,200,"Serif",30, new Color(69,0,100));
+        controls = new SpriteFont("CREDITS", 100,240,"Georgia",30, new Color(69,0,100));
         controls.setOutlineColor(Color.black);
         controls.setOutlineThickness(3);
         
-        credits = new SpriteFont("CONTROLS", 100, 250, "Serif", 30, new Color(89, 0, 100));
+        credits = new SpriteFont("CONTROLS", 100, 290, "Georgia", 30, new Color(89, 0, 100));
         credits.setOutlineColor(Color.black);
         credits.setOutlineThickness(3);
         background = new TitleScreenMap();
@@ -52,7 +52,7 @@ public class MenuScreen extends Screen {
         title = new SpriteFont("Grim Rose", 50, 50, customFont, new Color(140, 24, 150));
         title.setOutlineColor(Color.black);
         title.setOutlineThickness(3);
-
+        //272 - 208
     }
 
     public void update() {
@@ -85,19 +85,19 @@ public class MenuScreen extends Screen {
             controls.setColor(new Color (69,0,100));
             credits.setColor(new Color(89, 0, 100));
             pointerLocationX = 70;
-            pointerLocationY = 160;
+            pointerLocationY = 200;
         } else if (currentMenuItemHovered == 1) {
             playGame.setColor(new Color(49, 0, 100));
             controls.setColor(new Color (196,255,155));
             credits.setColor(new Color(89, 0, 100));
             pointerLocationX = 70;
-            pointerLocationY = 210;
+            pointerLocationY = 250;
         } else if (currentMenuItemHovered == 2) {
             playGame.setColor(new Color(49, 0, 100));
             controls.setColor(new Color (69,0,100));
             credits.setColor(new Color(176, 255, 155));
             pointerLocationX = 70;
-            pointerLocationY = 260;
+            pointerLocationY = 300;
         }
 
         // if space is pressed on menu item, change to appropriate screen based on which menu item was chosen
@@ -110,6 +110,9 @@ public class MenuScreen extends Screen {
                 screenCoordinator.setGameState(GameState.LEVEL);
             } else if (menuItemSelected == 1) {
                 screenCoordinator.setGameState(GameState.CREDITS);
+            }
+            else if (menuItemSelected == 2) {
+                screenCoordinator.setGameState(GameState.CONTROLS);
             }
         }
     }
