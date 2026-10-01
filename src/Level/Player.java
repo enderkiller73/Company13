@@ -600,14 +600,14 @@ public abstract class Player extends GameObject {
                 return;
             }
             if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && this.x != targetX && map.getTileByPosition(targetX2, targetY).getTileType() == TileType.PASSABLE && this.x != targetX2 && placedAtFrame.size() == 0) {
-                MapTile newTile = commonTileset.defineTiles().get(0).build(targetX, targetY);
+                MapTile newTile = petalPlatformTileset.defineTiles().get(0).build(targetX, targetY);
                 newTile.setMap(map);
                 map.setMapTile(targetX/48, targetY/48, newTile);
                 placedTiles.add(map.getTileByPosition(targetX, targetY));
                 System.out.println("placed");
                 placedAtFrame.add(framecount);
 
-                MapTile newTile2 = commonTileset.defineTiles().get(0).build(targetX2, targetY);
+                MapTile newTile2 = petalPlatformTileset.defineTiles().get(0).build(targetX2, targetY);
                 newTile2.setMap(map);
                 map.setMapTile(targetX2/48, targetY/48, newTile2);
                 placedTiles.add(map.getTileByPosition(targetX2, targetY));
