@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class GrasslandTileset extends Tileset {
 
     public GrasslandTileset() {
-        super(ImageLoader.load("GrasslandTileset.png"), 32, 32, 1);
+        super(ImageLoader.load("GrasslandTileset.png"), 31, 31, 1);
     }
     @Override
     public ArrayList<MapTileBuilder> defineTiles() {
