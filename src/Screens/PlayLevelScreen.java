@@ -2,14 +2,17 @@ package Screens;
 
 import Engine.GraphicsHandler;
 import Engine.Screen;
+import Engine.ScreenManager;
 import Game.GameState;
 import Game.ScreenCoordinator;
 import Level.Map;
 import Level.Player;
 import Level.PlayerListener;
 import Maps.TestMap;
-import Players.Cat;
 import Players.Rose;
+import SpriteFont.SpriteFont;
+
+import java.awt.Color;
 
 // This class is for when the platformer game is actually being played
 public class PlayLevelScreen extends Screen implements PlayerListener {
@@ -21,6 +24,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     protected LevelClearedScreen levelClearedScreen;
     protected LevelLoseScreen levelLoseScreen;
     protected boolean levelCompletedStateChangeStart;
+    protected SpriteFont levelIntro;
+    protected int levelIntroTimer;
 
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
@@ -37,13 +42,21 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
 
         levelClearedScreen = new LevelClearedScreen();
         levelLoseScreen = new LevelLoseScreen(this);
+        levelIntro = new SpriteFont("Level 1", 0, 0, "Arial", 36, Color.white);
+        levelIntroTimer = 120;
 
-        this.playLevelScreenState = PlayLevelScreenState.RUNNING;
+        this.playLevelScreenState = PlayLevelScreenState.LEVEL_INTRO;
     }
 
     public void update() {
         // based on screen state, perform specific actions
         switch (playLevelScreenState) {
+            case LEVEL_INTRO:
+                levelIntroTimer--;
+                if (levelIntroTimer <= 0) {
+                    playLevelScreenState = PlayLevelScreenState.RUNNING;
+                }
+                break;
             // if level is "running" update player and map to keep game logic for the platformer level going
             case RUNNING:
                 player.update();
@@ -72,6 +85,16 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     public void draw(GraphicsHandler graphicsHandler) {
         // based on screen state, draw appropriate graphics
         switch (playLevelScreenState) {
+            case LEVEL_INTRO:
+            graphicsHandler.drawFilledRectangle(0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), Color.black);
+            int textWidth = graphicsHandler.getGraphics().getFontMetrics(levelIntro.getFont()).stringWidth(levelIntro.getText());
+            int textHeight = graphicsHandler.getGraphics().getFontMetrics(levelIntro.getFont()).getHeight();
+            levelIntro.setLocation(
+                (ScreenManager.getScreenWidth() - textWidth) / 2f,
+                (ScreenManager.getScreenHeight() - textHeight) / 2f
+            );
+            levelIntro.draw(graphicsHandler);
+            break;
             case RUNNING:
                 map.draw(graphicsHandler);
                 player.draw(graphicsHandler);
@@ -114,6 +137,6 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
 
     // This enum represents the different states this screen can be in
     private enum PlayLevelScreenState {
-        RUNNING, LEVEL_COMPLETED, LEVEL_LOSE
+        LEVEL_INTRO, RUNNING, LEVEL_COMPLETED, LEVEL_LOSE
     }
 }
