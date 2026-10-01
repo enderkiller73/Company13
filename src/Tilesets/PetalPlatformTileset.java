@@ -23,10 +23,12 @@ public class PetalPlatformTileset extends Tileset {
 
         Frame petalPlatformFrame = new FrameBuilder(getSubImage(0, 0))
                 .withScale(tileScale)
+                .withBounds(8, 10, 10, 16)
                 .build();
 
         MapTileBuilder petalPlatformTile = new MapTileBuilder(petalPlatformFrame)
                 .withTileType(TileType.NOT_PASSABLE);
+
 
         mapTiles.add(petalPlatformTile);
 
