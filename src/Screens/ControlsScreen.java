@@ -35,7 +35,7 @@ public class ControlsScreen extends Screen {
         baseControlsLabel.setOutlineColor(Color.pink);
         baseControlsLabel.setOutlineThickness(3);
         advancedControlsLabel = new SpriteFont("Advanced Movement: J = Dash, K = Place Platform, L = Float", 130, 151, "Georgia", 20, Color.pink);
-        advancedControlsLabel.setOutlineColor(Color.gray);
+        advancedControlsLabel.setOutlineColor(Color.white);
         advancedControlsLabel.setOutlineThickness(3);
         returnInstructionsLabel = new SpriteFont("Press Space to return to the menu", 20, 532, "Times New Roman", 30, Color.white);
         returnInstructionsLabel.setOutlineColor(Color.black);
