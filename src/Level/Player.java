@@ -13,7 +13,7 @@ import Tilesets.GrasslandTileset;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.AirWallState;
-
+import Tilesets.PetalPlatformTileset;
 import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +35,8 @@ public abstract class Player extends GameObject {
     protected float momentumXIncrease = 0;
     protected float prevMoveAmountY;
     protected float dashDegrade = 0;
+    protected float floatFallCounter = 0;
+    protected float floatFallMax = 0;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -80,6 +82,8 @@ public abstract class Player extends GameObject {
     ArrayList<MapTile> placedTiles = new ArrayList<>();
     int framecount = 0;
     ArrayList<Integer> placedAtFrame =  new ArrayList<>();
+    PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
+
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
         facingDirection = Direction.RIGHT;
@@ -247,12 +251,17 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
             moveAmountX -= walkSpeed;
             facingDirection = Direction.LEFT;
+            if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                moveAmountY = gravity;
+                playerClimbing();
+            }
         }
 
         // if walk right key is pressed, move player to the right
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
             moveAmountX += walkSpeed;
             facingDirection = Direction.RIGHT;
+            
         } else if (Keyboard.isKeyUp(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
             playerState = PlayerState.STANDING;
         }
@@ -262,10 +271,16 @@ public abstract class Player extends GameObject {
             keyLocker.lockKey(JUMP_KEY);
             playerState = PlayerState.JUMPING;
         }
-
+        else if (Keyboard.isKeyDown(CLIMB_KEY) && airGroundState == AirGroundState.AIR && !keyLocker.isKeyLocked(CLIMB_KEY)) {
+             keyLocker.lockKey(CLIMB_KEY);
+             playerState = playerState.CLIMBING;
+        }
         // if crouch key is pressed,
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
+        }
+        else if (Keyboard.isKeyDown(PLACE_KEY)) {
+            playerState = playerState.THROWING;
         }
     }
 
@@ -355,13 +370,22 @@ public abstract class Player extends GameObject {
         }
         if (Keyboard.isKeyDown(CLIMB_KEY))  {
             keyLocker.lockKey(CLIMB_KEY);
-            //moveAmountY;
+            moveAmountY = gravity;
+            if (facingDirection == Direction.RIGHT) {
+                moveAmountX += (walkSpeed/4);
+                moveAmountY = gravity;
+                
+            }
+            if (facingDirection == Direction.LEFT) {
+                moveAmountX -= (walkSpeed/4);
+                moveAmountY = gravity;
+            }
+
             playerState = PlayerState.CLIMBING;
-            //fallGravity();
         }
-        playerState = PlayerState.STANDING;
-        
-        moveAmountY = prevMoveAmountY;
+        if (airGroundState == AirGroundState.GROUND) {
+            playerState = PlayerState.STANDING;
+        }
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -420,6 +444,9 @@ public abstract class Player extends GameObject {
             }
         }
         else if (playerState == PlayerState.CLIMBING) {
+            this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+        }
+        else if (playerState == PlayerState.THROWING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
         }
     }
@@ -598,14 +625,14 @@ public abstract class Player extends GameObject {
                 return;
             }
             if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && this.x != targetX && map.getTileByPosition(targetX2, targetY).getTileType() == TileType.PASSABLE && this.x != targetX2 && placedAtFrame.size() == 0) {
-                MapTile newTile = commonTileset.defineTiles().get(0).build(targetX, targetY);
+                MapTile newTile = petalPlatformTileset.defineTiles().get(0).build(targetX, targetY);
                 newTile.setMap(map);
                 map.setMapTile(targetX/48, targetY/48, newTile);
                 placedTiles.add(map.getTileByPosition(targetX, targetY));
                 System.out.println("placed");
                 placedAtFrame.add(framecount);
 
-                MapTile newTile2 = commonTileset.defineTiles().get(0).build(targetX2, targetY);
+                MapTile newTile2 = petalPlatformTileset.defineTiles().get(0).build(targetX2, targetY);
                 newTile2.setMap(map);
                 map.setMapTile(targetX2/48, targetY/48, newTile2);
                 placedTiles.add(map.getTileByPosition(targetX2, targetY));
@@ -613,15 +640,15 @@ public abstract class Player extends GameObject {
                 placedAtFrame.add(framecount);
 
             }
-            else if (placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150){
-                MapTile newTile = commonTileset.defineTiles().get(0).build(targetX, targetY);
+            else if (placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4){
+                MapTile newTile = petalPlatformTileset.defineTiles().get(0).build(targetX, targetY);
                 newTile.setMap(map);
                 map.setMapTile(targetX/48, targetY/48, newTile);
                 placedTiles.add(map.getTileByPosition(targetX, targetY));
                 System.out.println("placed");
                 placedAtFrame.add(framecount);
 
-                MapTile newTile2 = commonTileset.defineTiles().get(0).build(targetX2, targetY);
+                MapTile newTile2 = petalPlatformTileset.defineTiles().get(0).build(targetX2, targetY);
                 newTile2.setMap(map);
                 map.setMapTile(targetX2/48, targetY/48, newTile2);
                 placedTiles.add(map.getTileByPosition(targetX2, targetY));

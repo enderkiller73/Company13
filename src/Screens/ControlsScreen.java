@@ -29,16 +29,16 @@ public class ControlsScreen extends Screen {
         background = new TitleScreenMap();
         background.setAdjustCamera(false);
         controlsLabel = new SpriteFont("Controls", 35, 10, "Georgia", 50, Color.black);
-        controlsLabel.setOutlineColor(Color.gray);
+        controlsLabel.setOutlineColor(Color.lightGray);
         controlsLabel.setOutlineThickness(3);
         baseControlsLabel = new SpriteFont("Basic Movement: A = Left, W = Jump, D = Right, S = Crouch", 130, 121, "Georgia", 20, Color.red);
-        baseControlsLabel.setOutlineColor(Color.pink);
+        baseControlsLabel.setOutlineColor(Color.red);
         baseControlsLabel.setOutlineThickness(3);
         advancedControlsLabel = new SpriteFont("Advanced Movement: J = Dash, K = Place Platform, L = Float", 130, 151, "Georgia", 20, Color.pink);
-        advancedControlsLabel.setOutlineColor(Color.white);
+        advancedControlsLabel.setOutlineColor(Color.pink);
         advancedControlsLabel.setOutlineThickness(3);
         returnInstructionsLabel = new SpriteFont("Press Space to return to the menu", 20, 532, "Times New Roman", 30, Color.white);
-        returnInstructionsLabel.setOutlineColor(Color.black);
+        returnInstructionsLabel.setOutlineColor(Color.darkGray);
         returnInstructionsLabel.setOutlineThickness(3);
         keyLocker.lockKey(Key.SPACE);
     }
