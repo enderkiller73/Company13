@@ -28,13 +28,13 @@ public class CreditsScreen extends Screen {
         background = new TitleScreenMap();
         background.setAdjustCamera(false);
         creditsLabel = new SpriteFont("Credits", 35, 10, "Georgia", 50, Color.black);
-        creditsLabel.setOutlineColor(Color.DARK_GRAY);
+        creditsLabel.setOutlineColor(Color.LIGHT_GRAY);
         creditsLabel.setOutlineThickness(3);
         createdByLabel = new SpriteFont("Created by Company 13: Mike, Robert, William, and Kenneth", 130, 121, "Times New Roman", 20, Color.blue);
-        createdByLabel.setOutlineColor(Color.BLACK);
+        createdByLabel.setOutlineColor(Color.BLUE);
         createdByLabel.setOutlineThickness(1);
         returnInstructionsLabel = new SpriteFont("Press Space to return to the menu", 20, 532, "Times New Roman", 30, Color.white);
-        returnInstructionsLabel.setOutlineColor(Color.BLACK);
+        returnInstructionsLabel.setOutlineColor(Color.DARK_GRAY);
         returnInstructionsLabel.setOutlineThickness(3);
         keyLocker.lockKey(Key.SPACE);
     }

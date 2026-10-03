@@ -35,6 +35,8 @@ public abstract class Player extends GameObject {
     protected float momentumXIncrease = 0;
     protected float prevMoveAmountY;
     protected float dashDegrade = 0;
+    protected float floatFallCounter = 0;
+    protected float floatFallMax = 0;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -249,12 +251,17 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
             moveAmountX -= walkSpeed;
             facingDirection = Direction.LEFT;
+            if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                moveAmountY = gravity;
+                playerClimbing();
+            }
         }
 
         // if walk right key is pressed, move player to the right
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
             moveAmountX += walkSpeed;
             facingDirection = Direction.RIGHT;
+            
         } else if (Keyboard.isKeyUp(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
             playerState = PlayerState.STANDING;
         }
@@ -264,10 +271,16 @@ public abstract class Player extends GameObject {
             keyLocker.lockKey(JUMP_KEY);
             playerState = PlayerState.JUMPING;
         }
-
+        else if (Keyboard.isKeyDown(CLIMB_KEY) && airGroundState == AirGroundState.AIR && !keyLocker.isKeyLocked(CLIMB_KEY)) {
+             keyLocker.lockKey(CLIMB_KEY);
+             playerState = playerState.CLIMBING;
+        }
         // if crouch key is pressed,
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
+        }
+        else if (Keyboard.isKeyDown(PLACE_KEY)) {
+            playerState = playerState.THROWING;
         }
     }
 
@@ -357,13 +370,22 @@ public abstract class Player extends GameObject {
         }
         if (Keyboard.isKeyDown(CLIMB_KEY))  {
             keyLocker.lockKey(CLIMB_KEY);
-            //moveAmountY;
+            moveAmountY = gravity;
+            if (facingDirection == Direction.RIGHT) {
+                moveAmountX += (walkSpeed/4);
+                moveAmountY = gravity;
+                
+            }
+            if (facingDirection == Direction.LEFT) {
+                moveAmountX -= (walkSpeed/4);
+                moveAmountY = gravity;
+            }
+
             playerState = PlayerState.CLIMBING;
-            //fallGravity();
         }
-        playerState = PlayerState.STANDING;
-        
-        moveAmountY = prevMoveAmountY;
+        if (airGroundState == AirGroundState.GROUND) {
+            playerState = PlayerState.STANDING;
+        }
     }
 
     // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
@@ -422,6 +444,9 @@ public abstract class Player extends GameObject {
             }
         }
         else if (playerState == PlayerState.CLIMBING) {
+            this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+        }
+        else if (playerState == PlayerState.THROWING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
         }
     }

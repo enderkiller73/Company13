@@ -31,14 +31,14 @@ public class MenuScreen extends Screen {
 
     @Override
     public void initialize() {
-        playGame = new SpriteFont("PLAY GAME", 100, 190, "Georgia", 30, new Color(49, 0, 100));
+        playGame = new SpriteFont("PLAY GAME", 100, 190, "Georgia", 30, new Color(200, 0, 100));
         playGame.setOutlineColor(Color.black);
         playGame.setOutlineThickness(3);
-        controls = new SpriteFont("CREDITS", 100,240,"Georgia",30, new Color(69,0,100));
+        controls = new SpriteFont("CREDITS", 100,240,"Georgia",30, new Color(220,20,100));
         controls.setOutlineColor(Color.black);
         controls.setOutlineThickness(3);
         
-        credits = new SpriteFont("CONTROLS", 100, 290, "Georgia", 30, new Color(89, 0, 100));
+        credits = new SpriteFont("CONTROLS", 100, 290, "Georgia", 30, new Color(240, 40, 100));
         credits.setOutlineColor(Color.black);
         credits.setOutlineThickness(3);
         background = new TitleScreenMap();
@@ -81,21 +81,21 @@ public class MenuScreen extends Screen {
 
         // sets location for blue square in front of text (pointerLocation) and also sets color of spritefont text based on which menu item is being hovered
         if (currentMenuItemHovered == 0) {
-            playGame.setColor(new Color(216, 255, 155));
-            controls.setColor(new Color (69,0,100));
-            credits.setColor(new Color(89, 0, 100));
+            playGame.setColor(new Color(100, 0, 100));
+            controls.setColor(new Color (220,20,100));
+            credits.setColor(new Color(240,40, 100));
             pointerLocationX = 70;
             pointerLocationY = 200;
         } else if (currentMenuItemHovered == 1) {
-            playGame.setColor(new Color(49, 0, 100));
-            controls.setColor(new Color (196,255,155));
-            credits.setColor(new Color(89, 0, 100));
+            playGame.setColor(new Color(200, 0, 100));
+            controls.setColor(new Color (120,20,100));
+            credits.setColor(new Color(240, 40, 100));
             pointerLocationX = 70;
             pointerLocationY = 250;
         } else if (currentMenuItemHovered == 2) {
-            playGame.setColor(new Color(49, 0, 100));
-            controls.setColor(new Color (69,0,100));
-            credits.setColor(new Color(176, 255, 155));
+            playGame.setColor(new Color(200, 0, 100));
+            controls.setColor(new Color (220,20,100));
+            credits.setColor(new Color(140, 40, 100));
             pointerLocationX = 70;
             pointerLocationY = 300;
         }
