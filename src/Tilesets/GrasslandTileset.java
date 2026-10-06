@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class GrasslandTileset extends Tileset {
 
     public GrasslandTileset() {
-        super(ImageLoader.load("GrasslandTileset.png"), 32, 32, 1);
+        super(ImageLoader.load("GrasslandTileset.png"), 31, 31, 1);
     }
     @Override
     public ArrayList<MapTileBuilder> defineTiles() {
@@ -123,6 +123,51 @@ public class GrasslandTileset extends Tileset {
                 .withTileType(TileType.PASSABLE);
 
         mapTiles.add(topShrubTile);
+
+        Frame starFrame = new FrameBuilder(getSubImage(2, 3))
+                .withScale(tileScale)
+                .build();
+
+        MapTileBuilder starTile = new MapTileBuilder(starFrame)
+                .withTileType(TileType.PASSABLE);
+
+        mapTiles.add(starTile);
+
+        Frame leftShrubFrame = new FrameBuilder(getSubImage(3, 0))
+                .withScale(tileScale)
+                .build();
+
+        MapTileBuilder leftShrubTile = new MapTileBuilder(leftShrubFrame)
+                .withTileType(TileType.PASSABLE);
+
+        mapTiles.add(leftShrubTile);
+
+        Frame moonFrame = new FrameBuilder(getSubImage(3, 1))
+                .withScale(tileScale)
+                .build();
+
+        MapTileBuilder moonTile = new MapTileBuilder(moonFrame)
+                .withTileType(TileType.PASSABLE);
+
+        mapTiles.add(moonTile);
+
+        Frame rightShrubFrame = new FrameBuilder(getSubImage(3, 2))
+                .withScale(tileScale)
+                .build();
+
+        MapTileBuilder rightShrubTile = new MapTileBuilder(rightShrubFrame)
+                .withTileType(TileType.PASSABLE);
+
+        mapTiles.add(rightShrubTile);
+
+        Frame middleLogFrame = new FrameBuilder(getSubImage(3, 3))
+                .withScale(tileScale)
+                .build();
+
+        MapTileBuilder middleLogTile = new MapTileBuilder(middleLogFrame)
+                .withTileType(TileType.PASSABLE);
+
+        mapTiles.add(middleLogTile);
 
         return mapTiles;
     }

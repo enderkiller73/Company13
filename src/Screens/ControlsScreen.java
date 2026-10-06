@@ -10,15 +10,16 @@ import SpriteFont.SpriteFont;
 import java.awt.*;
 
 // This class is for the credits screen
-public class CreditsScreen extends Screen {
+public class ControlsScreen extends Screen {
     protected ScreenCoordinator screenCoordinator;
     protected Map background;
     protected KeyLocker keyLocker = new KeyLocker();
-    protected SpriteFont creditsLabel;
-    protected SpriteFont createdByLabel;
+    protected SpriteFont controlsLabel;
+    protected SpriteFont baseControlsLabel;
+    protected SpriteFont advancedControlsLabel;
     protected SpriteFont returnInstructionsLabel;
 
-    public CreditsScreen(ScreenCoordinator screenCoordinator) {
+    public ControlsScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
     }
 
@@ -27,14 +28,17 @@ public class CreditsScreen extends Screen {
         // setup graphics on screen (background map, spritefont text)
         background = new TitleScreenMap();
         background.setAdjustCamera(false);
-        creditsLabel = new SpriteFont("Credits", 35, 10, "Georgia", 50, Color.black);
-        creditsLabel.setOutlineColor(Color.LIGHT_GRAY);
-        creditsLabel.setOutlineThickness(3);
-        createdByLabel = new SpriteFont("Created by Company 13: Mike, Robert, William, and Kenneth", 130, 121, "Times New Roman", 20, Color.blue);
-        createdByLabel.setOutlineColor(Color.BLUE);
-        createdByLabel.setOutlineThickness(1);
+        controlsLabel = new SpriteFont("Controls", 35, 10, "Georgia", 50, Color.black);
+        controlsLabel.setOutlineColor(Color.lightGray);
+        controlsLabel.setOutlineThickness(3);
+        baseControlsLabel = new SpriteFont("Basic Movement: A = Left, W = Jump, D = Right, S = Crouch", 130, 121, "Georgia", 20, Color.red);
+        baseControlsLabel.setOutlineColor(Color.red);
+        baseControlsLabel.setOutlineThickness(3);
+        advancedControlsLabel = new SpriteFont("Advanced Movement: J = Dash, K = Place Platform, L = Float", 130, 151, "Georgia", 20, Color.pink);
+        advancedControlsLabel.setOutlineColor(Color.pink);
+        advancedControlsLabel.setOutlineThickness(3);
         returnInstructionsLabel = new SpriteFont("Press Space to return to the menu", 20, 532, "Times New Roman", 30, Color.white);
-        returnInstructionsLabel.setOutlineColor(Color.DARK_GRAY);
+        returnInstructionsLabel.setOutlineColor(Color.darkGray);
         returnInstructionsLabel.setOutlineThickness(3);
         keyLocker.lockKey(Key.SPACE);
     }
@@ -54,8 +58,9 @@ public class CreditsScreen extends Screen {
 
     public void draw(GraphicsHandler graphicsHandler) {
         background.draw(graphicsHandler);
-        creditsLabel.draw(graphicsHandler);
-        createdByLabel.draw(graphicsHandler);
+        controlsLabel.draw(graphicsHandler);
+        baseControlsLabel.draw(graphicsHandler);
+        advancedControlsLabel.draw(graphicsHandler);
         returnInstructionsLabel.draw(graphicsHandler);
     }
 }
