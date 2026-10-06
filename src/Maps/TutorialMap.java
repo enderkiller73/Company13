@@ -1,12 +1,8 @@
 package Maps;
 
-import Engine.ImageLoader;
 import EnhancedMapTiles.EndLevelBox;
-import EnhancedMapTiles.HorizontalMovingPlatform;
-import GameObject.Rectangle;
 import Level.*;
 import Tilesets.GrasslandTileset;
-import Utils.Direction;
 
 import java.util.ArrayList;
 
@@ -15,9 +11,8 @@ public class TutorialMap extends Map {
 
     public TutorialMap() {
         super("tutorial_map.txt", new GrasslandTileset());
-        //this.playerStartPosition = getMapTile(1, 9).getLocation();
+        this.playerStartPosition = getMapTile(1, 9).getLocation();
     }
-
     @Override
     public ArrayList<Enemy> loadEnemies() {
          ArrayList<Enemy> enemies = new ArrayList<>();
@@ -40,10 +35,8 @@ public class TutorialMap extends Map {
                 // );
                 // enhancedMapTiles.add(hmp);
 
-                // EndLevelBox endLevelBox = new EndLevelBox(getMapTile(32, 7).getLocation());
-                // enhancedMapTiles.add(endLevelBox);
-
-        return enhancedMapTiles;
+                enhancedMapTiles.add(new EndLevelBox(getMapTile(49, 10).getLocation()));
+            return enhancedMapTiles;
     }
 
     @Override

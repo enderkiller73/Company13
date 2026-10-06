@@ -21,6 +21,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     protected Player player;
     protected PlayLevelScreenState playLevelScreenState;
     protected int screenTimer;
+    protected int currentLevel = 1;
     protected LevelClearedScreen levelClearedScreen;
     protected LevelLoseScreen levelLoseScreen;
     protected boolean levelCompletedStateChangeStart;
@@ -32,24 +33,23 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void initialize() {
-        // define/setup map
-        this.map = new TestMap();
+        loadLevel();
+    }
 
-        // setup player
-        this.player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
-        this.player.setMap(map);
-        this.player.addListener(this);
-
+    private void loadLevel() {
+        map = new TestMap();
+        player = new Rose(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
+        player.setMap(map);
+        player.addListener(this);
         levelClearedScreen = new LevelClearedScreen();
         levelLoseScreen = new LevelLoseScreen(this);
-        levelIntro = new SpriteFont("Level 1", 0, 0, "Arial", 36, Color.white);
+        levelIntro = new SpriteFont("Level " + currentLevel, 0, 0, "Arial", 36, Color.white);
         levelIntroTimer = 120;
-
-        this.playLevelScreenState = PlayLevelScreenState.LEVEL_INTRO;
+        levelCompletedStateChangeStart = false;
+        playLevelScreenState = PlayLevelScreenState.LEVEL_INTRO;
     }
 
     public void update() {
-        // based on screen state, perform specific actions
         switch (playLevelScreenState) {
             case LEVEL_INTRO:
                 levelIntroTimer--;
@@ -57,12 +57,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                     playLevelScreenState = PlayLevelScreenState.RUNNING;
                 }
                 break;
-            // if level is "running" update player and map to keep game logic for the platformer level going
             case RUNNING:
                 player.update();
                 map.update(player);
                 break;
-            // if level has been completed, bring up the level cleared screen
             case LEVEL_COMPLETED:
                 if (levelCompletedStateChangeStart) {
                     screenTimer = 130;
@@ -71,11 +69,15 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                     levelClearedScreen.update();
                     screenTimer--;
                     if (screenTimer == 0) {
-                        goBackToMenu();
+                        if (currentLevel == 1) {
+                            currentLevel = 2;
+                            loadLevel();
+                        } else {
+                            goBackToMenu();
+                        }
                     }
                 }
                 break;
-            // wait on level lose screen to make a decision (either resets level or sends player back to main menu)
             case LEVEL_LOSE:
                 levelLoseScreen.update();
                 break;
@@ -120,7 +122,6 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         }
     }
 
-    @Override
     public void onDeath() {
         if (playLevelScreenState != PlayLevelScreenState.LEVEL_LOSE) {
             playLevelScreenState = PlayLevelScreenState.LEVEL_LOSE;
@@ -128,7 +129,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void resetLevel() {
-        initialize();
+        loadLevel();
     }
 
     public void goBackToMenu() {
