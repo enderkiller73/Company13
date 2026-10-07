@@ -21,6 +21,7 @@ public class Rose extends Player {
         walkSpeed = 6f;
         momentumYIncrease = .5f;
         momentumXIncrease = .5f;
+        maxMomentum = 3f;
         dashDegrade = .5f;
         dashSpeed = 75f;
     }

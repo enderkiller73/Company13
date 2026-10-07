@@ -33,6 +33,7 @@ public abstract class Player extends GameObject {
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
     protected float momentumXIncrease = 0;
+    protected float maxMomentum = 0f;
     protected float prevMoveAmountY;
     protected float dashDegrade = 0;
     protected float floatFallCounter = 0;
@@ -202,6 +203,7 @@ public abstract class Player extends GameObject {
         switch (playerState) {
             case STANDING:
                 playerStanding();
+                momentumX = 1;
                 break;
             case WALKING:
                 playerWalking();
@@ -243,6 +245,7 @@ public abstract class Player extends GameObject {
            // keyLocker.lockKey(CLIMB_KEY);
             playerState = PlayerState.CLIMBING;
         }
+
     }
 
     // player WALKING state logic
@@ -259,9 +262,12 @@ public abstract class Player extends GameObject {
 
         // if walk right key is pressed, move player to the right
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-            moveAmountX += walkSpeed;
+            if(playerState != playerState.WALKING) {
+                momentumX = 1;
+            }
+            moveAmountX += walkSpeed*(momentumX);
             facingDirection = Direction.RIGHT;
-            
+            increaseMomentumX();
         } else if (Keyboard.isKeyUp(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
             playerState = PlayerState.STANDING;
         }
@@ -398,6 +404,9 @@ public abstract class Player extends GameObject {
 
     protected void increaseMomentumX() {
         momentumX += momentumXIncrease;
+        if (momentumX > maxMomentum) {
+            momentumY = maxMomentum;
+        }
     }
 
     protected void updateLockedKeys() {
