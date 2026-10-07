@@ -78,10 +78,14 @@ public abstract class Player extends GameObject {
     protected boolean isDashing = false;
 
 
-    // Recsources for Placeable Tiles 
+    //frame counts
+    int climbFrameCount = 0;
+    int climbStartFrame = -1;
+    int framecount = 0;
+
+    // Resources for Placeable Tiles 
     CommonTileset commonTileset = new CommonTileset();
     ArrayList<MapTile> placedTiles = new ArrayList<>();
-    int framecount = 0;
     ArrayList<Integer> placedAtFrame =  new ArrayList<>();
     PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
 
@@ -112,6 +116,8 @@ public abstract class Player extends GameObject {
             } while (previousPlayerState != playerState);
             framecount++;
             handleDash();
+            playerClimbing();
+            climbFrameCount ++;
             placePlatform();
             unPlacePlatform();
             previousAirGroundState = airGroundState;
@@ -255,8 +261,7 @@ public abstract class Player extends GameObject {
             moveAmountX -= walkSpeed;
             facingDirection = Direction.LEFT;
             if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                moveAmountY = gravity;
-                playerClimbing();
+                moveAmountX = walkSpeed /4;
             }
         }
 
@@ -279,14 +284,14 @@ public abstract class Player extends GameObject {
         }
         else if (Keyboard.isKeyDown(CLIMB_KEY) && airGroundState == AirGroundState.AIR && !keyLocker.isKeyLocked(CLIMB_KEY)) {
              keyLocker.lockKey(CLIMB_KEY);
-             playerState = playerState.CLIMBING;
+             playerState = PlayerState.CLIMBING;
         }
         // if crouch key is pressed,
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
         }
         else if (Keyboard.isKeyDown(PLACE_KEY)) {
-            playerState = playerState.THROWING;
+            playerState = PlayerState.THROWING;
         }
     }
 
@@ -346,10 +351,14 @@ public abstract class Player extends GameObject {
             // allows you to move left and right while in the air
             if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
                 moveAmountX -= walkSpeed;
+                if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                    moveAmountX = - (walkSpeed/2);
+                }
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
                 moveAmountX += walkSpeed;
-            } else if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                playerState = PlayerState.CLIMBING;
+                if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                    moveAmountX = walkSpeed/2;
+                }
             }
     
 
@@ -370,26 +379,29 @@ public abstract class Player extends GameObject {
     
 
     protected void playerClimbing() {
-        // if player is facing a wall, allow them to hold on to the wall.
-        if (prevMoveAmountY != 0) {
-            prevMoveAmountY = moveAmountY;
-        }
-        if (Keyboard.isKeyDown(CLIMB_KEY))  {
-            keyLocker.lockKey(CLIMB_KEY);
-            moveAmountY = gravity;
-            if (facingDirection == Direction.RIGHT) {
-                moveAmountX += (walkSpeed/4);
-                moveAmountY = gravity;
-                
-            }
-            if (facingDirection == Direction.LEFT) {
-                moveAmountX -= (walkSpeed/4);
-                moveAmountY = gravity;
+       
+        if (Keyboard.isKeyDown(CLIMB_KEY)) {
+
+            if (climbStartFrame == -1) {
+                climbStartFrame = climbFrameCount;
             }
 
-            playerState = PlayerState.CLIMBING;
+            int heldFrames = climbFrameCount - climbStartFrame;
+
+            if (heldFrames < 180) {
+                playerState = PlayerState.CLIMBING;
+                moveAmountY = gravity; 
+            } else {
+  
+                playerState = PlayerState.JUMPING;
+            }
         }
-        if (airGroundState == AirGroundState.GROUND) {
+        else {
+   
+            climbStartFrame = -1;
+        }
+        
+        if (airGroundState == AirGroundState.GROUND && moveAmountX == 0) {
             playerState = PlayerState.STANDING;
         }
     }
@@ -423,26 +435,40 @@ public abstract class Player extends GameObject {
 
     // anything extra the player should do based on interactions can be handled here
     protected void handlePlayerAnimation() {
+        int centerX = Math.round(getBounds().getX1()) + Math.round(getBounds().getWidth() / 2f);
+        int centerY = Math.round(getBounds().getY1()) + Math.round(getBounds().getHeight() / 2f);
+        MapTile currentMapTile = map.getTileByPosition(centerX, centerY);
+
         if (playerState == PlayerState.STANDING) {
             // sets animation to a STAND animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "STAND_RIGHT" : "STAND_LEFT";
 
             // handles putting goggles on when standing in water
             // checks if the center of the player is currently touching a water tile
-            int centerX = Math.round(getBounds().getX1()) + Math.round(getBounds().getWidth() / 2f);
-            int centerY = Math.round(getBounds().getY1()) + Math.round(getBounds().getHeight() / 2f);
-            MapTile currentMapTile = map.getTileByPosition(centerX, centerY);
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.WATER) {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "SWIM_STAND_RIGHT" : "SWIM_STAND_LEFT";
+            }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
             }
         }
         else if (playerState == PlayerState.WALKING) {
             // sets animation to a WALK animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "WALK_RIGHT" : "WALK_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
+            
         }
         else if (playerState == PlayerState.CROUCHING) {
             // sets animation to a CROUCH animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CROUCH_RIGHT" : "CROUCH_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.JUMPING) {
             // if player is moving upwards, set player's animation to jump. if player moving downwards, set player's animation to fall
@@ -451,12 +477,24 @@ public abstract class Player extends GameObject {
             } else {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
             }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.CLIMBING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.THROWING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
     }
 
