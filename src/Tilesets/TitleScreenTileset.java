@@ -19,7 +19,7 @@ public class TitleScreenTileset extends Tileset {
     public ArrayList<MapTileBuilder> defineTiles() {
         ArrayList<MapTileBuilder> mapTiles = new ArrayList<>();
 
-        Frame frame11 = new FrameBuilder(getSubImage(0, 0))
+        Frame frame11 = new FrameBuilder(getSubImage(0, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -28,7 +28,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile11);
         
-        Frame frame12 = new FrameBuilder(getSubImage(0, 1))
+        Frame frame12 = new FrameBuilder(getSubImage(0, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -37,7 +37,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile12);
 
-        Frame frame13 = new FrameBuilder(getSubImage(0, 2))
+        Frame frame13 = new FrameBuilder(getSubImage(0, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -46,7 +46,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile13);
 
-        Frame frame14 = new FrameBuilder(getSubImage(0, 3))
+        Frame frame14 = new FrameBuilder(getSubImage(0, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -55,7 +55,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile14);
 
-        Frame frame15 = new FrameBuilder(getSubImage(0, 4))
+        Frame frame15 = new FrameBuilder(getSubImage(0, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -64,7 +64,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile15);
 
-        Frame frame16 = new FrameBuilder(getSubImage(0, 5))
+        Frame frame16 = new FrameBuilder(getSubImage(0, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -73,7 +73,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile16);
 
-        Frame frame17 = new FrameBuilder(getSubImage(0, 6))
+        Frame frame17 = new FrameBuilder(getSubImage(0, 8))
                 .withScale(tileScale)
                 .build();
 
@@ -82,7 +82,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile17);
 
-        Frame frame21 = new FrameBuilder(getSubImage(1, 0))
+        Frame frame21 = new FrameBuilder(getSubImage(1, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -91,7 +91,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile21);
         
-    Frame frame22 = new FrameBuilder(getSubImage(1, 1))
+    Frame frame22 = new FrameBuilder(getSubImage(1, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -100,7 +100,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile22);
 
-        Frame frame23 = new FrameBuilder(getSubImage(1, 2))
+        Frame frame23 = new FrameBuilder(getSubImage(1, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -109,7 +109,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile23);
 
-        Frame frame24 = new FrameBuilder(getSubImage(1, 3))
+        Frame frame24 = new FrameBuilder(getSubImage(1, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -118,7 +118,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile24);
 
-        Frame frame25 = new FrameBuilder(getSubImage(1, 4))
+        Frame frame25 = new FrameBuilder(getSubImage(1, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -127,7 +127,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile25);
 
-        Frame frame26 = new FrameBuilder(getSubImage(1, 5))
+        Frame frame26 = new FrameBuilder(getSubImage(1, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -136,7 +136,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile26);
 
-        Frame frame27 = new FrameBuilder(getSubImage(1, 6))
+        Frame frame27 = new FrameBuilder(getSubImage(1, 8))
                 .withScale(tileScale)
                 .build();
 
@@ -147,7 +147,7 @@ public class TitleScreenTileset extends Tileset {
 
 
 
-        Frame frame31 = new FrameBuilder(getSubImage(2, 0))
+        Frame frame31 = new FrameBuilder(getSubImage(2, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -156,7 +156,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile31);
         
-    Frame frame32 = new FrameBuilder(getSubImage(2, 1))
+    Frame frame32 = new FrameBuilder(getSubImage(2, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -165,7 +165,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile32);
 
-        Frame frame33 = new FrameBuilder(getSubImage(2, 2))
+        Frame frame33 = new FrameBuilder(getSubImage(2, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -174,7 +174,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile33);
 
-        Frame frame34 = new FrameBuilder(getSubImage(2, 3))
+        Frame frame34 = new FrameBuilder(getSubImage(2, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -183,7 +183,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile34);
 
-        Frame frame35 = new FrameBuilder(getSubImage(2, 4))
+        Frame frame35 = new FrameBuilder(getSubImage(2, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -192,7 +192,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile35);
 
-        Frame frame36 = new FrameBuilder(getSubImage(2, 5))
+        Frame frame36 = new FrameBuilder(getSubImage(2, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -201,7 +201,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile36);
 
-        Frame frame37 = new FrameBuilder(getSubImage(2, 6))
+        Frame frame37 = new FrameBuilder(getSubImage(2, 8))
                 .withScale(tileScale)
                 .build();
 
@@ -211,7 +211,7 @@ public class TitleScreenTileset extends Tileset {
         mapTiles.add(tile37);
 
 
-        Frame frame41 = new FrameBuilder(getSubImage(3, 0))
+        Frame frame41 = new FrameBuilder(getSubImage(3, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -220,7 +220,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile41);
         
-        Frame frame42 = new FrameBuilder(getSubImage(3, 1))
+        Frame frame42 = new FrameBuilder(getSubImage(3, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -229,7 +229,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile42);
 
-        Frame frame43 = new FrameBuilder(getSubImage(3, 2))
+        Frame frame43 = new FrameBuilder(getSubImage(3, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -238,7 +238,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile43);
 
-        Frame frame44 = new FrameBuilder(getSubImage(3, 3))
+        Frame frame44 = new FrameBuilder(getSubImage(3, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -247,7 +247,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile44);
 
-        Frame frame45 = new FrameBuilder(getSubImage(3, 4))
+        Frame frame45 = new FrameBuilder(getSubImage(3, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -256,7 +256,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile45);
 
-        Frame frame46 = new FrameBuilder(getSubImage(3, 5))
+        Frame frame46 = new FrameBuilder(getSubImage(3, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -265,7 +265,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile46);
 
-        Frame frame47 = new FrameBuilder(getSubImage(3, 6))
+        Frame frame47 = new FrameBuilder(getSubImage(3, 8))
                 .withScale(tileScale)
                 .build();
 
@@ -274,7 +274,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile47);
 
-        Frame frame51 = new FrameBuilder(getSubImage(4, 0))
+        Frame frame51 = new FrameBuilder(getSubImage(4, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -283,7 +283,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile51);
         
-    Frame frame52 = new FrameBuilder(getSubImage(4, 1))
+    Frame frame52 = new FrameBuilder(getSubImage(4, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -292,7 +292,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile52);
 
-        Frame frame53 = new FrameBuilder(getSubImage(4, 2))
+        Frame frame53 = new FrameBuilder(getSubImage(4, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -301,7 +301,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile53);
 
-        Frame frame54 = new FrameBuilder(getSubImage(4, 3))
+        Frame frame54 = new FrameBuilder(getSubImage(4, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -310,7 +310,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile54);
 
-        Frame frame55 = new FrameBuilder(getSubImage(4, 4))
+        Frame frame55 = new FrameBuilder(getSubImage(4, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -319,7 +319,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile55);
 
-        Frame frame56 = new FrameBuilder(getSubImage(4, 5))
+        Frame frame56 = new FrameBuilder(getSubImage(4, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -328,7 +328,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile56);
 
-        Frame frame57 = new FrameBuilder(getSubImage(4, 6))
+        Frame frame57 = new FrameBuilder(getSubImage(4, 8))
                 .withScale(tileScale)
                 .build();
 
@@ -339,7 +339,7 @@ public class TitleScreenTileset extends Tileset {
 
 
 
-        Frame frame61 = new FrameBuilder(getSubImage(5, 0))
+        Frame frame61 = new FrameBuilder(getSubImage(5, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -348,7 +348,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile61);
         
-    Frame frame62 = new FrameBuilder(getSubImage(5, 1))
+    Frame frame62 = new FrameBuilder(getSubImage(5, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -357,7 +357,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile62);
 
-        Frame frame63 = new FrameBuilder(getSubImage(5, 2))
+        Frame frame63 = new FrameBuilder(getSubImage(5, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -366,7 +366,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile63);
 
-        Frame frame64 = new FrameBuilder(getSubImage(5, 3))
+        Frame frame64 = new FrameBuilder(getSubImage(5, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -375,7 +375,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile64);
 
-        Frame frame65 = new FrameBuilder(getSubImage(5, 4))
+        Frame frame65 = new FrameBuilder(getSubImage(5, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -384,7 +384,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile65);
 
-        Frame frame66 = new FrameBuilder(getSubImage(5, 5))
+        Frame frame66 = new FrameBuilder(getSubImage(5, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -393,7 +393,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile66);
 
-        Frame frame67 = new FrameBuilder(getSubImage(5, 6))
+        Frame frame67 = new FrameBuilder(getSubImage(5, 8))
                 .withScale(tileScale)
                 .build();
 
@@ -402,7 +402,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile67);
 
-        Frame frame71 = new FrameBuilder(getSubImage(6, 0))
+        Frame frame71 = new FrameBuilder(getSubImage(6, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -411,7 +411,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile71);
         
-        Frame frame72 = new FrameBuilder(getSubImage(6, 1))
+        Frame frame72 = new FrameBuilder(getSubImage(6, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -420,7 +420,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile72);
 
-        Frame frame73 = new FrameBuilder(getSubImage(6, 2))
+        Frame frame73 = new FrameBuilder(getSubImage(6, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -429,7 +429,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile73);
 
-        Frame frame74 = new FrameBuilder(getSubImage(6, 3))
+        Frame frame74 = new FrameBuilder(getSubImage(6, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -438,7 +438,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile74);
 
-        Frame frame75 = new FrameBuilder(getSubImage(6, 4))
+        Frame frame75 = new FrameBuilder(getSubImage(6, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -447,7 +447,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile75);
 
-        Frame frame76 = new FrameBuilder(getSubImage(6, 5))
+        Frame frame76 = new FrameBuilder(getSubImage(6, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -456,7 +456,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile76);
 
-        Frame frame77 = new FrameBuilder(getSubImage(6, 6))
+        Frame frame77 = new FrameBuilder(getSubImage(6, 8))
                 .withScale(tileScale)
                 .build();
 
@@ -465,7 +465,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile77);
 
-        Frame frame81 = new FrameBuilder(getSubImage(7, 0))
+        Frame frame81 = new FrameBuilder(getSubImage(7, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -474,7 +474,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile81);
         
-    Frame frame82 = new FrameBuilder(getSubImage(7, 1))
+    Frame frame82 = new FrameBuilder(getSubImage(7, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -483,7 +483,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile82);
 
-        Frame frame83 = new FrameBuilder(getSubImage(7, 2))
+        Frame frame83 = new FrameBuilder(getSubImage(7, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -492,7 +492,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile83);
 
-        Frame frame84 = new FrameBuilder(getSubImage(7, 3))
+        Frame frame84 = new FrameBuilder(getSubImage(7, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -501,7 +501,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile84);
 
-        Frame frame85 = new FrameBuilder(getSubImage(7, 4))
+        Frame frame85 = new FrameBuilder(getSubImage(7, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -510,7 +510,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile85);
 
-        Frame frame86 = new FrameBuilder(getSubImage(7, 5))
+        Frame frame86 = new FrameBuilder(getSubImage(7, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -519,7 +519,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile86);
 
-        Frame frame87 = new FrameBuilder(getSubImage(7, 6))
+        Frame frame87 = new FrameBuilder(getSubImage(7, 8))
                 .withScale(tileScale)
                 .build();
 
@@ -528,7 +528,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile87);
 
-        Frame frame91 = new FrameBuilder(getSubImage(8, 0))
+        Frame frame91 = new FrameBuilder(getSubImage(8, 2))
                 .withScale(tileScale)
                 .build();
 
@@ -537,7 +537,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile91);
         
-    Frame frame92 = new FrameBuilder(getSubImage(8, 1))
+    Frame frame92 = new FrameBuilder(getSubImage(8, 3))
                 .withScale(tileScale)
                 .build();
 
@@ -546,7 +546,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile92);
 
-        Frame frame93 = new FrameBuilder(getSubImage(8, 2))
+        Frame frame93 = new FrameBuilder(getSubImage(8, 4))
                 .withScale(tileScale)
                 .build();
 
@@ -555,7 +555,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile93);
 
-        Frame frame94 = new FrameBuilder(getSubImage(8, 3))
+        Frame frame94 = new FrameBuilder(getSubImage(8, 5))
                 .withScale(tileScale)
                 .build();
 
@@ -564,7 +564,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile94);
 
-        Frame frame95 = new FrameBuilder(getSubImage(8, 4))
+        Frame frame95 = new FrameBuilder(getSubImage(8, 6))
                 .withScale(tileScale)
                 .build();
 
@@ -573,7 +573,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile95);
 
-        Frame frame96 = new FrameBuilder(getSubImage(8, 5))
+        Frame frame96 = new FrameBuilder(getSubImage(8, 7))
                 .withScale(tileScale)
                 .build();
 
@@ -582,7 +582,7 @@ public class TitleScreenTileset extends Tileset {
 
         mapTiles.add(tile96);
 
-        Frame frame97 = new FrameBuilder(getSubImage(8, 6))
+        Frame frame97 = new FrameBuilder(getSubImage(8, 8))
                 .withScale(tileScale)
                 .build();
 

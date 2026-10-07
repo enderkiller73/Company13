@@ -267,7 +267,7 @@ public abstract class Player extends GameObject {
 
         // if walk right key is pressed, move player to the right
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-            if(playerState != playerState.WALKING) {
+            if(playerState != PlayerState.WALKING) {
                 momentumX = 1;
             }
             moveAmountX += walkSpeed*(momentumX);
