@@ -77,10 +77,14 @@ public abstract class Player extends GameObject {
     protected boolean isDashing = false;
 
 
-    // Recsources for Placeable Tiles 
+    //frame counts
+    int climbFrameCount = 0;
+    int climbStartFrame = -1;
+    int framecount = 0;
+
+    // Resources for Placeable Tiles 
     CommonTileset commonTileset = new CommonTileset();
     ArrayList<MapTile> placedTiles = new ArrayList<>();
-    int framecount = 0;
     ArrayList<Integer> placedAtFrame =  new ArrayList<>();
     PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
 
@@ -111,6 +115,8 @@ public abstract class Player extends GameObject {
             } while (previousPlayerState != playerState);
             framecount++;
             handleDash();
+            playerClimbing();
+            climbFrameCount ++;
             placePlatform();
             unPlacePlatform();
             previousAirGroundState = airGroundState;
@@ -252,8 +258,7 @@ public abstract class Player extends GameObject {
             moveAmountX -= walkSpeed;
             facingDirection = Direction.LEFT;
             if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                moveAmountY = gravity;
-                playerClimbing();
+                moveAmountX = walkSpeed /4;
             }
         }
 
@@ -261,6 +266,9 @@ public abstract class Player extends GameObject {
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
             moveAmountX += walkSpeed;
             facingDirection = Direction.RIGHT;
+            if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                moveAmountX = walkSpeed/4;
+            }
             
         } else if (Keyboard.isKeyUp(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
             playerState = PlayerState.STANDING;
@@ -273,14 +281,14 @@ public abstract class Player extends GameObject {
         }
         else if (Keyboard.isKeyDown(CLIMB_KEY) && airGroundState == AirGroundState.AIR && !keyLocker.isKeyLocked(CLIMB_KEY)) {
              keyLocker.lockKey(CLIMB_KEY);
-             playerState = playerState.CLIMBING;
+             playerState = PlayerState.CLIMBING;
         }
         // if crouch key is pressed,
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
         }
         else if (Keyboard.isKeyDown(PLACE_KEY)) {
-            playerState = playerState.THROWING;
+            playerState = PlayerState.THROWING;
         }
     }
 
@@ -340,10 +348,14 @@ public abstract class Player extends GameObject {
             // allows you to move left and right while in the air
             if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
                 moveAmountX -= walkSpeed;
+                if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                    moveAmountX = - (walkSpeed/2);
+                }
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
                 moveAmountX += walkSpeed;
-            } else if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                playerState = PlayerState.CLIMBING;
+                if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                    moveAmountX = walkSpeed/2;
+                }
             }
     
 
@@ -364,26 +376,29 @@ public abstract class Player extends GameObject {
     
 
     protected void playerClimbing() {
-        // if player is facing a wall, allow them to hold on to the wall.
-        if (prevMoveAmountY != 0) {
-            prevMoveAmountY = moveAmountY;
-        }
-        if (Keyboard.isKeyDown(CLIMB_KEY))  {
-            keyLocker.lockKey(CLIMB_KEY);
-            moveAmountY = gravity;
-            if (facingDirection == Direction.RIGHT) {
-                moveAmountX += (walkSpeed/4);
-                moveAmountY = gravity;
-                
-            }
-            if (facingDirection == Direction.LEFT) {
-                moveAmountX -= (walkSpeed/4);
-                moveAmountY = gravity;
+       
+        if (Keyboard.isKeyDown(CLIMB_KEY)) {
+
+            if (climbStartFrame == -1) {
+                climbStartFrame = climbFrameCount;
             }
 
-            playerState = PlayerState.CLIMBING;
+            int heldFrames = climbFrameCount - climbStartFrame;
+
+            if (heldFrames < 180) {
+                playerState = PlayerState.CLIMBING;
+                moveAmountY = gravity; 
+            } else {
+  
+                playerState = PlayerState.JUMPING;
+            }
         }
-        if (airGroundState == AirGroundState.GROUND) {
+        else {
+   
+            climbStartFrame = -1;
+        }
+        
+        if (airGroundState == AirGroundState.GROUND && moveAmountX == 0) {
             playerState = PlayerState.STANDING;
         }
     }
