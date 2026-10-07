@@ -429,26 +429,40 @@ public abstract class Player extends GameObject {
 
     // anything extra the player should do based on interactions can be handled here
     protected void handlePlayerAnimation() {
+        int centerX = Math.round(getBounds().getX1()) + Math.round(getBounds().getWidth() / 2f);
+        int centerY = Math.round(getBounds().getY1()) + Math.round(getBounds().getHeight() / 2f);
+        MapTile currentMapTile = map.getTileByPosition(centerX, centerY);
+
         if (playerState == PlayerState.STANDING) {
             // sets animation to a STAND animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "STAND_RIGHT" : "STAND_LEFT";
 
             // handles putting goggles on when standing in water
             // checks if the center of the player is currently touching a water tile
-            int centerX = Math.round(getBounds().getX1()) + Math.round(getBounds().getWidth() / 2f);
-            int centerY = Math.round(getBounds().getY1()) + Math.round(getBounds().getHeight() / 2f);
-            MapTile currentMapTile = map.getTileByPosition(centerX, centerY);
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.WATER) {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "SWIM_STAND_RIGHT" : "SWIM_STAND_LEFT";
+            }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
             }
         }
         else if (playerState == PlayerState.WALKING) {
             // sets animation to a WALK animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "WALK_RIGHT" : "WALK_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
+            
         }
         else if (playerState == PlayerState.CROUCHING) {
             // sets animation to a CROUCH animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CROUCH_RIGHT" : "CROUCH_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.JUMPING) {
             // if player is moving upwards, set player's animation to jump. if player moving downwards, set player's animation to fall
@@ -457,12 +471,24 @@ public abstract class Player extends GameObject {
             } else {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
             }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.CLIMBING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.THROWING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
     }
 
