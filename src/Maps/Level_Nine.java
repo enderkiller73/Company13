@@ -15,11 +15,11 @@ import java.util.ArrayList;
 
 
 // Represents a test map to be used in a level
-public class Level_Four extends Map {
+public class Level_Nine extends Map {
 
 
-    public Level_Four() {
-        super("level_four.txt", new CommonTileset());
+    public Level_Nine() {
+        super("level_nine.txt", new CommonTileset());
         this.playerStartPosition = getMapTile(1, 9).getLocation();
     }
 
@@ -29,7 +29,7 @@ public class Level_Four extends Map {
         ArrayList<Enemy> enemies = new ArrayList<>();
 
 
-        BugEnemy bugEnemy = new BugEnemy(getMapTile(6, 10).getLocation().subtractY(25), Direction.LEFT);
+        BugEnemy bugEnemy = new BugEnemy(getMapTile(16, 10).getLocation().subtractY(25), Direction.LEFT);
         enemies.add(bugEnemy);
 
 
@@ -82,7 +82,7 @@ public class Level_Four extends Map {
 
 // public static Map getMapByName(String mapName) {
 //     switch(mapName) {
-//         case "Level_Four":
+//         case "Level_Eight":
 //             return new TestMap();
 //         case "TitleScreen":
 //             return new TitleScreenMap();
