@@ -29,7 +29,7 @@ public class Level_Five extends Map {
         ArrayList<Enemy> enemies = new ArrayList<>();
 
 
-        BugEnemy bugEnemy = new BugEnemy(getMapTile(16, 10).getLocation().subtractY(25), Direction.LEFT);
+        BugEnemy bugEnemy = new BugEnemy(getMapTile(6, 12).getLocation().subtractY(25), Direction.LEFT);
         enemies.add(bugEnemy);
 
 

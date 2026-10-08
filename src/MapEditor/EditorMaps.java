@@ -11,6 +11,9 @@ import Maps.Level_Five;
 import Maps.Level_Six;
 import Maps.Level_Seven;
 import Maps.Level_Eight;
+import Maps.Level_Nine;
+import Maps.Level_Ten;
+
 import java.util.ArrayList;
 
 public class EditorMaps {
@@ -26,6 +29,8 @@ public class EditorMaps {
             add("Level_Six");
             add("Level_Seven");
             add("Level_Eight");
+            add("Level_Nine");
+            add("Level_Ten");
         }};
     }
 
@@ -51,6 +56,10 @@ public class EditorMaps {
                 return new Level_Seven();
             case "Level_Eight":
                 return new Level_Eight();
+            case "Level_Nine":
+                return new Level_Nine();
+            case "Level_Ten":
+                return new Level_Ten();
             default:
                 throw new RuntimeException("Unrecognized map name");
         }
