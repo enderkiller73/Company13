@@ -376,7 +376,7 @@ public abstract class Player extends GameObject {
 
             if (heldFrames < 180) {
                 playerState = PlayerState.JUMPING;
-                moveAmountY = gravity; 
+                moveAmountY = moveAmountY / 6; 
             } else {
   
                 playerState = PlayerState.JUMPING;
