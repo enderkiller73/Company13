@@ -3,10 +3,9 @@ import Builders.FrameBuilder;
 import Builders.MapTileBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
-import GameObject.ImageEffect;
+import GameObject.Rectangle;
 import Level.TileType;
 import Level.Tileset;
-import Utils.SlopeTileLayoutUtils;
 
 import java.util.ArrayList;
 
@@ -19,19 +18,29 @@ public class PetalPlatformTileset extends Tileset {
 
     @Override
     public ArrayList<MapTileBuilder> defineTiles() {
-        ArrayList<MapTileBuilder> mapTiles = new ArrayList<>();
+        return defineTiles(32);
+        //TS so clever im so proud of this
+    }
+
+    // builds the petal tile scaled to exactly fit the map's tile size
+    public ArrayList<MapTileBuilder> defineTiles(int tilesize) {
+        ArrayList<MapTileBuilder> maptiles = new ArrayList<>();
+        float petalscale = tilesize / 32f;
+        float boundsX = Math.round(2 * petalscale) / petalscale;
+        float boundsY = Math.round(11 * petalscale) / petalscale;
+
 
         Frame petalPlatformFrame = new FrameBuilder(getSubImage(0, 0))
-                .withScale(tileScale)
-                .withBounds(8, 10, 10, 16)
-                .build();
+            .withScale(petalscale)
+            .withBounds(new Rectangle(boundsX, boundsY, 28, 8))
+            .build();
 
         MapTileBuilder petalPlatformTile = new MapTileBuilder(petalPlatformFrame)
-                .withTileType(TileType.NOT_PASSABLE);
+            .withTileType(TileType.NOT_PASSABLE);
 
+        maptiles.add(petalPlatformTile);
 
-        mapTiles.add(petalPlatformTile);
-
-        return mapTiles;
+        return maptiles;
     }
+
 }

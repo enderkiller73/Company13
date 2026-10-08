@@ -93,6 +93,7 @@ public abstract class Player extends GameObject {
     ArrayList<MapTile> placedTiles = new ArrayList<>();
     ArrayList<Integer> placedAtFrame =  new ArrayList<>();
     PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
+    ArrayList<MapTile> originalTiles = new ArrayList<>();
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -627,86 +628,93 @@ public abstract class Player extends GameObject {
         drawBounds(graphicsHandler, new Color(255, 0, 0, 100));
     }
     */
-    protected void placePlatform() {
-        if (Keyboard.isKeyDown(PLACE_KEY)) {
-            keyLocker.lockKey(PLACE_KEY);
-            int targetX;
-            int targetX2; 
-            if (this.facingDirection == Direction.RIGHT) {
-                targetX = (Math.round(this.x) + 96) / 48 * 48;
-            }
-            else {
-                targetX = (Math.round(this.x) - 96) / 48 * 48;
-            }
-            int targetY = (Math.round(this.y)-32) / 48 * 48;
+protected void placePlatform() {
+    if (Keyboard.isKeyDown(PLACE_KEY)) {
+        keyLocker.lockKey(PLACE_KEY);
+        int tileWidth = map.getTileset().getScaledSpriteWidth();
+        int tileHeight = map.getTileset().getScaledSpriteHeight();
+        int targetX;
+        int targetX2;
+        if (this.facingDirection == Direction.RIGHT) {
+            targetX = (Math.round(this.x) + tileWidth * 2) / tileWidth * tileWidth;
+            targetX2 = (Math.round(this.x) + tileWidth * 3) / tileWidth * tileWidth;
+        }
+        else {
+            targetX = (Math.round(this.x) - tileWidth * 2) / tileWidth * tileWidth;
+            targetX2 = (Math.round(this.x) - tileWidth * 3) / tileWidth * tileWidth;
+        }
+        int targetY = (Math.round(this.y) - 32) / tileHeight * tileHeight;
+        int targetY2 = targetY;
 
-            if (this.facingDirection == Direction.RIGHT) {
-                targetX2 = (Math.round(this.x) + 144) / 48 * 48;
-            }
-            else {
-                targetX2 = (Math.round(this.x) - 144) / 48 * 48;
-            }
-            int targetY2 = (Math.round(this.y)-32) / 48 * 48;
+        try {
+            map.getTileByPosition(targetX, targetY).getTileType();
+            map.getTileByPosition(targetX2, targetY2).getTileType();
+        } catch (Exception e) {
+            System.out.println("placing out of bounds");
+            return;
+        }
 
-            try {
-                map.getTileByPosition(targetX, targetY).getTileType();
-                map.getTileByPosition(targetX2, targetY2).getTileType();
-            } catch (Exception e) {
-                System.out.println("placing out of bounds");
-                return;
-            }
-            if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && this.x != targetX && map.getTileByPosition(targetX2, targetY).getTileType() == TileType.PASSABLE && this.x != targetX2 && placedAtFrame.size() == 0) {
-                MapTile newTile = petalPlatformTileset.defineTiles().get(0).build(targetX, targetY);
-                newTile.setMap(map);
-                map.setMapTile(targetX/48, targetY/48, newTile);
-                placedTiles.add(map.getTileByPosition(targetX, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+        boolean canPlace = map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && map.getTileByPosition(targetX2, targetY2).getTileType() == TileType.PASSABLE && this.x != targetX && this.x != targetX2;
 
-                MapTile newTile2 = petalPlatformTileset.defineTiles().get(0).build(targetX2, targetY);
-                newTile2.setMap(map);
-                map.setMapTile(targetX2/48, targetY/48, newTile2);
-                placedTiles.add(map.getTileByPosition(targetX2, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+        if (canPlace && placedAtFrame.size() == 0) {
+            originalTiles.add(map.getTileByPosition(targetX, targetY));
+            MapTile newTile = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX, targetY);
+            newTile.setMap(map);
+            map.setMapTile(targetX / tileWidth, targetY / tileHeight, newTile);
+            placedTiles.add(map.getTileByPosition(targetX, targetY));
+            System.out.println("placed");
+            placedAtFrame.add(framecount);
 
-            }
-            else if (placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4){
-                MapTile newTile = petalPlatformTileset.defineTiles().get(0).build(targetX, targetY);
-                newTile.setMap(map);
-                map.setMapTile(targetX/48, targetY/48, newTile);
-                placedTiles.add(map.getTileByPosition(targetX, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+            originalTiles.add(map.getTileByPosition(targetX2, targetY2));
+            MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX2, targetY2);
+            newTile2.setMap(map);
+            map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
+            placedTiles.add(map.getTileByPosition(targetX2, targetY2));
+            System.out.println("placed");
+            placedAtFrame.add(framecount);
+        }
+        else if (canPlace && placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4) {
+            originalTiles.add(map.getTileByPosition(targetX, targetY));
+            MapTile newTile = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX, targetY);
+            newTile.setMap(map);
+            map.setMapTile(targetX / tileWidth, targetY / tileHeight, newTile);
+            placedTiles.add(map.getTileByPosition(targetX, targetY));
+            System.out.println("placed");
+            placedAtFrame.add(framecount);
 
-                MapTile newTile2 = petalPlatformTileset.defineTiles().get(0).build(targetX2, targetY);
-                newTile2.setMap(map);
-                map.setMapTile(targetX2/48, targetY/48, newTile2);
-                placedTiles.add(map.getTileByPosition(targetX2, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
-            }
-            else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
-                playerState = PlayerState.STANDING;
-            }
+            originalTiles.add(map.getTileByPosition(targetX2, targetY2));
+            MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX2, targetY2);
+            newTile2.setMap(map);
+            map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
+            placedTiles.add(map.getTileByPosition(targetX2, targetY2));
+            System.out.println("placed");
+            placedAtFrame.add(framecount);
+        }
+        else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
+            playerState = PlayerState.STANDING;
         }
     }
-    protected void unPlacePlatform() {
-        if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0)>= 180){
-            MapTile oldTile = commonTileset.defineTiles().get(1).build(placedTiles.get(0).getX(), placedTiles.get(0).getY());
-            oldTile.setMap(map);
-            map.setMapTile(Math.round(placedTiles.get(0).getX())/48, Math.round(placedTiles.get(0).getY())/48, oldTile);
-            System.out.println("unplaced");
-            placedTiles.remove(0);
-            placedAtFrame.remove(0);
-        }
-        if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0)>= 180){
-            MapTile oldTile2 = commonTileset.defineTiles().get(1).build(placedTiles.get(0).getX(), placedTiles.get(0).getY());
-            oldTile2.setMap(map);
-            map.setMapTile(Math.round(placedTiles.get(0).getX())/48, Math.round(placedTiles.get(0).getY())/48, oldTile2);
-            System.out.println("unplaced");
-            placedTiles.remove(0);
-            placedAtFrame.remove(0);
-        }
+}
+
+protected void unPlacePlatform() {
+    int tileWidth = map.getTileset().getScaledSpriteWidth();
+    int tileHeight = map.getTileset().getScaledSpriteHeight();
+
+    if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
+        MapTile oldTile = originalTiles.get(0);
+        map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile);
+        System.out.println("unplaced");
+        placedTiles.remove(0);
+        placedAtFrame.remove(0);
+        originalTiles.remove(0);
     }
+    if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
+        MapTile oldTile2 = originalTiles.get(0);
+        map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile2);
+        System.out.println("unplaced");
+        placedTiles.remove(0);
+        placedAtFrame.remove(0);
+        originalTiles.remove(0);
+    }
+}
 } 
