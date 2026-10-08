@@ -232,12 +232,6 @@ public abstract class Player extends GameObject {
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
         }
-
-        else if (Keyboard.isKeyDown(CLIMB_KEY) && !keyLocker.isKeyLocked(CLIMB_KEY)) {
-           // keyLocker.lockKey(CLIMB_KEY);
-            playerState = PlayerState.CLIMBING;
-        }
-
     }
 
     // player WALKING state logic
@@ -267,10 +261,6 @@ public abstract class Player extends GameObject {
             keyLocker.lockKey(JUMP_KEY);
             playerState = PlayerState.JUMPING;
         }
-        else if (Keyboard.isKeyDown(CLIMB_KEY) && airGroundState == AirGroundState.AIR && !keyLocker.isKeyLocked(CLIMB_KEY)) {
-             keyLocker.lockKey(CLIMB_KEY);
-             playerState = PlayerState.CLIMBING;
-        }
         // if crouch key is pressed,
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
@@ -282,7 +272,7 @@ public abstract class Player extends GameObject {
     }
 
     protected void slip() {
-        if (framecount - velocityStartFrame > 2 && playerState != playerState.WALKING) {
+        if (framecount - velocityStartFrame > 2 && playerState != PlayerState.WALKING) {
             velocity *= momentumXdecrease;
             moveAmountX += velocity;
             if (Math.abs(velocity) < 0.01f) {
@@ -384,7 +374,7 @@ public abstract class Player extends GameObject {
             int heldFrames = climbFrameCount - climbStartFrame;
 
             if (heldFrames < 180) {
-                playerState = PlayerState.CLIMBING;
+                playerState = PlayerState.JUMPING;
                 moveAmountY = gravity; 
             } else {
   

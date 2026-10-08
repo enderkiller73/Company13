@@ -53,7 +53,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     private Map createLevelMap() {
         switch (currentLevel) {
             case 1:
-                return new TestMap();
+                return new TutorialMap();
             case 2:
                 return new LevelTwo();
             case 3:
