@@ -204,7 +204,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder waterTile = new MapTileBuilder(waterFrame)
-                .withTileType(TileType.WATER);
+                .withTileType(TileType.KILL);
 
         mapTiles.add(waterTile);
 

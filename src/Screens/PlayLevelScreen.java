@@ -8,7 +8,8 @@ import Game.ScreenCoordinator;
 import Level.Map;
 import Level.Player;
 import Level.PlayerListener;
-import Maps.TestMap;
+import Maps.*;
+import Players.Cat;
 import Players.Rose;
 import SpriteFont.SpriteFont;
 
@@ -37,8 +38,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     private void loadLevel() {
-        map = new TestMap();
-        player = new Rose(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
+        map = createLevelMap();
+        player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
         player.setMap(map);
         player.addListener(this);
         levelClearedScreen = new LevelClearedScreen();
@@ -47,6 +48,29 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         levelIntroTimer = 120;
         levelCompletedStateChangeStart = false;
         playLevelScreenState = PlayLevelScreenState.LEVEL_INTRO;
+    }
+
+    private Map createLevelMap() {
+        switch (currentLevel) {
+            case 1:
+                return new TutorialMap();
+            case 2:
+                return new LevelTwo();
+            case 3:
+                return new Level_Three();
+            case 4:
+                return new Level_Four();
+            case 5:
+                return new Level_Five();
+            case 6:
+                return new Level_Six();
+            case 7:
+                return new Level_Seven();
+            case 8:
+                return new Level_Eight();
+            default:
+                throw new IllegalStateException("No map configured for level " + currentLevel);
+        }
     }
 
     public void update() {
@@ -69,8 +93,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                     levelClearedScreen.update();
                     screenTimer--;
                     if (screenTimer == 0) {
-                        if (currentLevel == 1) {
-                            currentLevel = 2;
+                        if (currentLevel < 8) {
+                            currentLevel++;
                             loadLevel();
                         } else {
                             goBackToMenu();

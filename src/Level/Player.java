@@ -32,20 +32,25 @@ public abstract class Player extends GameObject {
     protected float jumpDegrade = 0;
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
-    protected float momentumXIncrease = 0;
+    protected float momentumXdecrease = 0;
+    protected float maxMomentum = 0f;
     protected float prevMoveAmountY;
     protected float dashDegrade = 0;
     protected float floatFallCounter = 0;
     protected float floatFallMax = 0;
+    protected float floatSpeed = 0;
 
     // values used to handle player movement
     protected float jumpForce = 0;
     protected float momentumX = 0;
     protected float momentumY = 0;
+    protected float velocity = 0;
+    protected float maxVelocity = 0;
     protected float moveAmountX, moveAmountY;
     protected float lastAmountMovedX, lastAmountMovedY;
     protected int dashAmount;
     protected int dashCap;
+    protected float airSpeed;
     
 
     // values used to keep track of player's current state
@@ -77,12 +82,18 @@ public abstract class Player extends GameObject {
     protected boolean isDashing = false;
 
 
-    // Recsources for Placeable Tiles 
+    //frame counts
+    int climbFrameCount = 0;
+    int climbStartFrame = -1;
+    int velocityStartFrame = 0;
+    int framecount = 0;
+
+    // Resources for Placeable Tiles 
     CommonTileset commonTileset = new CommonTileset();
     ArrayList<MapTile> placedTiles = new ArrayList<>();
-    int framecount = 0;
     ArrayList<Integer> placedAtFrame =  new ArrayList<>();
     PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
+    ArrayList<MapTile> originalTiles = new ArrayList<>();
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -108,9 +119,12 @@ public abstract class Player extends GameObject {
             do {
                 previousPlayerState = playerState;
                 handlePlayerState();
+                handleDash();
+                slip(); 
             } while (previousPlayerState != playerState);
             framecount++;
-            handleDash();
+            playerClimbing();
+            climbFrameCount ++;
             placePlatform();
             unPlacePlatform();
             previousAirGroundState = airGroundState;
@@ -145,46 +159,27 @@ public abstract class Player extends GameObject {
     }
 
     protected void handleDash() {
+        if(airGroundState == AirGroundState.GROUND) {
+            dashAmount = 0;
+        }
         if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
             keyLocker.lockKey(DASH_KEY);
             //if (dashAmount != 0) {
             if (airGroundState == AirGroundState.AIR) {
                if (dashAmount <= dashCap) {
-                    moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
-                    dashAmount ++;
+                    velocity += facingDirection == Direction.RIGHT ?  dashSpeed : -dashSpeed;
+                    dashAmount++;
                 }
             }
             else if (airGroundState == AirGroundState.GROUND) {
-                //if (dashAmount <= dashCap) {
-                moveAmountX += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
-                dashAmount --;
-                //}
+                if (dashAmount <= dashCap) {
+                    velocity += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+                    dashAmount++;
+                }
             }
         }
     }
 
-    protected void updateDash() {
-    //     if (!isDashing) return;
-
-    //     float direction = (facingDirection == Direction.RIGHT) ? 1f : -1f;
-
-    //     // Apply momentum to position
-    //     moveAmountX += momentumX;
-
-    //     if (momentumX > 0) momentumX -= momentumXIncrease;
-    //     if (momentumX < 0) momentumX += momentumXIncrease;
-
-    //     currentDashSpeed -= dashDegrade;
-    //     if (currentDashSpeed < 0) currentDashSpeed = 0;
-
-    //     boolean reachedDestination =
-    //         (direction > 0 && moveAmountX >= dashDestinationX) ||
-    //         (direction < 0 && moveAmountX <= dashDestinationX);
-
-    //     if (reachedDestination || Math.abs(momentumX) <= 0.01f) {
-    //         isDashing = false;
-    //     }
-    }
 
     protected void fallGravity() {
         if (reducedFallSpeed) {
@@ -238,52 +233,54 @@ public abstract class Player extends GameObject {
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
         }
-
-        else if (Keyboard.isKeyDown(CLIMB_KEY) && !keyLocker.isKeyLocked(CLIMB_KEY)) {
-           // keyLocker.lockKey(CLIMB_KEY);
-            playerState = PlayerState.CLIMBING;
-        }
     }
 
     // player WALKING state logic
     protected void playerWalking() {
         // if walk left key is pressed, move player to the left
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
-            moveAmountX -= walkSpeed;
-            facingDirection = Direction.LEFT;
-            if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                moveAmountY = gravity;
-                playerClimbing();
+            velocityStartFrame = framecount;
+            velocity -= walkSpeed;
+            if (velocity < -maxVelocity) {
+                velocity = -maxVelocity;
             }
+            facingDirection = Direction.LEFT;
         }
-
         // if walk right key is pressed, move player to the right
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-            moveAmountX += walkSpeed;
+            velocityStartFrame = framecount;
+            velocity += walkSpeed;
+            if (velocity > maxVelocity) {
+                velocity = maxVelocity;
+            }
             facingDirection = Direction.RIGHT;
-            
         } else if (Keyboard.isKeyUp(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
             playerState = PlayerState.STANDING;
         }
-
         // if jump key is pressed, player enters JUMPING state
         if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
             keyLocker.lockKey(JUMP_KEY);
             playerState = PlayerState.JUMPING;
-        }
-        else if (Keyboard.isKeyDown(CLIMB_KEY) && airGroundState == AirGroundState.AIR && !keyLocker.isKeyLocked(CLIMB_KEY)) {
-             keyLocker.lockKey(CLIMB_KEY);
-             playerState = playerState.CLIMBING;
         }
         // if crouch key is pressed,
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
         }
         else if (Keyboard.isKeyDown(PLACE_KEY)) {
-            playerState = playerState.THROWING;
+            playerState = PlayerState.THROWING;
         }
+        moveAmountX += velocity;
     }
 
+    protected void slip() {
+        if (framecount - velocityStartFrame > 2 && playerState != PlayerState.WALKING) {
+            velocity *= momentumXdecrease;
+            moveAmountX += velocity;
+            if (Math.abs(velocity) < 0.01f) {
+                velocity = 0;
+            }
+        }
+    }
     // player CROUCHING state logic
     protected void playerCrouching() {
         // if crouch key is released, player enters STANDING state
@@ -339,14 +336,18 @@ public abstract class Player extends GameObject {
 
             // allows you to move left and right while in the air
             if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
-                moveAmountX -= walkSpeed;
+                facingDirection = Direction.LEFT;
+                moveAmountX -= airSpeed;
+                if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                    moveAmountX = -floatSpeed;
+                }
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-                moveAmountX += walkSpeed;
-            } else if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                playerState = PlayerState.CLIMBING;
+                facingDirection = Direction.RIGHT;
+                moveAmountX += airSpeed;
+                if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                    moveAmountX = floatSpeed;
+                }
             }
-    
-
             // if player is falling, increases momentum as player falls so it falls faster over time
             if (moveAmountY > 0) {
                 increaseMomentumY();
@@ -364,26 +365,29 @@ public abstract class Player extends GameObject {
     
 
     protected void playerClimbing() {
-        // if player is facing a wall, allow them to hold on to the wall.
-        if (prevMoveAmountY != 0) {
-            prevMoveAmountY = moveAmountY;
-        }
-        if (Keyboard.isKeyDown(CLIMB_KEY))  {
-            keyLocker.lockKey(CLIMB_KEY);
-            moveAmountY = gravity;
-            if (facingDirection == Direction.RIGHT) {
-                moveAmountX += (walkSpeed/4);
-                moveAmountY = gravity;
-                
-            }
-            if (facingDirection == Direction.LEFT) {
-                moveAmountX -= (walkSpeed/4);
-                moveAmountY = gravity;
+       
+        if (Keyboard.isKeyDown(CLIMB_KEY)) {
+
+            if (climbStartFrame == -1) {
+                climbStartFrame = climbFrameCount;
             }
 
-            playerState = PlayerState.CLIMBING;
+            int heldFrames = climbFrameCount - climbStartFrame;
+
+            if (heldFrames < 180) {
+                playerState = PlayerState.JUMPING;
+                moveAmountY = gravity; 
+            } else {
+  
+                playerState = PlayerState.JUMPING;
+            }
         }
-        if (airGroundState == AirGroundState.GROUND) {
+        else {
+   
+            climbStartFrame = -1;
+        }
+        
+        if (airGroundState == AirGroundState.GROUND && moveAmountX == 0) {
             playerState = PlayerState.STANDING;
         }
     }
@@ -397,7 +401,10 @@ public abstract class Player extends GameObject {
     }
 
     protected void increaseMomentumX() {
-        momentumX += momentumXIncrease;
+        momentumX += momentumX;
+        if (momentumX < maxMomentum) {
+            momentumX = 4;
+        }
     }
 
     protected void updateLockedKeys() {
@@ -414,26 +421,40 @@ public abstract class Player extends GameObject {
 
     // anything extra the player should do based on interactions can be handled here
     protected void handlePlayerAnimation() {
+        int centerX = Math.round(getBounds().getX1()) + Math.round(getBounds().getWidth() / 2f);
+        int centerY = Math.round(getBounds().getY1()) + Math.round(getBounds().getHeight() / 2f);
+        MapTile currentMapTile = map.getTileByPosition(centerX, centerY);
+
         if (playerState == PlayerState.STANDING) {
             // sets animation to a STAND animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "STAND_RIGHT" : "STAND_LEFT";
 
             // handles putting goggles on when standing in water
             // checks if the center of the player is currently touching a water tile
-            int centerX = Math.round(getBounds().getX1()) + Math.round(getBounds().getWidth() / 2f);
-            int centerY = Math.round(getBounds().getY1()) + Math.round(getBounds().getHeight() / 2f);
-            MapTile currentMapTile = map.getTileByPosition(centerX, centerY);
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.WATER) {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "SWIM_STAND_RIGHT" : "SWIM_STAND_LEFT";
+            }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
             }
         }
         else if (playerState == PlayerState.WALKING) {
             // sets animation to a WALK animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "WALK_RIGHT" : "WALK_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
+            
         }
         else if (playerState == PlayerState.CROUCHING) {
             // sets animation to a CROUCH animation based on which way player is facing
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CROUCH_RIGHT" : "CROUCH_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.JUMPING) {
             // if player is moving upwards, set player's animation to jump. if player moving downwards, set player's animation to fall
@@ -442,12 +463,24 @@ public abstract class Player extends GameObject {
             } else {
                 this.currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
             }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.CLIMBING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
         else if (playerState == PlayerState.THROWING) {
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+            this.currentAnimationName = facingDirection == Direction.RIGHT ? "WALK_RIGHT" : "WALK_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
         }
     }
 
@@ -595,87 +628,93 @@ public abstract class Player extends GameObject {
         drawBounds(graphicsHandler, new Color(255, 0, 0, 100));
     }
     */
-    protected void placePlatform() {
-        if (Keyboard.isKeyDown(PLACE_KEY)) {
-            keyLocker.lockKey(PLACE_KEY);
-            int targetX;
-            int targetX2; 
-            playerState = PlayerState.THROWING;
-            if (this.facingDirection == Direction.RIGHT) {
-                targetX = (Math.round(this.x) + 96) / 48 * 48;
-            }
-            else {
-                targetX = (Math.round(this.x) - 96) / 48 * 48;
-            }
-            int targetY = (Math.round(this.y)-32) / 48 * 48;
+protected void placePlatform() {
+    if (Keyboard.isKeyDown(PLACE_KEY)) {
+        keyLocker.lockKey(PLACE_KEY);
+        int tileWidth = map.getTileset().getScaledSpriteWidth();
+        int tileHeight = map.getTileset().getScaledSpriteHeight();
+        int targetX;
+        int targetX2;
+        if (this.facingDirection == Direction.RIGHT) {
+            targetX = (Math.round(this.x) + tileWidth * 2) / tileWidth * tileWidth;
+            targetX2 = (Math.round(this.x) + tileWidth * 3) / tileWidth * tileWidth;
+        }
+        else {
+            targetX = (Math.round(this.x) - tileWidth * 2) / tileWidth * tileWidth;
+            targetX2 = (Math.round(this.x) - tileWidth * 3) / tileWidth * tileWidth;
+        }
+        int targetY = (Math.round(this.y) - 32) / tileHeight * tileHeight;
+        int targetY2 = targetY;
 
-            if (this.facingDirection == Direction.RIGHT) {
-                targetX2 = (Math.round(this.x) + 144) / 48 * 48;
-            }
-            else {
-                targetX2 = (Math.round(this.x) - 144) / 48 * 48;
-            }
-            int targetY2 = (Math.round(this.y)-32) / 48 * 48;
+        try {
+            map.getTileByPosition(targetX, targetY).getTileType();
+            map.getTileByPosition(targetX2, targetY2).getTileType();
+        } catch (Exception e) {
+            System.out.println("placing out of bounds");
+            return;
+        }
 
-            try {
-                map.getTileByPosition(targetX, targetY).getTileType();
-                map.getTileByPosition(targetX2, targetY2).getTileType();
-            } catch (Exception e) {
-                System.out.println("placing out of bounds");
-                return;
-            }
-            if (map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && this.x != targetX && map.getTileByPosition(targetX2, targetY).getTileType() == TileType.PASSABLE && this.x != targetX2 && placedAtFrame.size() == 0) {
-                MapTile newTile = petalPlatformTileset.defineTiles().get(0).build(targetX, targetY);
-                newTile.setMap(map);
-                map.setMapTile(targetX/48, targetY/48, newTile);
-                placedTiles.add(map.getTileByPosition(targetX, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+        boolean canPlace = map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && map.getTileByPosition(targetX2, targetY2).getTileType() == TileType.PASSABLE && this.x != targetX && this.x != targetX2;
 
-                MapTile newTile2 = petalPlatformTileset.defineTiles().get(0).build(targetX2, targetY);
-                newTile2.setMap(map);
-                map.setMapTile(targetX2/48, targetY/48, newTile2);
-                placedTiles.add(map.getTileByPosition(targetX2, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+        if (canPlace && placedAtFrame.size() == 0) {
+            originalTiles.add(map.getTileByPosition(targetX, targetY));
+            MapTile newTile = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX, targetY);
+            newTile.setMap(map);
+            map.setMapTile(targetX / tileWidth, targetY / tileHeight, newTile);
+            placedTiles.add(map.getTileByPosition(targetX, targetY));
+            System.out.println("placed");
+            placedAtFrame.add(framecount);
 
-            }
-            else if (placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4){
-                MapTile newTile = petalPlatformTileset.defineTiles().get(0).build(targetX, targetY);
-                newTile.setMap(map);
-                map.setMapTile(targetX/48, targetY/48, newTile);
-                placedTiles.add(map.getTileByPosition(targetX, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+            originalTiles.add(map.getTileByPosition(targetX2, targetY2));
+            MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX2, targetY2);
+            newTile2.setMap(map);
+            map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
+            placedTiles.add(map.getTileByPosition(targetX2, targetY2));
+            System.out.println("placed");
+            placedAtFrame.add(framecount);
+        }
+        else if (canPlace && placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4) {
+            originalTiles.add(map.getTileByPosition(targetX, targetY));
+            MapTile newTile = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX, targetY);
+            newTile.setMap(map);
+            map.setMapTile(targetX / tileWidth, targetY / tileHeight, newTile);
+            placedTiles.add(map.getTileByPosition(targetX, targetY));
+            System.out.println("placed");
+            placedAtFrame.add(framecount);
 
-                MapTile newTile2 = petalPlatformTileset.defineTiles().get(0).build(targetX2, targetY);
-                newTile2.setMap(map);
-                map.setMapTile(targetX2/48, targetY/48, newTile2);
-                placedTiles.add(map.getTileByPosition(targetX2, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
-            }
-            if(playerState == PlayerState.THROWING && airGroundState == AirGroundState.GROUND) {
-                playerState = PlayerState.STANDING;
-            }
+            originalTiles.add(map.getTileByPosition(targetX2, targetY2));
+            MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX2, targetY2);
+            newTile2.setMap(map);
+            map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
+            placedTiles.add(map.getTileByPosition(targetX2, targetY2));
+            System.out.println("placed");
+            placedAtFrame.add(framecount);
+        }
+        else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
+            playerState = PlayerState.STANDING;
         }
     }
-    protected void unPlacePlatform() {
-        if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0)>= 180){
-            MapTile oldTile = commonTileset.defineTiles().get(1).build(placedTiles.get(0).getX(), placedTiles.get(0).getY());
-            oldTile.setMap(map);
-            map.setMapTile(Math.round(placedTiles.get(0).getX())/48, Math.round(placedTiles.get(0).getY())/48, oldTile);
-            System.out.println("unplaced");
-            placedTiles.remove(0);
-            placedAtFrame.remove(0);
-        }
-        if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0)>= 180){
-            MapTile oldTile2 = commonTileset.defineTiles().get(1).build(placedTiles.get(0).getX(), placedTiles.get(0).getY());
-            oldTile2.setMap(map);
-            map.setMapTile(Math.round(placedTiles.get(0).getX())/48, Math.round(placedTiles.get(0).getY())/48, oldTile2);
-            System.out.println("unplaced");
-            placedTiles.remove(0);
-            placedAtFrame.remove(0);
-        }
+}
+
+protected void unPlacePlatform() {
+    int tileWidth = map.getTileset().getScaledSpriteWidth();
+    int tileHeight = map.getTileset().getScaledSpriteHeight();
+
+    if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
+        MapTile oldTile = originalTiles.get(0);
+        map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile);
+        System.out.println("unplaced");
+        placedTiles.remove(0);
+        placedAtFrame.remove(0);
+        originalTiles.remove(0);
     }
+    if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
+        MapTile oldTile2 = originalTiles.get(0);
+        map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile2);
+        System.out.println("unplaced");
+        placedTiles.remove(0);
+        placedAtFrame.remove(0);
+        originalTiles.remove(0);
+    }
+}
 } 
