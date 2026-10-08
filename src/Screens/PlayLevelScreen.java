@@ -8,14 +8,8 @@ import Game.ScreenCoordinator;
 import Level.Map;
 import Level.Player;
 import Level.PlayerListener;
-import Maps.LevelTwo;
-import Maps.Level_Eight;
-import Maps.Level_Five;
-import Maps.Level_Four;
-import Maps.Level_Seven;
-import Maps.Level_Six;
-import Maps.Level_Three;
-import Maps.TestMap;
+import Maps.*;
+import Players.Cat;
 import Players.Rose;
 import SpriteFont.SpriteFont;
 
@@ -45,7 +39,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
 
     private void loadLevel() {
         map = createLevelMap();
-        player = new Rose(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
+        player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
         player.setMap(map);
         player.addListener(this);
         levelClearedScreen = new LevelClearedScreen();

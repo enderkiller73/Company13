@@ -86,6 +86,44 @@ public class GrasslandTileset extends Tileset {
 
         mapTiles.add(woodTile);
 
+        Frame woodBranchSmallLeftFrame = new FrameBuilder(getSubImage(1, 3))
+                .withScale(tileScale)
+                .build();
+        
+        MapTileBuilder woodBranchSmallLeftTile = new MapTileBuilder(woodBranchSmallLeftFrame)
+                .withTileType(TileType.JUMP_THROUGH_PLATFORM);
+
+        mapTiles.add(woodBranchSmallLeftTile);
+
+        Frame woodBranchBigLeftFrame = new FrameBuilder(getSubImage(1, 4))
+                .withScale(tileScale)
+                .build();
+        
+        MapTileBuilder woodBranchBigLeftTile = new MapTileBuilder(woodBranchBigLeftFrame)
+                .withTileType(TileType.JUMP_THROUGH_PLATFORM);
+
+        mapTiles.add(woodBranchBigLeftTile);
+
+        Frame woodBranchSmallRightFrame = new FrameBuilder(getSubImage(1, 3))
+                .withScale(tileScale)
+                .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                .build();
+        
+        MapTileBuilder woodBranchSmallRightTile = new MapTileBuilder(woodBranchSmallRightFrame)
+                .withTileType(TileType.JUMP_THROUGH_PLATFORM);
+
+        mapTiles.add(woodBranchSmallRightTile);
+
+        Frame woodBranchBigRightFrame = new FrameBuilder(getSubImage(1, 4))
+                .withScale(tileScale)
+                .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                .build();
+        
+        MapTileBuilder woodBranchBigRightTile = new MapTileBuilder(woodBranchBigRightFrame)
+                .withTileType(TileType.JUMP_THROUGH_PLATFORM);
+
+        mapTiles.add(woodBranchBigRightTile);
+
         Frame dirtFrame = new FrameBuilder(getSubImage(2, 0))
                 .withScale(tileScale)
                 .build();
@@ -127,6 +165,20 @@ public class GrasslandTileset extends Tileset {
         Frame starFrame = new FrameBuilder(getSubImage(2, 3))
                 .withScale(tileScale)
                 .build();
+
+        Frame[] BugWallFrames = new Frame[] {
+                new FrameBuilder(getSubImage(2, 4), 65)
+                        .withScale(tileScale)
+                        .build(),
+                new FrameBuilder(getSubImage(3, 4), 10)
+                        .withScale(tileScale)
+                        .build(),
+        };
+
+        MapTileBuilder BugWallTile = new MapTileBuilder(BugWallFrames)
+                .withTileType(TileType.KILL);
+
+        mapTiles.add(BugWallTile);
 
         MapTileBuilder starTile = new MapTileBuilder(starFrame)
                 .withTileType(TileType.PASSABLE);
