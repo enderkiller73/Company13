@@ -82,20 +82,29 @@ public class MenuScreen extends Screen {
         // sets location for blue square in front of text (pointerLocation) and also sets color of spritefont text based on which menu item is being hovered
         if (currentMenuItemHovered == 0) {
             playGame.setColor(new Color(100, 0, 100));
+            playGame.setOutlineColor(Color.lightGray);
             controls.setColor(new Color (220,20,100));
+            controls.setOutlineColor(Color.black);
             credits.setColor(new Color(240,40, 100));
+            credits.setOutlineColor(Color.black);
             pointerLocationX = 70;
             pointerLocationY = 200;
         } else if (currentMenuItemHovered == 1) {
             playGame.setColor(new Color(200, 0, 100));
+            playGame.setOutlineColor(Color.black);
             controls.setColor(new Color (120,20,100));
+            controls.setOutlineColor(Color.lightGray);
             credits.setColor(new Color(240, 40, 100));
+            credits.setOutlineColor(Color.black);
             pointerLocationX = 70;
             pointerLocationY = 250;
         } else if (currentMenuItemHovered == 2) {
             playGame.setColor(new Color(200, 0, 100));
+            playGame.setOutlineColor(Color.black);
             controls.setColor(new Color (220,20,100));
+            controls.setOutlineColor(Color.black);
             credits.setColor(new Color(140, 40, 100));
+            credits.setOutlineColor(Color.lightGray);
             pointerLocationX = 70;
             pointerLocationY = 300;
         }

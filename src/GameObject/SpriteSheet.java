@@ -10,6 +10,8 @@ public class SpriteSheet {
 	protected int spriteHeight;
 	protected int rowLength;
 	protected int columnLength;
+	protected float scaleX;
+	protected float scaleY;
 
 	public SpriteSheet(BufferedImage image, int spriteWidth, int spriteHeight) {
 		this.image = image;

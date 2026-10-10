@@ -162,21 +162,30 @@ public class Rose extends Player {
             });
 
             put("CLIMB_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(4, 0))
+                    new FrameBuilder(spriteSheet.getSprite(4, 0), 20)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                        new FrameBuilder(spriteSheet.getSprite(4, 0), 20)
                             .withScale(2)
                             .withBounds(8, 16, 16, 16)
                             .build()
             });
 
             put("CROUCH_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(4, 0))
+                    new FrameBuilder(spriteSheet.getSprite(0, 0))
                             .withScale(2)
                             .withBounds(8, 16, 16, 16)
                             .build()
             });
 
             put("CLIMB_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(4, 0))
+                    new FrameBuilder(spriteSheet.getSprite(4, 0), 9)
+                            .withScale(2)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                        new FrameBuilder(spriteSheet.getSprite(4, 1))
                             .withScale(2)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(8, 16, 16, 16)
@@ -184,7 +193,7 @@ public class Rose extends Player {
             });
 
             put("CROUCH_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(4, 0))
+                    new FrameBuilder(spriteSheet.getSprite(0, 0))
                             .withScale(2)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(8, 16, 16, 16)
@@ -225,14 +234,32 @@ public class Rose extends Player {
             });
 
             put("THROW_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(6, 0))
+                    new FrameBuilder(spriteSheet.getSprite(6, 0), 5)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(6, 1), 5)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(6, 2), 999)
                             .withScale(2)
                             .withBounds(8, 16, 16, 16)
                             .build()
             });
 
             put("THROW_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(6, 0))
+                    new FrameBuilder(spriteSheet.getSprite(6, 0), 9)
+                            .withScale(2)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(6, 1), 9)
+                            .withScale(2)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(6, 0),999)
                             .withScale(2)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(8, 16, 16, 16)

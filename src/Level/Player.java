@@ -233,6 +233,10 @@ public abstract class Player extends GameObject {
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
         }
+
+        else if (Keyboard.isKeyDown(PLACE_KEY)) {
+            playerState = PlayerState.THROWING;
+        }
     }
 
     // player WALKING state logic
@@ -311,9 +315,6 @@ public abstract class Player extends GameObject {
                 jumpForce -= jumpDegrade;
                 if (jumpForce < 0) {
                     jumpForce = 0;
-                    if (Keyboard.isKeyDown(CLIMB_KEY) && airWallState == AirWallState.WALL) {
-                        playerState = PlayerState.CLIMBING;
-                    }
                 }
             }
             if (Keyboard.isKeyDown(CLIMB_KEY)) {
@@ -374,16 +375,14 @@ public abstract class Player extends GameObject {
 
             int heldFrames = climbFrameCount - climbStartFrame;
 
-            if (heldFrames < 180) {
-                playerState = PlayerState.JUMPING;
+            if (heldFrames < 60) {
+                playerState = PlayerState.CLIMBING;
                 moveAmountY = gravity * 2; 
             } else {
-  
-                playerState = PlayerState.JUMPING;
+                playerState = PlayerState.STANDING;
             }
         }
-        else {
-   
+        if (airGroundState == AirGroundState.GROUND) {
             climbStartFrame = -1;
         }
         
@@ -469,14 +468,19 @@ public abstract class Player extends GameObject {
             }
         }
         else if (playerState == PlayerState.CLIMBING) {
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+            if (airGroundState == AirGroundState.AIR) {
+                currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
+            }
+            if (airGroundState == AirGroundState.AIR && climbFrameCount - climbStartFrame <= 40) {
+                currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+            }
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
             }
         }
         else if (playerState == PlayerState.THROWING) {
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "WALK_RIGHT" : "WALK_LEFT";
+            this.currentAnimationName = facingDirection == Direction.RIGHT ? "THROW_RIGHT" : "THROW_LEFT";
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
@@ -697,24 +701,25 @@ protected void placePlatform() {
 }
 
 protected void unPlacePlatform() {
-    int tileWidth = map.getTileset().getScaledSpriteWidth();
-    int tileHeight = map.getTileset().getScaledSpriteHeight();
+        int tileWidth = map.getTileset().getScaledSpriteWidth();
+        int tileHeight = map.getTileset().getScaledSpriteHeight();
 
-    if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
-        MapTile oldTile = originalTiles.get(0);
-        map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile);
-        System.out.println("unplaced");
-        placedTiles.remove(0);
-        placedAtFrame.remove(0);
-        originalTiles.remove(0);
+        if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
+            MapTile oldTile = originalTiles.get(0);
+            map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile);
+            System.out.println("unplaced");
+            placedTiles.remove(0);
+            placedAtFrame.remove(0);
+            originalTiles.remove(0);
+        }
+        if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
+            MapTile oldTile2 = originalTiles.get(0);
+            map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile2);
+            System.out.println("unplaced");
+            placedTiles.remove(0);
+            placedAtFrame.remove(0);
+            originalTiles.remove(0);
+
+        }
     }
-    if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
-        MapTile oldTile2 = originalTiles.get(0);
-        map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile2);
-        System.out.println("unplaced");
-        placedTiles.remove(0);
-        placedAtFrame.remove(0);
-        originalTiles.remove(0);
-    }
-}
 } 
