@@ -10,11 +10,21 @@ public class SpriteSheet {
 	protected int spriteHeight;
 	protected int rowLength;
 	protected int columnLength;
+	protected float scaleX;
+	protected float scaleY;
 
 	public SpriteSheet(BufferedImage image, int spriteWidth, int spriteHeight) {
 		this.image = image;
 		this.spriteWidth = spriteWidth;
 		this.spriteHeight = spriteHeight;
+		this.rowLength = image.getHeight() / spriteHeight;
+		this.columnLength = image.getWidth() / spriteWidth;
+	}
+
+	public SpriteSheet(BufferedImage image, int spriteWidth, int spriteHeight, float scaleX, float scaleY) {
+		this.image = image;
+		//this.spriteWidth = spriteWidth / scaleX;
+		//this.spriteHeight = spriteHeight / scaleY;
 		this.rowLength = image.getHeight() / spriteHeight;
 		this.columnLength = image.getWidth() / spriteWidth;
 	}

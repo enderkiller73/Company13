@@ -68,8 +68,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 return new Level_Seven();
             case 8:
                 return new Level_Eight();
-            case 9:
-                return new Level_Nine();
+            // case 9:
+            //     return new Level_Nine();
             default:
                 throw new IllegalStateException("No map configured for level " + currentLevel);
         }
