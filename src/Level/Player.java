@@ -33,6 +33,8 @@ public abstract class Player extends GameObject {
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
     protected float momentumXdecrease = 0;
+    protected float scaleX = 1f;
+    protected float scaleY = 1f;
     protected float maxMomentum = 0f;
     protected float prevMoveAmountY;
     protected float dashDegrade = 0;
@@ -97,8 +99,8 @@ public abstract class Player extends GameObject {
     PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
     ArrayList<MapTile> originalTiles = new ArrayList<>();
 
-    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
-        super(spriteSheet, x, y, startingAnimationName);
+    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, float scaleX, float scaleY) {
+        super(spriteSheet, x, y, startingAnimationName, scaleX, scaleY);
         facingDirection = Direction.RIGHT;
         airGroundState = AirGroundState.AIR;
         previousAirGroundState = airGroundState;

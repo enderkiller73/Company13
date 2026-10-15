@@ -31,6 +31,10 @@ public class GameObject extends AnimatedSprite {
     // previous location the game object was in from the last frame
     protected float previousX, previousY;
 
+    // scales sprite depending on the size
+    protected float scaleX = 1f;
+    protected float scaleY = 1f;
+
     // the map instance this game object "belongs" to.
     protected Map map;
 
@@ -65,6 +69,16 @@ public class GameObject extends AnimatedSprite {
         this.startPositionY = y;
         this.previousX = x;
         this.previousY = y;
+    }
+
+    public GameObject(SpriteSheet spriteSheet, float x, float y, String startingAnimation, float scaleX, float scaleY) {
+        super(spriteSheet, x, y, startingAnimation);
+        this.startPositionX = x;
+        this.startPositionY = y;
+        this.previousX = x;
+        this.previousY = y;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
     }
 
     public GameObject(float x, float y) {
@@ -319,13 +333,20 @@ public class GameObject extends AnimatedSprite {
     @Override
     public void draw(GraphicsHandler graphicsHandler) {
         if (map != null) {
+            int originalWidth = currentFrame.getWidth();
+            int originalHeight = currentFrame.getHeight();
+
+            int scaledWidth = Math.round(originalWidth * scaleX);
+            int scaledHeight = Math.round(originalHeight * scaleY);
+
             graphicsHandler.drawImage(
                 currentFrame.getImage(),
                 Math.round(getCalibratedXLocation()),
                 Math.round(getCalibratedYLocation()),
-                currentFrame.getWidth(),
-                currentFrame.getHeight(),
-                currentFrame.getImageEffect());
+                scaledWidth,
+                scaledHeight,
+                currentFrame.getImageEffect()
+            );
         } else {
             super.draw(graphicsHandler);
         }
@@ -347,5 +368,12 @@ public class GameObject extends AnimatedSprite {
     }
     public float getLastFrameYPos() {
         return this.previousY;
+    }
+    public float getScaleX() {
+        return scaleX;
+    }
+
+    public float getScaleY() {
+        return scaleY;
     }
 }
