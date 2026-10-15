@@ -339,14 +339,22 @@ public abstract class Player extends GameObject {
 
             // allows you to move left and right while in the air
             if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+                velocityStartFrame = framecount;
+                velocity -= walkSpeed;
+                if (velocity < -maxVelocity) {
+                    velocity = -maxVelocity;
+                }
                 facingDirection = Direction.LEFT;
-                moveAmountX -= airSpeed;
                 if (Keyboard.isKeyDown(CLIMB_KEY)) {
                     moveAmountX = -floatSpeed;
                 }
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-                facingDirection = Direction.RIGHT;
-                moveAmountX += airSpeed;
+                velocityStartFrame = framecount;
+                velocity += walkSpeed;
+                if (velocity > maxVelocity) {
+                    velocity = maxVelocity;
+                }
+            facingDirection = Direction.RIGHT;
                 if (Keyboard.isKeyDown(CLIMB_KEY)) {
                     moveAmountX = floatSpeed;
                 }
@@ -355,6 +363,7 @@ public abstract class Player extends GameObject {
             if (moveAmountY > 0) {
                 increaseMomentumY();
             }
+            moveAmountX += velocity;
         }
 
         
