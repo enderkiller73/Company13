@@ -369,8 +369,17 @@ public class GameObject extends AnimatedSprite {
     public float getLastFrameYPos() {
         return this.previousY;
     }
+
+    public void setScaleX(float scaleX) {
+        this.scaleX = scaleX;
+    }
+
     public float getScaleX() {
         return scaleX;
+    }
+
+    public void setScaleY(float scaleY) {
+        this.scaleY = scaleY;
     }
 
     public float getScaleY() {

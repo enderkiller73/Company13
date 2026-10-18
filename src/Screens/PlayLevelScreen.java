@@ -5,11 +5,12 @@ import Engine.Screen;
 import Engine.ScreenManager;
 import Game.GameState;
 import Game.ScreenCoordinator;
+import GameObject.GameObject;
 import Level.Map;
 import Level.Player;
 import Level.PlayerListener;
 import Maps.*;
-import Players.Cat;
+//import Players.Cat;
 import Players.Rose;
 import SpriteFont.SpriteFont;
 
@@ -28,6 +29,9 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     protected boolean levelCompletedStateChangeStart;
     protected SpriteFont levelIntro;
     protected int levelIntroTimer;
+    protected GameObject gameObject;
+    protected float scaleX = 1f;
+    protected float scaleY = 1f;
 
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
@@ -35,11 +39,13 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
 
     public void initialize() {
         loadLevel();
+        gameObject.setScaleX(scaleX);
+        gameObject.setScaleY(scaleY);
     }
 
     private void loadLevel() {
         map = createLevelMap();
-        player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
+        player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, gameObject.getScaleX(), gameObject.getScaleY());
         player.setMap(map);
         player.addListener(this);
         levelClearedScreen = new LevelClearedScreen();

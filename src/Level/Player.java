@@ -15,6 +15,7 @@ import Utils.Direction;
 import Utils.AirWallState;
 import Tilesets.PetalPlatformTileset;
 import java.lang.System.Logger.Level;
+import java.nio.file.WatchKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -348,7 +349,10 @@ public abstract class Player extends GameObject {
                 }
                 facingDirection = Direction.LEFT;
                 if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                    moveAmountX = -floatSpeed;
+                    velocity -= walkSpeed;
+                    if (velocity < -floatSpeed) {
+                        velocity = -floatSpeed;
+                    }
                 }
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
                 velocityStartFrame = framecount;
@@ -358,7 +362,10 @@ public abstract class Player extends GameObject {
                 }
             facingDirection = Direction.RIGHT;
                 if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                    moveAmountX = floatSpeed;
+                    velocity += walkSpeed;
+                    if (velocity > floatSpeed) {
+                        velocity = floatSpeed;
+                    }
                 }
             }
             // if player is falling, increases momentum as player falls so it falls faster over time
