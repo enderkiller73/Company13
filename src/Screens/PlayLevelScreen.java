@@ -39,13 +39,15 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
 
     public void initialize() {
         loadLevel();
-        gameObject.setScaleX(scaleX);
-        gameObject.setScaleY(scaleY);
+        if (gameObject != null) {
+            gameObject.setScaleX(scaleX);
+            gameObject.setScaleY(scaleY);
+        }
     }
 
     private void loadLevel() {
         map = createLevelMap();
-        player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, gameObject.getScaleX(), gameObject.getScaleY());
+        player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, scaleX, scaleY);
         player.setMap(map);
         player.addListener(this);
         levelClearedScreen = new LevelClearedScreen();
