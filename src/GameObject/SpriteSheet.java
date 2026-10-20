@@ -10,8 +10,8 @@ public class SpriteSheet {
 	protected int spriteHeight;
 	protected int rowLength;
 	protected int columnLength;
-	protected float scaleX;
-	protected float scaleY;
+	// protected float scaleX;
+	// protected float scaleY;
 
 	public SpriteSheet(BufferedImage image, int spriteWidth, int spriteHeight) {
 		this.image = image;
@@ -21,13 +21,13 @@ public class SpriteSheet {
 		this.columnLength = image.getWidth() / spriteWidth;
 	}
 
-	public SpriteSheet(BufferedImage image, int spriteWidth, int spriteHeight, float scaleX, float scaleY) {
-		this.image = image;
-		//this.spriteWidth = spriteWidth / scaleX;
-		//this.spriteHeight = spriteHeight / scaleY;
-		this.rowLength = image.getHeight() / spriteHeight;
-		this.columnLength = image.getWidth() / spriteWidth;
-	}
+	// public SpriteSheet(BufferedImage image, float spriteWidth, float spriteHeight, float scaleX, float scaleY) {
+	// 	this.image = image;
+	// 	this.spriteWidth = spriteWidth / scaleX;
+	// 	this.spriteHeight = spriteHeight / scaleY;
+	// 	this.rowLength = (int) (image.getHeight() / spriteHeight);
+	// 	this.columnLength = (int) (image.getWidth() / spriteWidth);
+	// }
 
 	// returns a subimage from the sprite sheet image based on the row and column
 	public BufferedImage getSprite(int spriteNumber, int animationNumber) {

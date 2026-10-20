@@ -44,6 +44,7 @@ public enum Key {
     EIGHT,
     NINE,
     ZERO,
+    EQUALS,
     SPACE,
     ESC
 }

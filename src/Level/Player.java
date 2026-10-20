@@ -39,6 +39,8 @@ public abstract class Player extends GameObject {
     protected float floatFallCounter = 0;
     protected float floatFallMax = 0;
     protected float floatSpeed = 0;
+    protected float deathScreenFall = 3f;
+    protected float deathScreenFallMax = 15f;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -437,6 +439,10 @@ public abstract class Player extends GameObject {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
             }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+                levelState = LevelState.LEVEL_COMPLETED;
+                System.out.println("Diddly Blud beat the level");
+            }
         }
         else if (playerState == PlayerState.WALKING) {
             // sets animation to a WALK animation based on which way player is facing
@@ -444,6 +450,10 @@ public abstract class Player extends GameObject {
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
+            }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+                levelState = LevelState.LEVEL_COMPLETED;
+                System.out.println("Diddly Blud beat the level");
             }
             
         }
@@ -453,6 +463,10 @@ public abstract class Player extends GameObject {
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
+            }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+                levelState = LevelState.LEVEL_COMPLETED;
+                System.out.println("Diddly Blud beat the level");
             }
         }
         else if (playerState == PlayerState.JUMPING) {
@@ -466,6 +480,10 @@ public abstract class Player extends GameObject {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
             }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+                levelState = LevelState.LEVEL_COMPLETED;
+                System.out.println("Diddly Blud beat the level");
+            }
         }
         else if (playerState == PlayerState.CLIMBING) {
             if (airGroundState == AirGroundState.AIR) {
@@ -478,12 +496,20 @@ public abstract class Player extends GameObject {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
             }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+                levelState = LevelState.LEVEL_COMPLETED;
+                System.out.println("Diddly Blud beat the level");
+            }
         }
         else if (playerState == PlayerState.THROWING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "THROW_RIGHT" : "THROW_LEFT";
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
+            }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+                levelState = LevelState.LEVEL_COMPLETED;
+                System.out.println("Diddly Blud beat the level");
             }
         }
     }
@@ -587,7 +613,10 @@ public abstract class Player extends GameObject {
         // if death animation on last frame (it is set up not to loop back to start), player should continually fall until it goes off screen
         else if (currentFrameIndex == getCurrentAnimation().length - 1) {
             if (map.getCamera().containsDraw(this)) {
-                moveY(3);
+                if (deathScreenFall < deathScreenFallMax) {
+                    deathScreenFall *= 1.05;
+                }
+                moveY(deathScreenFall);
             } else {
                 // tell all player listeners that the player has died in the level
                 for (PlayerListener listener : listeners) {

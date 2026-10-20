@@ -28,6 +28,10 @@ public class Keyboard {
             int keyCode = e.getKeyCode();
             keyDown.put(keyCode, true);
             keyUp.put(keyCode, false);
+			if (isEqualsKey(e)) {
+				keyDown.put(keyMap.get(Key.EQUALS), true);
+				keyUp.put(keyMap.get(Key.EQUALS), false);
+			}
         }
 
         @Override
@@ -36,11 +40,19 @@ public class Keyboard {
 			int keyCode = e.getKeyCode();
             keyDown.put(keyCode, false);
             keyUp.put(keyCode, true);
+			if (isEqualsKey(e)) {
+				keyDown.put(keyMap.get(Key.EQUALS), false);
+				keyUp.put(keyMap.get(Key.EQUALS), true);
+			}
         }
     };
 
 	// prevents Keyboard from being instantiated -- it's my way of making a "static" class like C# has
 	private Keyboard() { }
+
+	private static boolean isEqualsKey(KeyEvent event) {
+		return event.getKeyCode() == KeyEvent.VK_EQUALS;
+	}
     
     public static KeyListener getKeyListener() {
     	return keyListener;
@@ -123,6 +135,7 @@ public class Keyboard {
 				 put(Key.EIGHT, 56);
 				 put(Key.NINE, 57);
 				 put(Key.ZERO, 48);
+				 put(Key.EQUALS, KeyEvent.VK_EQUALS);
 				 put(Key.SPACE, 32);
 				 put(Key.ESC, 27);
 			}};

@@ -2,8 +2,6 @@ package Engine;
 
 import GameObject.Rectangle;
 import SpriteFont.SpriteFont;
-import Utils.Colors;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,6 +9,7 @@ import java.awt.*;
  * This is where the game loop process and render back buffer is setup
  */
 public class GamePanel extends JPanel {
+	private final GameWindow gameWindow;
 	// loads Screens on to the JPanel
 	// each screen has its own update and draw methods defined to handle a "section" of the game.
 	private ScreenManager screenManager;
@@ -21,6 +20,7 @@ public class GamePanel extends JPanel {
 	private boolean isGamePaused = false;
 	private SpriteFont pauseLabel;
 	private KeyLocker keyLocker = new KeyLocker();
+	private final Key fullscreenKey = Key.EQUALS;
 	private final Key pauseKey = Key.P;
 	private Thread gameLoopProcess;
 
@@ -31,9 +31,11 @@ public class GamePanel extends JPanel {
 	private boolean doPaint;
 
 	// The JPanel and various important class instances are setup here
-	public GamePanel() {
+	public GamePanel(GameWindow gameWindow) {
 		super();
+		this.gameWindow = gameWindow;
 		this.setDoubleBuffered(true);
+		this.setPreferredSize(new Dimension(Config.GAME_WINDOW_WIDTH, Config.GAME_WINDOW_HEIGHT));
 
 		// attaches Keyboard class's keyListener to this JPanel
 		this.addKeyListener(Keyboard.getKeyListener());
@@ -59,8 +61,8 @@ public class GamePanel extends JPanel {
 	// this is called later after instantiation, and will initialize screenManager
 	// this had to be done outside of the constructor because it needed to know the JPanel's width and height, which aren't available in the constructor
 	public void setupGame() {
-		setBackground(Colors.CORNFLOWER_BLUE);
-		screenManager.initialize(new Rectangle(getX(), getY(), getWidth(), getHeight()));
+		setBackground(Color.BLACK);
+		screenManager.initialize(new Rectangle(0, 0, Config.GAME_WINDOW_WIDTH, Config.GAME_WINDOW_HEIGHT));
 	}
 
 	// this starts the timer (the game loop is started here)
@@ -81,11 +83,23 @@ public class GamePanel extends JPanel {
 	}
 
 	public void update() {
+		updateFullscreenState();
 		updatePauseState();
 		updateShowFPSState();
 
 		if (!isGamePaused) {
 			screenManager.update();
+		}
+	}
+
+	private void updateFullscreenState() {
+		if (Keyboard.isKeyDown(fullscreenKey) && !keyLocker.isKeyLocked(fullscreenKey)) {
+			keyLocker.lockKey(fullscreenKey);
+			SwingUtilities.invokeLater(gameWindow::toggleFullscreen);
+		}
+
+		if (Keyboard.isKeyUp(fullscreenKey)) {
+			keyLocker.unlockKey(fullscreenKey);
 		}
 	}
 
@@ -133,8 +147,18 @@ public class GamePanel extends JPanel {
 		if (doPaint) {
 			// every repaint call will schedule this method to be called
 			// when called, it will setup the graphics handler and then call this class's draw method
-			graphicsHandler.setGraphics((Graphics2D) g);
+			Graphics2D viewportGraphics = (Graphics2D) g.create();
+			double scale = Math.min(
+				(double) getWidth() / Config.GAME_WINDOW_WIDTH,
+				(double) getHeight() / Config.GAME_WINDOW_HEIGHT
+			);
+			int offsetX = (int) ((getWidth() - Config.GAME_WINDOW_WIDTH * scale) / 2);
+			int offsetY = (int) ((getHeight() - Config.GAME_WINDOW_HEIGHT * scale) / 2);
+			viewportGraphics.translate(offsetX, offsetY);
+			viewportGraphics.scale(scale, scale);
+			graphicsHandler.setGraphics(viewportGraphics);
 			draw();
+			viewportGraphics.dispose();
 		}
 	}
 }

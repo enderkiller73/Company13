@@ -118,6 +118,8 @@ public class MapCollisionHandler {
                     return false;
                 case KILL:
                     return false;
+                case END:
+                    return false;
                 default:
                     return false;
             }
