@@ -12,8 +12,8 @@ import java.util.HashMap;
 
 public class Rose extends Player {
 
-    public Rose(float x, float y) {
-        super(new SpriteSheet(ImageLoader.load("Flahli.png"), 31, 33), x, y, "STAND_RIGHT");
+    public Rose(float x, float y, float scaleX, float scaleY) {
+        super(new SpriteSheet(ImageLoader.load("Flahli.png"), 31, 33), x, y, "STAND_RIGHT", scaleX, scaleY);
         gravity = .5f;
         terminalVelocityY = 10f;
         jumpHeight = 14.5f;
