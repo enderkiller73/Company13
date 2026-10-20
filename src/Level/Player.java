@@ -165,19 +165,21 @@ public abstract class Player extends GameObject {
         if(airGroundState == AirGroundState.GROUND) {
             dashAmount = 0;
         }
-        if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
+        if (Keyboard.isKeyDown(DASH_KEY) /* &&  */ && !keyLocker.isKeyLocked(DASH_KEY)) {
             keyLocker.lockKey(DASH_KEY);
             //if (dashAmount != 0) {
-            if (airGroundState == AirGroundState.AIR) {
-               if (dashAmount <= dashCap) {
-                    velocity += facingDirection == Direction.RIGHT ?  dashSpeed : -dashSpeed;
-                    dashAmount++;
+            if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+                if (airGroundState == AirGroundState.AIR) {
+                   if (dashAmount <= dashCap) {
+                        velocity += facingDirection == Direction.RIGHT ?  dashSpeed : -dashSpeed;
+                        dashAmount++;
+                    }
                 }
-            }
-            else if (airGroundState == AirGroundState.GROUND) {
-                if (dashAmount <= dashCap) {
-                    velocity += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
-                    dashAmount++;
+                else if (airGroundState == AirGroundState.GROUND) {
+                    if (dashAmount <= dashCap) {
+                        velocity += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+                        dashAmount++;
+                    }
                 }
             }
         }
@@ -768,3 +770,7 @@ protected void unPlacePlatform() {
         }
     }
 } 
+
+protected void lastInput() {
+    
+}
