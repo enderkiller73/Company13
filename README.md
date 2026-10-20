@@ -6,11 +6,25 @@ Students will be paired up in teams for an entire semester, and will utilize agi
 This usually involves adding features and fixing bugs (I'm sure there are bugs...)
 
 ## How to run this project?
-I did not use any external libraries for this, so you can clone this repo as is and run it out of the box with Java (min version 8).
-I recommend using a tool such as Visual Studio Code or IntelliJ to run this game.
+You can clone this repo and run it with Java (minimum version 8). I recommend using a tool such as Visual Studio Code or IntelliJ to run the game.
 
 The main method for the game is in the `Game` package > `Game.java` file.<br>
 The main method for the map editor is in the `MapEditor` package > `MapEditor.java` file.
+
+## Playing music
+Put `.wav` files in the `Music` folder and create a `MusicPlayer` with the file name. For example:
+
+```java
+MusicPlayer music = new MusicPlayer("level.wav");
+music.play(true); // loop continuously
+music.pause();
+music.resume();
+music.setVolume(0.5f); // range: 0.0 to 1.0
+music.stop();
+music.close();
+```
+
+The constructor can throw `IOException`, `UnsupportedAudioFileException`, and `LineUnavailableException` if the file cannot be loaded or audio is unavailable.
 
 ## Documentation
 This project includes a GitHub pages website in the `docs` folder where the documentation resides.<br>

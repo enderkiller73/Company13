@@ -10,8 +10,8 @@ public class SpriteSheet {
 	protected int spriteHeight;
 	protected int rowLength;
 	protected int columnLength;
-	// protected float scaleX;
-	// protected float scaleY;
+	protected float scaleX = 1f;
+	protected float scaleY = 1f;
 
 	public SpriteSheet(BufferedImage image, int spriteWidth, int spriteHeight) {
 		this.image = image;
@@ -51,4 +51,19 @@ public class SpriteSheet {
 	public int getSpriteHeight() {
 		return spriteHeight;
 	}
+	public void setScaleX(float scaleX) {
+        this.scaleX = scaleX;
+    }
+
+    public float getScaleX() {
+        return scaleX;
+    }
+
+    public void setScaleY(float scaleY) {
+        this.scaleY = scaleY;
+    }
+
+    public float getScaleY() {
+        return scaleY;
+    }
 }

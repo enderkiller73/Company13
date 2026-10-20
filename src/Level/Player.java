@@ -15,6 +15,7 @@ import Utils.Direction;
 import Utils.AirWallState;
 import Tilesets.PetalPlatformTileset;
 import java.lang.System.Logger.Level;
+import java.nio.file.WatchKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -33,6 +34,8 @@ public abstract class Player extends GameObject {
     protected float terminalVelocityY = 0;
     protected float momentumYIncrease = 0;
     protected float momentumXdecrease = 0;
+    protected float scaleX = 1f;
+    protected float scaleY = 1f;
     protected float maxMomentum = 0f;
     protected float prevMoveAmountY;
     protected float dashDegrade = 0;
@@ -97,8 +100,8 @@ public abstract class Player extends GameObject {
     PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
     ArrayList<MapTile> originalTiles = new ArrayList<>();
 
-    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
-        super(spriteSheet, x, y, startingAnimationName);
+    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, float scaleX, float scaleY) {
+        super(spriteSheet, x, y, startingAnimationName, scaleX, scaleY);
         facingDirection = Direction.RIGHT;
         airGroundState = AirGroundState.AIR;
         previousAirGroundState = airGroundState;
@@ -339,22 +342,37 @@ public abstract class Player extends GameObject {
 
             // allows you to move left and right while in the air
             if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+                velocityStartFrame = framecount;
+                velocity -= walkSpeed;
+                if (velocity < -maxVelocity) {
+                    velocity = -maxVelocity;
+                }
                 facingDirection = Direction.LEFT;
-                moveAmountX -= airSpeed;
                 if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                    moveAmountX = -floatSpeed;
+                    velocity -= walkSpeed;
+                    if (velocity < -floatSpeed) {
+                        velocity = -floatSpeed;
+                    }
                 }
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-                facingDirection = Direction.RIGHT;
-                moveAmountX += airSpeed;
+                velocityStartFrame = framecount;
+                velocity += walkSpeed;
+                if (velocity > maxVelocity) {
+                    velocity = maxVelocity;
+                }
+            facingDirection = Direction.RIGHT;
                 if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                    moveAmountX = floatSpeed;
+                    velocity += walkSpeed;
+                    if (velocity > floatSpeed) {
+                        velocity = floatSpeed;
+                    }
                 }
             }
             // if player is falling, increases momentum as player falls so it falls faster over time
             if (moveAmountY > 0) {
                 increaseMomentumY();
             }
+            moveAmountX += velocity;
         }
 
         
