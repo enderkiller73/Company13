@@ -2,11 +2,19 @@ package Game;
 
 import Engine.DefaultScreen;
 import Engine.GraphicsHandler;
+import Engine.Key;
+import Engine.KeyLocker;
+import Engine.MusicPlayer;
 import Engine.Screen;
+import Engine.Keyboard;
 import Screens.CreditsScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
 import Screens.ControlsScreen;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 
 /*
  * Based on the current game state, this class determines which Screen should be shown
@@ -15,10 +23,15 @@ import Screens.ControlsScreen;
 public class ScreenCoordinator extends Screen {
 	// currently shown Screen
 	protected Screen currentScreen = new DefaultScreen();
+	private MusicPlayer menuMusic;
+	private boolean musicMuted;
+	private final KeyLocker musicKeyLocker = new KeyLocker();
 
 	// keep track of gameState so ScreenCoordinator knows which Screen to show
 	protected GameState gameState;
 	protected GameState previousGameState;
+
+	private MusicPlayer levelMusic;
 
 	public GameState getGameState() {
 		return gameState;
@@ -33,19 +46,34 @@ public class ScreenCoordinator extends Screen {
 	public void initialize() {
 		// start game off with Menu Screen
 		gameState = GameState.MENU;
+		musicKeyLocker.lockKey(Key.M);
 	}
 
 	@Override
 	public void update() {
+		if (Keyboard.isKeyUp(Key.M)) {
+			musicKeyLocker.unlockKey(Key.M);
+		} else if (!musicKeyLocker.isKeyLocked(Key.M)) {
+			musicMuted = !musicMuted;
+			musicKeyLocker.lockKey(Key.M);
+			updateMusicVolume();
+		}
+
 		do {
 			// if previousGameState does not equal gameState, it means there was a change in gameState
 			// this triggers ScreenCoordinator to bring up a new Screen based on what the gameState is
 			if (previousGameState != gameState) {
 				switch(gameState) {
 					case MENU:
+						stopLevelMusic();
+						startMenuMusic();
 						currentScreen = new MenuScreen(this);
 						break;
 					case LEVEL:
+						if (menuMusic != null) {
+							menuMusic.stop();
+						}
+						startLevelMusic();
 						currentScreen = new PlayLevelScreen(this);
 						break;
 					case CREDITS:
@@ -67,5 +95,47 @@ public class ScreenCoordinator extends Screen {
 	public void draw(GraphicsHandler graphicsHandler) {
 		// call the draw method for the currentScreen
 		currentScreen.draw(graphicsHandler);
+	}
+
+	private void startMenuMusic() {
+		try {
+			if (menuMusic == null) {
+				menuMusic = new MusicPlayer("Start Menu 0.wav");
+			}
+			menuMusic.setVolume(musicMuted ? 0 : 1);
+			menuMusic.play(true);
+		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+			System.err.println("Unable to play menu music.");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	private void startLevelMusic() {
+		try {
+			if (levelMusic == null) {
+				levelMusic = new MusicPlayer("Castlevania_ Symphony of the Night OST - Abandoned Pit.wav");
+			}
+			levelMusic.setVolume(musicMuted ? 0 : 1);
+			levelMusic.play(true);
+		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+			System.err.println("Unable to play level music.");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	private void stopLevelMusic() {
+		if (levelMusic != null) {
+			levelMusic.stop();
+		}
+	}
+
+	private void updateMusicVolume() {
+		float volume = musicMuted ? 0 : 1;
+		if (menuMusic != null) {
+			menuMusic.setVolume(volume);
+		}
+		if (levelMusic != null) {
+			levelMusic.setVolume(volume);
+		}
 	}
 }
