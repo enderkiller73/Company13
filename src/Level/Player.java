@@ -3,6 +3,7 @@ package Level;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import Engine.SoundEffectPlayer;
 import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
@@ -20,6 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import Builders.MapTileBuilder;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -80,6 +85,8 @@ public abstract class Player extends GameObject {
     protected Key CLIMB_KEY = Key.L;
     protected Key DASH_KEY = Key.J;
     protected Key PLACE_KEY = Key.K;
+    private static SoundEffectPlayer jumpSound;
+    private static boolean jumpSoundLoadAttempted;
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
@@ -114,6 +121,15 @@ public abstract class Player extends GameObject {
         levelState = LevelState.RUNNING;
         airWallState = AirWallState.AIR;
         previousAirWallState = airWallState;
+        if (!jumpSoundLoadAttempted) {
+            jumpSoundLoadAttempted = true;
+            try {
+                jumpSound = new SoundEffectPlayer("Mario Jump - Sound Effect (HD) 0.wav");
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+                System.err.println("Unable to load the player jump sound.");
+                e.printStackTrace(System.err);
+            }
+        }
     }
 
     public void update() {
@@ -331,6 +347,9 @@ public abstract class Player extends GameObject {
     protected void playerJumping() {
         // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
         if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND) {
+            if (jumpSound != null) {
+                jumpSound.play();
+            }
 
             // sets animation to a JUMP animation based on which way player is facing
             currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
