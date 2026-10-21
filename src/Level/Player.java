@@ -129,7 +129,7 @@ public abstract class Player extends GameObject {
                 previousPlayerState = playerState;
                 handlePlayerState();
                 lastInput();
-                handleDash();
+                // handleDash();
                 slip(); 
             } while (previousPlayerState != playerState);
             framecount++;
@@ -172,9 +172,7 @@ public abstract class Player extends GameObject {
         if(airGroundState == AirGroundState.GROUND) {
             dashAmount = 0;
         }
-        if (Keyboard.isKeyDown(DASH_KEY) /* &&  */ && !keyLocker.isKeyLocked(DASH_KEY)) {
-            keyLocker.lockKey(DASH_KEY);
-            //if (dashAmount != 0) {
+        if ((latestInputFrame.get((latestInputFrame.size()-2)) - latestInputFrame.get((latestInputFrame.size()-1))) >= 30 && (latestInputFrame.get((latestInputFrame.size()-2)) - latestInputFrame.get((latestInputFrame.size()-1))) >= 50) {
             if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
                 if (airGroundState == AirGroundState.AIR) {
                    if (dashAmount <= dashCap) {
@@ -190,6 +188,24 @@ public abstract class Player extends GameObject {
                 }
             }
         }
+        // if (Keyboard.isKeyDown(DASH_KEY) /* &&  */ && !keyLocker.isKeyLocked(DASH_KEY)) {
+        //     keyLocker.lockKey(DASH_KEY);
+        //     //if (dashAmount != 0) {
+        //     if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+        //         if (airGroundState == AirGroundState.AIR) {
+        //            if (dashAmount <= dashCap) {
+        //                 velocity += facingDirection == Direction.RIGHT ?  dashSpeed : -dashSpeed;
+        //                 dashAmount++;
+        //             }
+        //         }
+        //         else if (airGroundState == AirGroundState.GROUND) {
+        //             if (dashAmount <= dashCap) {
+        //                 velocity += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+        //                 dashAmount++;
+        //             }
+        //         }
+        //     }
+        // }
     }
 
 
@@ -777,13 +793,26 @@ public abstract class Player extends GameObject {
             }
     }
 
-    int i = 0;
     protected void lastInput() {
         if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
             latestInput.add(MOVE_RIGHT_KEY);
             latestInputFrame.add(framecount);
-            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
-            i++;
+            // System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+        }
+        if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+            latestInput.add(MOVE_LEFT_KEY);
+            latestInputFrame.add(framecount);
+            // System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+        }
+        if (Keyboard.isKeyDown(JUMP_KEY)) {
+            latestInput.add(JUMP_KEY);
+            latestInputFrame.add(framecount);
+            // System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+        }
+        if (Keyboard.isKeyDown(CROUCH_KEY)) {
+            latestInput.add(CROUCH_KEY);
+            latestInputFrame.add(framecount);
+            // System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
         }
     }
 }
