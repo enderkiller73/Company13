@@ -43,10 +43,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void initialize() {
-        // if (gameObject == null) {
-        //     gameObject.setScaleX(scaleX);
-        //     gameObject.setScaleY(scaleY);
-        // }
+        if (gameObject != null) {
+            gameObject.setScaleX(scaleX);
+            gameObject.setScaleY(scaleY);
+        }
         // gameObject.getCalibratedYLocation();
 
         loadLevel();
