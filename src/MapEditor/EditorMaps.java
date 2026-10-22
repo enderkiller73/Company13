@@ -1,18 +1,7 @@
 package MapEditor;
 
 import Level.Map;
-import Maps.LevelTwo;
-import Maps.TestMap;
-import Maps.TitleScreenMap;
-import Maps.TutorialMap;
-import Maps.Level_Three;
-import Maps.Level_Four;
-import Maps.Level_Five;
-import Maps.Level_Six;
-import Maps.Level_Seven;
-import Maps.Level_Eight;
-import Maps.Level_Nine;
-import Maps.Level_Ten;
+import Maps.*;
 
 import java.util.ArrayList;
 
@@ -31,6 +20,7 @@ public class EditorMaps {
             add("Level_Eight");
             add("Level_Nine");
             add("Level_Ten");
+            // add("DemoLevelOneMap");
         }};
     }
 
@@ -60,6 +50,8 @@ public class EditorMaps {
                 return new Level_Nine();
             case "Level_Ten":
                 return new Level_Ten();
+            // case "DemoLevelOneMap":
+            //     return new DemoLevelOneMap();
             default:
                 throw new RuntimeException("Unrecognized map name");
         }
