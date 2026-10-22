@@ -13,6 +13,7 @@ import Maps.*;
 //import Players.Cat;
 import Players.Rose;
 import SpriteFont.SpriteFont;
+import Level.MapTile;
 
 import java.awt.Color;
 
@@ -32,6 +33,9 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     protected GameObject gameObject;
     protected float scaleX = 1f;
     protected float scaleY = 1f;
+    protected float changeScaleX = 0.01f;
+    protected float changeScaleY = 0.01f;
+    protected MapTile prevMapTile;
 
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
@@ -68,14 +72,14 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 return new Level_Three();
             case 4:
                 return new Level_Four();
-            case 5:
-                return new Level_Five();
-            case 6:
-                return new Level_Six();
-            case 7:
-                return new Level_Seven();
-            case 8:
-                return new Level_Eight();
+            // case 5:
+            //     return new Level_Five();
+            // case 6:
+            //     return new Level_Six();
+            // case 7:
+            //     return new Level_Seven();
+            // case 8:
+            //     return new Level_Eight();
             // case 9:
             //     return new Level_Nine();
             default:
