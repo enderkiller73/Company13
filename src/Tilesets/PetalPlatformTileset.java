@@ -40,6 +40,16 @@ public class PetalPlatformTileset extends Tileset {
 
         maptiles.add(petalPlatformTile);
 
+        Frame petalPlatformFrame2 = new FrameBuilder(getSubImage(0, 1))
+            .withScale(petalscale)
+            .withBounds(new Rectangle(boundsX, boundsY, 28, 8))
+            .build();
+
+        MapTileBuilder petalPlatformTile2 = new MapTileBuilder(petalPlatformFrame2)
+            .withTileType(TileType.NOT_PASSABLE);
+
+        maptiles.add(petalPlatformTile2);
+
         return maptiles;
     }
 

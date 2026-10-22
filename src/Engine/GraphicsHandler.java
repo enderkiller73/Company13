@@ -91,6 +91,19 @@ public class GraphicsHandler {
         g.setColor(oldColor);
     }
 
+    private java.awt.geom.AffineTransform savedTransform;
+
+    public void beginZoom(float zoom, float cx, float cy) {
+        savedTransform = g.getTransform();
+        g.translate(cx, cy);
+        g.scale(zoom, zoom);
+        g.translate(-cx, -cy);
+    }
+
+    public void endZoom() { 
+        g.setTransform(savedTransform); 
+    }
+
     // https://stackoverflow.com/a/35222059 and https://stackoverflow.com/a/31831120
     public void drawStringWithOutline(String text, int x, int y, Font font, Color textColor, Color outlineColor, float outlineThickness) {
         // remember original settings

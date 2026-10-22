@@ -23,6 +23,14 @@ import java.util.Scanner;
 */
 
 public abstract class Map {
+    private boolean firstUpdate = true;
+    private static final float CAMERA_EASE = 0.1f;
+    private static final float MAX_ZOOM_OUT = 0.1f;
+    private static final float ZOOM_SMOOTHING = 0.05f;
+    private float zoom = 1f;
+    private float shakeX, shakeY, shakePower;
+    private int shakeFrames, shakeTotal = 1;
+
     // the tile map (map tiles that make up the entire map image)
     protected MapTile[] mapTiles;
 
@@ -79,6 +87,10 @@ public abstract class Map {
     // loads in enemies, enhanced map tiles, and npcs
     // and instantiates a Camera
     public void setupMap() {
+        firstUpdate = true;
+        zoom = 1f;
+        shakeX = shakeY = 0;
+        shakeFrames = 0;
         this.animatedMapTiles = new ArrayList<>();
 
         loadMapFile();
@@ -327,11 +339,48 @@ public abstract class Map {
         this.adjustCamera = adjustCamera;
     }
 
+    private float camEase() {
+        return firstUpdate ? 1f : CAMERA_EASE;
+    }
+
+    public float getZoom() {
+        return zoom;
+    }
+
+    // power is in pixels, frames is how long the shake lasts
+    public void shake(float power, int frames) {
+        shakePower = power;
+        shakeFrames = shakeTotal = Math.max(1, frames);
+    }
+
     public void update(Player player) {
+        // undo last frame's shake so it doesn't feed into the scrolling
+        camera.moveX(-shakeX);
+        camera.moveY(-shakeY);
+
         if (adjustCamera) {
             adjustMovementY(player);
             adjustMovementX(player);
         }
+        firstUpdate = false;
+
+        // zoom out a little with speed
+        float speed = (player != null && player.maxVelocity > 0) ? Math.abs(player.velocity) / player.maxVelocity : 0;
+        float targetZoom = 1f - MAX_ZOOM_OUT * Math.min(speed, 1.5f) / 1.5f;
+        zoom += (targetZoom - zoom) * ZOOM_SMOOTHING;
+
+        // shake, whole pixels only so tiles don't show seams
+        if (shakeFrames > 0) {
+            float p = shakePower * shakeFrames / shakeTotal;
+            shakeX = Math.round((float) ((Math.random() * 2 - 1) * p));
+            shakeY = Math.round((float) ((Math.random() * 2 - 1) * p));
+            shakeFrames--;
+        } else {
+            shakeX = shakeY = 0;
+        }
+        camera.moveX(shakeX);
+        camera.moveY(shakeY);
+
         camera.update(player);
     }
 
@@ -341,12 +390,12 @@ public abstract class Map {
         // if player goes past center screen (on the right side) and there is more map to show on the right side, push player back to center and move camera forward
         if ((player.getCalibratedXLocation() + (player.getWidth() / 2)) > xMidPoint && camera.getEndBoundX() < endBoundX) {
             float xMidPointDifference = xMidPoint - (player.getCalibratedXLocation() + (player.getWidth() / 2));
-            camera.moveX(-xMidPointDifference);
+            camera.moveX(-xMidPointDifference * camEase());
 
             // if camera moved past the right edge of the map as a result from the move above, move camera back and push player forward
             if (camera.getEndBoundX() > endBoundX) {
                 float cameraDifference = camera.getEndBoundX() - endBoundX;
-                camera.moveX(-cameraDifference);
+                camera.moveX(-xMidPointDifference * camEase());
             }
         }
         // if player goes past center screen (on the left side) and there is more map to show on the left side, push player back to center and move camera backwards
@@ -368,7 +417,7 @@ public abstract class Map {
         // if player goes past center screen (below) and there is more map to show below, push player back to center and move camera upward
         if ((player.getCalibratedYLocation() + (player.getHeight() / 2)) > yMidPoint && camera.getEndBoundY() < endBoundY) {
             float yMidPointDifference = yMidPoint - (player.getCalibratedYLocation() + (player.getHeight() / 2));
-            camera.moveY(-yMidPointDifference);
+            camera.moveY(-yMidPointDifference * camEase());
 
             // if camera moved past the bottom of the map as a result from the move above, move camera upwards and push player downwards
             if (camera.getEndBoundY() > endBoundY) {
@@ -379,8 +428,7 @@ public abstract class Map {
         // if player goes past center screen (above) and there is more map to show above, push player back to center and move camera upwards
         else if ((player.getCalibratedYLocation() + (player.getHeight() / 2)) < yMidPoint && camera.getY() > startBoundY) {
             float yMidPointDifference = yMidPoint - (player.getCalibratedYLocation() + (player.getHeight() / 2));
-            camera.moveY(-yMidPointDifference);
-
+            camera.moveY(-yMidPointDifference * camEase());
             // if camera moved past the top of the map as a result from the move above, move camera downwards and push player upwards
             if (camera.getY() < startBoundY) {
                 float cameraDifference = startBoundY - camera.getY();

@@ -625,6 +625,9 @@ public abstract class Player extends GameObject {
         // if player does not collide with a map tile below, it is in air
         if (direction == Direction.DOWN) {
             if (hasCollided) {
+                if (airGroundState == AirGroundState.AIR && momentumY > terminalVelocityY * 0.95f) {
+                    map.shake(2f, 8);
+                }
                 momentumY = 0;
                 airGroundState = AirGroundState.GROUND;
             } else {
@@ -783,7 +786,7 @@ public abstract class Player extends GameObject {
                 placedAtFrame.add(framecount);
 
                 originalTiles.add(map.getTileByPosition(targetX2, targetY2));
-                MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX2, targetY2);
+                MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(1).build(targetX2, targetY2);
                 newTile2.setMap(map);
                 map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
                 placedTiles.add(map.getTileByPosition(targetX2, targetY2));
@@ -800,7 +803,7 @@ public abstract class Player extends GameObject {
                 placedAtFrame.add(framecount);
 
                 originalTiles.add(map.getTileByPosition(targetX2, targetY2));
-                MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX2, targetY2);
+                MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(1).build(targetX2, targetY2);
                 newTile2.setMap(map);
                 map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
                 placedTiles.add(map.getTileByPosition(targetX2, targetY2));
@@ -835,31 +838,22 @@ public abstract class Player extends GameObject {
 
             }
     }
-    int i = 0; 
     protected void lastInput() {
         if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
             latestInput.add(MOVE_RIGHT_KEY);
             latestInputFrame.add(framecount);
-            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
-            i++;
         }
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
             latestInput.add(MOVE_LEFT_KEY);
             latestInputFrame.add(framecount);
-            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
-            i++;
         }
         if (Keyboard.isKeyDown(JUMP_KEY)) {
             latestInput.add(JUMP_KEY);
             latestInputFrame.add(framecount);
-            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
-            i++;
         }
         if (Keyboard.isKeyDown(CROUCH_KEY)) {
             latestInput.add(CROUCH_KEY);
             latestInputFrame.add(framecount);
-            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
-            i++;
         }
     }
 }
