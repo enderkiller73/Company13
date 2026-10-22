@@ -167,7 +167,7 @@ public class Rose extends Player {
                             .withScale(2)
                             .withBounds(8, 16, 16, 16)
                             .build(),
-                        new FrameBuilder(spriteSheet.getSprite(4, 0), 20)
+                        new FrameBuilder(spriteSheet.getSprite(4, 1), 999)
                             .withScale(2)
                             .withBounds(8, 16, 16, 16)
                             .build()
@@ -181,12 +181,12 @@ public class Rose extends Player {
             });
 
             put("CLIMB_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(4, 0), 9)
+                    new FrameBuilder(spriteSheet.getSprite(4, 0), 20)
                             .withScale(2)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(8, 16, 16, 16)
                             .build(),
-                        new FrameBuilder(spriteSheet.getSprite(4, 1))
+                        new FrameBuilder(spriteSheet.getSprite(4, 1), 999)
                             .withScale(2)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(8, 16, 16, 16)
@@ -281,6 +281,38 @@ public class Rose extends Player {
                             .withBounds(8, 16, 16, 16)
                             .build(),
             });
+            put("DEATH_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0),50)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1),5)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2),5)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+            });
+
+            put("DASH_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(7, 0),50)
+                            .withScale(2)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(7, 1),5)
+                            .withScale(2)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2),5)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+            });
+
         }};
     }
 }

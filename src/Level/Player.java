@@ -284,6 +284,7 @@ public abstract class Player extends GameObject {
 
         if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
             keyLocker.lockKey(DASH_KEY);
+            this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
             if (dashAmount < dashCap && framecount >= dashReadyFrame) {
                 dashRampDir = facingDirection == Direction.RIGHT ? 1 : -1;
                 dashRampLeft = DASH_RAMP_FRAMES;
@@ -324,6 +325,9 @@ public abstract class Player extends GameObject {
                 break;
             case THROWING:
                 placePlatform();
+                break;
+            case DASHING:
+                handleDash();
                 break;
         }
     }
@@ -435,6 +439,9 @@ public abstract class Player extends GameObject {
             if (Keyboard.isKeyDown(CLIMB_KEY)) {
                 playerState = PlayerState.CLIMBING;
             }
+            if (Keyboard.isKeyDown(DASH_KEY)) {
+                this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
+            }
         }
        
 
@@ -476,6 +483,9 @@ public abstract class Player extends GameObject {
                     if (velocity > floatSpeed) {
                         velocity = floatSpeed;
                     }
+                }
+                if (Keyboard.isKeyDown(DASH_KEY)) {
+                    this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
                 }
             }
             // if player is falling, increases momentum as player falls so it falls faster over time
@@ -571,6 +581,7 @@ public abstract class Player extends GameObject {
                 levelState = LevelState.LEVEL_COMPLETED;
                 System.out.println("Diddly Blud beat the level");
             }
+
         }
         else if (playerState == PlayerState.WALKING) {
             // sets animation to a WALK animation based on which way player is facing
@@ -631,6 +642,17 @@ public abstract class Player extends GameObject {
         }
         else if (playerState == PlayerState.THROWING) {
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "THROW_RIGHT" : "THROW_LEFT";
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+                levelState = LevelState.PLAYER_DEAD;
+                System.out.println("Bro Should be Dead");
+            }
+            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+                levelState = LevelState.LEVEL_COMPLETED;
+                System.out.println("Diddly Blud beat the level");
+            }
+        }
+        else if (playerState == PlayerState.DASHING) {
+            this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
                 levelState = LevelState.PLAYER_DEAD;
                 System.out.println("Bro Should be Dead");
