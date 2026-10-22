@@ -96,25 +96,24 @@ public class GameObject extends AnimatedSprite {
         previousX = x;
         previousY = y;
 
-        if (compareYChange() > 0) {
-            scaleX = scaleX + changeScaleX;
-            scaleY = scaleY + changeScaleY;
-        } else if (compareYChange() < 0) {
-            scaleX = scaleX - changeScaleX;
-            scaleY = scaleY - changeScaleY;
-        } else {
-            while (scaleX != 1 && scaleY != 1) {
-                if (compareYChange() > 0) {
-                    scaleX -= changeScaleX;
-                    scaleY -= changeScaleY;
-                }
-                if (compareYChange() < 0) {
-                    scaleX += changeScaleX;
-                    scaleY += changeScaleY;
-                }
-            }
-            
-        }
+        // if (compareYChange() > 0) {
+        //     scaleX = scaleX + changeScaleX;
+        //     scaleY = scaleY + changeScaleY;
+        // } else if (compareYChange() < 0) {
+        //     scaleX = scaleX - changeScaleX;
+        //     scaleY = scaleY - changeScaleY;
+        // } else {
+        //     while (scaleX != 1 && scaleY != 1) {
+        //         if (compareYChange() > 0) {
+        //             scaleX -= changeScaleX;
+        //             scaleY -= changeScaleY;
+        //         }
+        //         if (compareYChange() < 0) {
+        //             scaleX += changeScaleX;
+        //             scaleY += changeScaleY;
+        //         }
+        //     }
+        //}
 
         // call to animation logic
         super.update();
