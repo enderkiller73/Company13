@@ -20,7 +20,7 @@ public class LevelTwo extends Map {
 
     public LevelTwo() {
         super("leveltwo.txt", new GrassLevelsTileset());
-        this.playerStartPosition = getMapTile(1, 1).getLocation();
+        this.playerStartPosition = getMapTile(1, 9).getLocation();
     }
 
 

@@ -370,6 +370,10 @@ public class GameObject extends AnimatedSprite {
         return this.previousY;
     }
 
+    public float compareYChange () {
+        return this.previousY - y;
+    }
+
     public void setScaleX(float scaleX) {
         this.scaleX = scaleX;
     }

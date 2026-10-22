@@ -48,7 +48,7 @@ public abstract class Player extends GameObject {
     protected float floatFallMax = 0;
     protected float floatSpeed = 0;
     protected float deathScreenFall = 3f;
-    protected float deathScreenFallMax = 15f;
+    protected float deathScreenFallMax = 20f;
 
     // values used to handle player movement
     protected float jumpForce = 0;

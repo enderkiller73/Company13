@@ -14,12 +14,12 @@ public class EditorMaps {
             add("LevelTwo");
             add("Level_Three");
             add("Level_Four");
-            add("Level_Five");
-            add("Level_Six");
-            add("Level_Seven");
-            add("Level_Eight");
-            add("Level_Nine");
-            add("Level_Ten");
+            // add("Level_Five");
+            // add("Level_Six");
+            // add("Level_Seven");
+            // add("Level_Eight");
+            // add("Level_Nine");
+            // add("Level_Ten");
             // add("DemoLevelOneMap");
         }};
     }
@@ -38,18 +38,18 @@ public class EditorMaps {
                 return new Level_Three();    
             case "Level_Four":
                 return new Level_Four();   
-            case "Level_Five":
-                return new Level_Five();   
-            case "Level_Six":
-                return new Level_Six();   
-            case "Level_Seven":
-                return new Level_Seven();
-            case "Level_Eight":
-                return new Level_Eight();
-            case "Level_Nine":
-                return new Level_Nine();
-            case "Level_Ten":
-                return new Level_Ten();
+            // case "Level_Five":
+            //     return new Level_Five();   
+            // case "Level_Six":
+            //     return new Level_Six();   
+            // case "Level_Seven":
+            //     return new Level_Seven();
+            // case "Level_Eight":
+            //     return new Level_Eight();
+            // case "Level_Nine":
+            //     return new Level_Nine();
+            // case "Level_Ten":
+            //     return new Level_Ten();
             // case "DemoLevelOneMap":
             //     return new DemoLevelOneMap();
             default:
