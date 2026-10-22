@@ -48,7 +48,7 @@ public abstract class Player extends GameObject {
     protected float floatFallMax = 0;
     protected float floatSpeed = 0;
     protected float deathScreenFall = 3f;
-    protected float deathScreenFallMax = 20f;
+    protected float deathScreenFallMax = 15f;
 
     // values used to handle player movement
     protected float jumpForce = 0;
@@ -112,6 +112,19 @@ public abstract class Player extends GameObject {
     protected ArrayList<Key> latestInput = new ArrayList<>();
     protected ArrayList<Integer> latestInputFrame = new ArrayList<>();
 
+    // how much speed is kept each frame while holding the opposite direction of motion (lower = snappier turn)
+    protected static final float TURN_BRAKE = 0.7f;
+
+    // the dash's speed boost is spread over this many frames instead of all at once
+    protected static final int DASH_RAMP_FRAMES = 6;
+    protected int dashRampLeft = 0;
+    protected float dashRampDir = 0;
+    protected int lastDashFrame = -1;
+
+    // frames the player has to wait after starting a dash before they can dash again (60 frames = 1 second)
+    protected static final int DASH_COOLDOWN_FRAMES = 30;
+    protected int dashReadyFrame = 0;   // the framecount at which the next dash is allowed
+
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, float scaleX, float scaleY) {
         super(spriteSheet, x, y, startingAnimationName, scaleX, scaleY);
         facingDirection = Direction.RIGHT;
@@ -153,6 +166,7 @@ public abstract class Player extends GameObject {
         // if player is currently playing through level (has not won or lost)
         if (levelState == LevelState.RUNNING) {
             applyGravity();
+            applyTurnBrake();
 
             // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
             do {
@@ -238,12 +252,30 @@ public abstract class Player extends GameObject {
     //         }
     //     }
     // }
+    // when the player holds the opposite direction of their motion, bleed off speed extra fast
+    protected void applyTurnBrake() {
+        if (isDashing) return;
+        boolean pressingLeft = Keyboard.isKeyDown(MOVE_LEFT_KEY);
+        boolean pressingRight = !pressingLeft && Keyboard.isKeyDown(MOVE_RIGHT_KEY);
+        if ((pressingLeft && velocity > 0) || (pressingRight && velocity < 0)) {
+            velocity *= TURN_BRAKE;
+        }
+    }
+
     protected void handleDash() {
         if (airGroundState == AirGroundState.GROUND) {
             dashAmount = 0;
         }
 
-        if (isDashing) {
+        if (lastDashFrame == framecount) {
+            return;
+        }
+        lastDashFrame = framecount;
+
+        if (dashRampLeft > 0) {
+            velocity += dashRampDir * (dashSpeed / DASH_RAMP_FRAMES);
+            dashRampLeft--;
+        } else if (isDashing) {
             velocity *= (dashDegrade > 0 ? dashDegrade : 0.9f);
             if (Math.abs(velocity) <= maxVelocity) {
                 isDashing = false;
@@ -252,8 +284,10 @@ public abstract class Player extends GameObject {
 
         if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
             keyLocker.lockKey(DASH_KEY);
-            if (dashAmount < dashCap) {
-                velocity += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
+            if (dashAmount < dashCap && framecount >= dashReadyFrame) {
+                dashRampDir = facingDirection == Direction.RIGHT ? 1 : -1;
+                dashRampLeft = DASH_RAMP_FRAMES;
+                dashReadyFrame = framecount + DASH_COOLDOWN_FRAMES;
                 isDashing = true;
                 dashAmount++;
             }
