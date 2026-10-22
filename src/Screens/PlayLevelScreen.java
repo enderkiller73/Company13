@@ -34,16 +34,16 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     protected GameObject gameObject;
     protected float scaleX = 1f;
     protected float scaleY = 1f;
-    protected float changeScaleX = 0.01f;
-    protected float changeScaleY = 0.01f;
-    protected float prevY;
+    // protected float changeScaleX = 0.01f;
+    // protected float changeScaleY = 0.01f;
+    // protected float prevY;
 
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
     }
 
     public void initialize() {
-        if (gameObject != null) {
+        if (gameObject == null) {
             gameObject.setScaleX(scaleX);
             gameObject.setScaleY(scaleY);
         }

@@ -34,6 +34,9 @@ public class GameObject extends AnimatedSprite {
     // scales sprite depending on the size
     protected float scaleX = 1f;
     protected float scaleY = 1f;
+    protected float changeScaleX = 0.01f;
+    protected float changeScaleY = 0.01f;
+    protected float prevY;
 
     // the map instance this game object "belongs" to.
     protected Map map;
@@ -77,8 +80,6 @@ public class GameObject extends AnimatedSprite {
         this.startPositionY = y;
         this.previousX = x;
         this.previousY = y;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
     }
 
     public GameObject(float x, float y) {
@@ -95,8 +96,30 @@ public class GameObject extends AnimatedSprite {
         previousX = x;
         previousY = y;
 
+        if (compareYChange() > 0) {
+            scaleX = scaleX + changeScaleX;
+            scaleY = scaleY + changeScaleY;
+        } else if (compareYChange() < 0) {
+            scaleX = scaleX - changeScaleX;
+            scaleY = scaleY - changeScaleY;
+        } else {
+            while (scaleX != 1 && scaleY != 1) {
+                if (compareYChange() > 0) {
+                    scaleX -= changeScaleX;
+                    scaleY -= changeScaleY;
+                }
+                if (compareYChange() < 0) {
+                    scaleX += changeScaleX;
+                    scaleY += changeScaleY;
+                }
+            }
+            
+        }
+
         // call to animation logic
         super.update();
+
+        
     }
 
     // move game object along the x axis
