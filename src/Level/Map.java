@@ -395,13 +395,13 @@ public abstract class Map {
             // if camera moved past the right edge of the map as a result from the move above, move camera back and push player forward
             if (camera.getEndBoundX() > endBoundX) {
                 float cameraDifference = camera.getEndBoundX() - endBoundX;
-                camera.moveX(-xMidPointDifference * camEase());
+                camera.moveX(-cameraDifference);
             }
         }
         // if player goes past center screen (on the left side) and there is more map to show on the left side, push player back to center and move camera backwards
         else if ((player.getCalibratedXLocation() + (player.getWidth() / 2)) < xMidPoint && camera.getX() > startBoundX) {
             float xMidPointDifference = xMidPoint - (player.getCalibratedXLocation() + (player.getWidth() / 2));
-            camera.moveX(-xMidPointDifference);
+            camera.moveX(-xMidPointDifference * camEase());
 
             // if camera moved past the left edge of the map as a result from the move above, move camera back and push player backward
             if (camera.getX() < startBoundX) {
