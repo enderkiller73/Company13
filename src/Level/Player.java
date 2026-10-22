@@ -635,7 +635,7 @@ public abstract class Player extends GameObject {
         // if player does not collide with a map tile below, it is in air
         if (direction == Direction.DOWN) {
             if (hasCollided) {
-                if (airGroundState == AirGroundState.AIR && momentumY > terminalVelocityY * 0.95f) {
+                if (airGroundState == AirGroundState.AIR && momentumY > terminalVelocityY * 0.35f) {
                     map.shake(2f, 8);
                 }
                 momentumY = 0;

@@ -158,8 +158,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
             levelIntro.draw(graphicsHandler);
             break;
             case RUNNING:
+                graphicsHandler.beginZoom(map.getZoom(), ScreenManager.getScreenWidth() / 2f, ScreenManager.getScreenHeight() / 2f);
                 map.draw(graphicsHandler);
                 player.draw(graphicsHandler);
+                graphicsHandler.endZoom();
                 break;
             case LEVEL_COMPLETED:
                 levelClearedScreen.draw(graphicsHandler);
