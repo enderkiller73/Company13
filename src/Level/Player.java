@@ -87,6 +87,7 @@ public abstract class Player extends GameObject {
     protected Key PLACE_KEY = Key.K;
     private static SoundEffectPlayer jumpSound;
     private static boolean jumpSoundLoadAttempted;
+    private static boolean soundEffectsMuted;
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
@@ -129,10 +130,19 @@ public abstract class Player extends GameObject {
             jumpSoundLoadAttempted = true;
             try {
                 jumpSound = new SoundEffectPlayer("Mario Jump - Sound Effect (HD) 0.wav");
+                jumpSound.setMuted(soundEffectsMuted);
             } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                 System.err.println("Unable to load the player jump sound.");
                 e.printStackTrace(System.err);
             }
+        }
+
+    }
+
+    public static void setSoundEffectsMuted(boolean muted) {
+        soundEffectsMuted = muted;
+        if (jumpSound != null) {
+            jumpSound.setMuted(muted);
         }
     }
 

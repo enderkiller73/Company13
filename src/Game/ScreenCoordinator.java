@@ -7,10 +7,12 @@ import Engine.KeyLocker;
 import Engine.MusicPlayer;
 import Engine.Screen;
 import Engine.Keyboard;
+import Level.Player;
 import Screens.CreditsScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
 import Screens.ControlsScreen;
+import Maps.Introbeforemenu;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -32,6 +34,7 @@ public class ScreenCoordinator extends Screen {
 	protected GameState previousGameState;
 
 	private MusicPlayer levelMusic;
+	private Introbeforemenu introScreen;
 
 	public GameState getGameState() {
 		return gameState;
@@ -44,8 +47,8 @@ public class ScreenCoordinator extends Screen {
 
 	@Override
 	public void initialize() {
-		// start game off with Menu Screen
-		gameState = GameState.MENU;
+		// play the startup intro before showing the menu
+		gameState = GameState.INTRO;
 		musicKeyLocker.lockKey(Key.M);
 	}
 
@@ -64,7 +67,15 @@ public class ScreenCoordinator extends Screen {
 			// this triggers ScreenCoordinator to bring up a new Screen based on what the gameState is
 			if (previousGameState != gameState) {
 				switch(gameState) {
+					case INTRO:
+						introScreen = new Introbeforemenu(this);
+						currentScreen = introScreen;
+						break;
 					case MENU:
+						if (introScreen != null) {
+							introScreen.close();
+							introScreen = null;
+						}
 						stopLevelMusic();
 						startMenuMusic();
 						currentScreen = new MenuScreen(this);
@@ -131,11 +142,19 @@ public class ScreenCoordinator extends Screen {
 
 	private void updateMusicVolume() {
 		float volume = musicMuted ? 0 : 1;
+		Player.setSoundEffectsMuted(musicMuted);
 		if (menuMusic != null) {
 			menuMusic.setVolume(volume);
 		}
 		if (levelMusic != null) {
 			levelMusic.setVolume(volume);
 		}
+		if (introScreen != null) {
+			introScreen.setMuted(musicMuted);
+		}
+	}
+
+	public boolean isMusicMuted() {
+		return musicMuted;
 	}
 }

@@ -8,7 +8,7 @@ This usually involves adding features and fixing bugs (I'm sure there are bugs..
 ## How to run this project?
 You can clone this repo and run it with Java (minimum version 8). I recommend using a tool such as Visual Studio Code or IntelliJ to run the game.
 
-The main method for the game is in the `Game` package > `Game.java` file.<br>
+The main method for the game is in the `Game` package > `Game.java` file. The game opens with an intro screen and plays the "2012 New Valve Intro" WAV before transitioning to the main menu.<br>
 The main method for the map editor is in the `MapEditor` package > `MapEditor.java` file.
 
 ## Playing music

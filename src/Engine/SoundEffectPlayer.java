@@ -12,6 +12,7 @@ import java.util.Locale;
 
 public class SoundEffectPlayer implements AutoCloseable {
     private final Clip clip;
+    private boolean muted;
 
     public SoundEffectPlayer(String fileName) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         File audioFile = new File(Config.SOUND_EFFECTS_PATH, fileName);
@@ -44,9 +45,20 @@ public class SoundEffectPlayer implements AutoCloseable {
     }
 
     public void play() {
+        if (muted) {
+            return;
+        }
         clip.stop();
         clip.setMicrosecondPosition(0);
         clip.start();
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+        if (muted) {
+            clip.stop();
+            clip.setMicrosecondPosition(0);
+        }
     }
 
     @Override
