@@ -61,7 +61,7 @@ public abstract class Player extends GameObject {
     protected int dashAmount;
     protected int dashCap;
     protected float airSpeed;
-    
+    protected float dashSpeedY = 0; 
 
     // values used to keep track of player's current state
     protected PlayerState playerState;
@@ -121,6 +121,10 @@ public abstract class Player extends GameObject {
         levelState = LevelState.RUNNING;
         airWallState = AirWallState.AIR;
         previousAirWallState = airWallState;
+        latestInputFrame.add(0);
+        latestInputFrame.add(0);
+        latestInput.add(Key.D); 
+        latestInput.add(Key.D);
         if (!jumpSoundLoadAttempted) {
             jumpSoundLoadAttempted = true;
             try {
@@ -145,7 +149,7 @@ public abstract class Player extends GameObject {
                 previousPlayerState = playerState;
                 handlePlayerState();
                 lastInput();
-                // handleDash();
+                handleDash();
                 slip(); 
             } while (previousPlayerState != playerState);
             framecount++;
@@ -188,22 +192,42 @@ public abstract class Player extends GameObject {
         if(airGroundState == AirGroundState.GROUND) {
             dashAmount = 0;
         }
-        if ((latestInputFrame.get((latestInputFrame.size()-2)) - latestInputFrame.get((latestInputFrame.size()-1))) >= 30 && (latestInputFrame.get((latestInputFrame.size()-2)) - latestInputFrame.get((latestInputFrame.size()-1))) >= 50) {
-            if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
-                if (airGroundState == AirGroundState.AIR) {
-                   if (dashAmount <= dashCap) {
-                        velocity += facingDirection == Direction.RIGHT ?  dashSpeed : -dashSpeed;
-                        dashAmount++;
-                    }
-                }
-                else if (airGroundState == AirGroundState.GROUND) {
-                    if (dashAmount <= dashCap) {
-                        velocity += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
-                        dashAmount++;
-                    }
-                }
+
+        // slow the horizontal dash back down; once it's at normal speed, the clamps apply again
+        if (isDashing) {
+            velocity *= (dashDegrade > 0 ? dashDegrade : 0.9f);
+            if (Math.abs(velocity) <= maxVelocity) {
+                isDashing = false;
             }
         }
+
+        if (latestInput.size() < 2) {
+            return;
+        }
+
+        int last = latestInput.size() - 1;
+        Key lastKey = latestInput.get(last);
+        int gap = latestInputFrame.get(last) - latestInputFrame.get(last - 1);
+
+        // same key pressed twice, a short time apart
+        if (lastKey == latestInput.get(last - 1) && gap >= 2 && gap <= 15 && dashAmount <= dashCap) {
+            if (lastKey == MOVE_RIGHT_KEY) {
+                velocity += dashSpeed;
+                isDashing = true;
+                dashAmount++;
+            }
+            else if (lastKey == MOVE_LEFT_KEY) {
+                velocity -= dashSpeed;
+                isDashing = true;
+                dashAmount++;
+            }
+            else if (lastKey == JUMP_KEY) {
+                jumpForce = dashSpeedY > 0 ? dashSpeedY : jumpHeight;
+                momentumY = 0;
+                dashAmount++;
+            }
+        }
+    }
         // if (Keyboard.isKeyDown(DASH_KEY) /* &&  */ && !keyLocker.isKeyLocked(DASH_KEY)) {
         //     keyLocker.lockKey(DASH_KEY);
         //     //if (dashAmount != 0) {
@@ -222,9 +246,6 @@ public abstract class Player extends GameObject {
         //         }
         //     }
         // }
-    }
-
-
     protected void fallGravity() {
         if (reducedFallSpeed) {
             gravity = gravity / 2;
@@ -289,7 +310,7 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
             velocityStartFrame = framecount;
             velocity -= walkSpeed;
-            if (velocity < -maxVelocity) {
+            if (velocity < -maxVelocity && !isDashing ) {
                 velocity = -maxVelocity;
             }
             facingDirection = Direction.LEFT;
@@ -298,7 +319,7 @@ public abstract class Player extends GameObject {
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
             velocityStartFrame = framecount;
             velocity += walkSpeed;
-            if (velocity > maxVelocity) {
+            if (velocity > maxVelocity && !isDashing) {
                 velocity = maxVelocity;
             }
             facingDirection = Direction.RIGHT;
@@ -386,7 +407,7 @@ public abstract class Player extends GameObject {
             if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
                 velocityStartFrame = framecount;
                 velocity -= walkSpeed;
-                if (velocity < -maxVelocity) {
+                if (velocity < -maxVelocity && !isDashing) {
                     velocity = -maxVelocity;
                 }
                 facingDirection = Direction.LEFT;
@@ -399,7 +420,7 @@ public abstract class Player extends GameObject {
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
                 velocityStartFrame = framecount;
                 velocity += walkSpeed;
-                if (velocity > maxVelocity) {
+                if (velocity > maxVelocity && !isDashing) {
                     velocity = maxVelocity;
                 }
             facingDirection = Direction.RIGHT;
@@ -811,27 +832,31 @@ public abstract class Player extends GameObject {
 
             }
     }
-
+    int i = 0; 
     protected void lastInput() {
         if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
             latestInput.add(MOVE_RIGHT_KEY);
             latestInputFrame.add(framecount);
-            // System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+            i++;
         }
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
             latestInput.add(MOVE_LEFT_KEY);
             latestInputFrame.add(framecount);
-            // System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+            i++;
         }
         if (Keyboard.isKeyDown(JUMP_KEY)) {
             latestInput.add(JUMP_KEY);
             latestInputFrame.add(framecount);
-            // System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+            i++;
         }
         if (Keyboard.isKeyDown(CROUCH_KEY)) {
             latestInput.add(CROUCH_KEY);
             latestInputFrame.add(framecount);
-            // System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+            System.out.printf("Last Input: %S  Last Input Frame: %d\n", latestInput.get(i),latestInputFrame.get(i));
+            i++;
         }
     }
 }
