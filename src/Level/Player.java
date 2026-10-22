@@ -350,7 +350,7 @@ public abstract class Player extends GameObject {
             playerState = PlayerState.CROUCHING;
         }
 
-        else if (Keyboard.isKeyDown(PLACE_KEY)) {
+        if (Keyboard.isKeyDown(PLACE_KEY)) {
             playerState = PlayerState.THROWING;
         }
     }
@@ -386,9 +386,11 @@ public abstract class Player extends GameObject {
         else if (Keyboard.isKeyDown(CROUCH_KEY)) {
             playerState = PlayerState.CROUCHING;
         }
-        else if (Keyboard.isKeyDown(PLACE_KEY)) {
+
+        if (Keyboard.isKeyDown(PLACE_KEY)) {
             playerState = PlayerState.THROWING;
         }
+    
         moveAmountX += velocity;
     }
 
@@ -437,10 +439,10 @@ public abstract class Player extends GameObject {
                 }
             }
             if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                playerState = PlayerState.CLIMBING;
+            playerState = PlayerState.CLIMBING;
             }
             if (Keyboard.isKeyDown(DASH_KEY)) {
-                this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
+                playerState = PlayerState.DASHING;
             }
         }
        
@@ -464,13 +466,20 @@ public abstract class Player extends GameObject {
                 if (velocity < -maxVelocity  && !isDashing ) {
                     velocity = -maxVelocity;
                 }
+
                 facingDirection = Direction.LEFT;
                 if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                    playerState = PlayerState.CLIMBING;
                     velocity -= walkSpeed;
                     if (velocity < -floatSpeed) {
                         velocity = -floatSpeed;
                     }
                 }
+
+                // if (Keyboard.isKeyDown(DASH_KEY)) {
+                //     playerState = PlayerState.DASHING;
+                // }
+
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
                 velocityStartFrame = framecount;
                 velocity += walkSpeed;
@@ -479,14 +488,15 @@ public abstract class Player extends GameObject {
                 }
             facingDirection = Direction.RIGHT;
                 if (Keyboard.isKeyDown(CLIMB_KEY)) {
+                    playerState = PlayerState.CLIMBING;
                     velocity += walkSpeed;
                     if (velocity > floatSpeed) {
                         velocity = floatSpeed;
                     }
                 }
-                if (Keyboard.isKeyDown(DASH_KEY)) {
-                    this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
-                }
+                // if (Keyboard.isKeyDown(DASH_KEY)) {
+                //     playerState = PlayerState.DASHING;
+                // }
             }
             // if player is falling, increases momentum as player falls so it falls faster over time
             if (moveAmountY > 0) {
@@ -516,7 +526,6 @@ public abstract class Player extends GameObject {
             int heldFrames = climbFrameCount - climbStartFrame;
 
             if (heldFrames < 60) {
-                playerState = PlayerState.CLIMBING;
                 moveAmountY = gravity * 2; 
             } else {
                 playerState = PlayerState.STANDING;
@@ -626,10 +635,11 @@ public abstract class Player extends GameObject {
         }
         else if (playerState == PlayerState.CLIMBING) {
             if (airGroundState == AirGroundState.AIR) {
-                currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
-            }
-            if (airGroundState == AirGroundState.AIR && climbFrameCount - climbStartFrame <= 40) {
+                if (climbFrameCount + climbStartFrame <= 40) {
                 currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
+                } else {
+                currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
+                }
             }
             if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
                 levelState = LevelState.PLAYER_DEAD;

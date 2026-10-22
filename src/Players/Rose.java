@@ -282,7 +282,7 @@ public class Rose extends Player {
                             .build(),
             });
             put("DEATH_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(0, 0),50)
+                    new FrameBuilder(spriteSheet.getSprite(0, 0),10)
                             .withScale(2)
                             .withBounds(8, 16, 16, 16)
                             .build(),
@@ -297,7 +297,7 @@ public class Rose extends Player {
             });
 
             put("DASH_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(7, 0),50)
+                    new FrameBuilder(spriteSheet.getSprite(7, 0),999)
                             .withScale(2)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(8, 16, 16, 16)
@@ -307,12 +307,27 @@ public class Rose extends Player {
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(8, 16, 16, 16)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(0, 2),5)
+                    new FrameBuilder(spriteSheet.getSprite(7, 2),5)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+            });
+            put("DASH_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(7, 0),999)
+                            .withScale(2)
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(7, 1),5)
+                            .withScale(2)
+        
+                            .withBounds(8, 16, 16, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(7, 2),5)
                             .withScale(2)
                             .withBounds(8, 16, 16, 16)
                             .build(),
             });
-
         }};
     }
 }
