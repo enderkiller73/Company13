@@ -45,7 +45,6 @@ public class Introbeforemenu extends Screen {
         keyLocker.lockKey(Key.SPACE);
         try {
             introMusic = new MusicPlayer(INTRO_AUDIO);
-            introMusic.setVolume(screenCoordinator.isMusicMuted() ? 0 : 1);
             introMusic.play();
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             System.err.println("Unable to play startup intro audio.");
@@ -93,12 +92,6 @@ public class Introbeforemenu extends Screen {
 
         for (int i = 0; i < LOGO.length; i++) {
             graphicsHandler.drawString(LOGO[i], startX, startY + (i + 1) * lineHeight, logoFont, Color.WHITE);
-        }
-    }
-
-    public void setMuted(boolean muted) {
-        if (introMusic != null) {
-            introMusic.setVolume(muted ? 0 : 1);
         }
     }
 

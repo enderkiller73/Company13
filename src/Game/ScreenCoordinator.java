@@ -26,8 +26,8 @@ public class ScreenCoordinator extends Screen {
 	// currently shown Screen
 	protected Screen currentScreen = new DefaultScreen();
 	private MusicPlayer menuMusic;
-	private boolean musicMuted;
-	private final KeyLocker musicKeyLocker = new KeyLocker();
+	private boolean soundEffectsMuted;
+	private final KeyLocker muteKeyLocker = new KeyLocker();
 
 	// keep track of gameState so ScreenCoordinator knows which Screen to show
 	protected GameState gameState;
@@ -49,17 +49,17 @@ public class ScreenCoordinator extends Screen {
 	public void initialize() {
 		// play the startup intro before showing the menu
 		gameState = GameState.INTRO;
-		musicKeyLocker.lockKey(Key.M);
+		muteKeyLocker.lockKey(Key.M);
 	}
 
 	@Override
 	public void update() {
 		if (Keyboard.isKeyUp(Key.M)) {
-			musicKeyLocker.unlockKey(Key.M);
-		} else if (!musicKeyLocker.isKeyLocked(Key.M)) {
-			musicMuted = !musicMuted;
-			musicKeyLocker.lockKey(Key.M);
-			updateMusicVolume();
+			muteKeyLocker.unlockKey(Key.M);
+		} else if (!muteKeyLocker.isKeyLocked(Key.M)) {
+			soundEffectsMuted = !soundEffectsMuted;
+			muteKeyLocker.lockKey(Key.M);
+			Player.setSoundEffectsMuted(soundEffectsMuted);
 		}
 
 		do {
@@ -113,7 +113,6 @@ public class ScreenCoordinator extends Screen {
 			if (menuMusic == null) {
 				menuMusic = new MusicPlayer("Start Menu 0.wav");
 			}
-			menuMusic.setVolume(musicMuted ? 0 : 1);
 			menuMusic.play(true);
 		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
 			System.err.println("Unable to play menu music.");
@@ -126,7 +125,6 @@ public class ScreenCoordinator extends Screen {
 			if (levelMusic == null) {
 				levelMusic = new MusicPlayer("Castlevania_ Symphony of the Night OST - Abandoned Pit.wav");
 			}
-			levelMusic.setVolume(musicMuted ? 0 : 1);
 			levelMusic.play(true);
 		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
 			System.err.println("Unable to play level music.");
@@ -140,21 +138,4 @@ public class ScreenCoordinator extends Screen {
 		}
 	}
 
-	private void updateMusicVolume() {
-		float volume = musicMuted ? 0 : 1;
-		Player.setSoundEffectsMuted(musicMuted);
-		if (menuMusic != null) {
-			menuMusic.setVolume(volume);
-		}
-		if (levelMusic != null) {
-			levelMusic.setVolume(volume);
-		}
-		if (introScreen != null) {
-			introScreen.setMuted(musicMuted);
-		}
-	}
-
-	public boolean isMusicMuted() {
-		return musicMuted;
-	}
 }
