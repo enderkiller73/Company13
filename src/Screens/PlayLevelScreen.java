@@ -3,6 +3,7 @@ package Screens;
 import Engine.GraphicsHandler;
 import Engine.Screen;
 import Engine.ScreenManager;
+import Game.Game;
 import Game.GameState;
 import Game.ScreenCoordinator;
 import GameObject.GameObject;
@@ -35,22 +36,43 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     protected float scaleY = 1f;
     protected float changeScaleX = 0.01f;
     protected float changeScaleY = 0.01f;
-    protected MapTile prevMapTile;
+    protected float prevY;
 
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
     }
 
     public void initialize() {
-        loadLevel();
         if (gameObject != null) {
             gameObject.setScaleX(scaleX);
             gameObject.setScaleY(scaleY);
         }
+        // gameObject.getCalibratedYLocation();
+
+        loadLevel();
     }
 
     private void loadLevel() {
         map = createLevelMap();
+        // if (gameObject.compareYChange() > 0) {
+        //     scaleX = scaleX + changeScaleX;
+        //     scaleY = scaleY + changeScaleY;
+        // } else if (gameObject.compareYChange() < 0) {
+        //     scaleX = scaleX - changeScaleX;
+        //     scaleY = scaleY - changeScaleY;
+        // } else {
+        //     while (scaleX != 1 && scaleY != 1) {
+        //         if (gameObject.compareYChange() > 0) {
+        //             scaleX -= changeScaleX;
+        //             scaleY -= changeScaleY;
+        //         }
+        //         if (gameObject.compareYChange() < 0) {
+        //             scaleX += changeScaleX;
+        //             scaleY += changeScaleY;
+        //         }
+        //     }
+        // }
+
         player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, scaleX, scaleY);
         player.setMap(map);
         player.addListener(this);
@@ -107,7 +129,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                     levelClearedScreen.update();
                     screenTimer--;
                     if (screenTimer == 0) {
-                        if (currentLevel < 8) {
+                        if (currentLevel < 4) {
                             currentLevel++;
                             loadLevel();
                         } else {
