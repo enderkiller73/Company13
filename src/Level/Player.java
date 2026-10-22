@@ -188,12 +188,51 @@ public abstract class Player extends GameObject {
         moveAmountY += gravity + momentumY;
     }
 
+    // protected void handleDash()
+    //     if(airGroundState == AirGroundState.GROUND) {
+    //         dashAmount = 0;
+    //     }
+
+    //     // slow the horizontal dash back down; once it's at normal speed, the clamps apply again
+    //     if (isDashing) {
+    //         velocity *= (dashDegrade > 0 ? dashDegrade : 0.9f);
+    //         if (Math.abs(velocity) <= maxVelocity) {
+    //             isDashing = false;
+    //         }
+    //     }
+
+    //     if (latestInput.size() < 2) {
+    //         return;
+    //     }
+
+    //     int last = latestInput.size() - 1;
+    //     Key lastKey = latestInput.get(last);
+    //     int gap = latestInputFrame.get(last) - latestInputFrame.get(last - 1);
+
+    //     // same key pressed twice, a short time apart
+    //     if (lastKey == latestInput.get(last - 1) && gap >= 2 && gap <= 15 && dashAmount <= dashCap) {
+    //         if (lastKey == MOVE_RIGHT_KEY) {
+    //             velocity += dashSpeed;
+    //             isDashing = true;
+    //             dashAmount++;
+    //         }
+    //         else if (lastKey == MOVE_LEFT_KEY) {
+    //             velocity -= dashSpeed;
+    //             isDashing = true;
+    //             dashAmount++;
+    //         }
+    //         else if (lastKey == JUMP_KEY) {
+    //             jumpForce = dashSpeedY > 0 ? dashSpeedY : jumpHeight;
+    //             momentumY = 0;
+    //             dashAmount++;
+    //         }
+    //     }
+    // }
     protected void handleDash() {
-        if(airGroundState == AirGroundState.GROUND) {
+        if (airGroundState == AirGroundState.GROUND) {
             dashAmount = 0;
         }
 
-        // slow the horizontal dash back down; once it's at normal speed, the clamps apply again
         if (isDashing) {
             velocity *= (dashDegrade > 0 ? dashDegrade : 0.9f);
             if (Math.abs(velocity) <= maxVelocity) {
@@ -201,51 +240,15 @@ public abstract class Player extends GameObject {
             }
         }
 
-        if (latestInput.size() < 2) {
-            return;
-        }
-
-        int last = latestInput.size() - 1;
-        Key lastKey = latestInput.get(last);
-        int gap = latestInputFrame.get(last) - latestInputFrame.get(last - 1);
-
-        // same key pressed twice, a short time apart
-        if (lastKey == latestInput.get(last - 1) && gap >= 2 && gap <= 15 && dashAmount <= dashCap) {
-            if (lastKey == MOVE_RIGHT_KEY) {
-                velocity += dashSpeed;
+        if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
+            keyLocker.lockKey(DASH_KEY);
+            if (dashAmount < dashCap) {
+                velocity += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
                 isDashing = true;
-                dashAmount++;
-            }
-            else if (lastKey == MOVE_LEFT_KEY) {
-                velocity -= dashSpeed;
-                isDashing = true;
-                dashAmount++;
-            }
-            else if (lastKey == JUMP_KEY) {
-                jumpForce = dashSpeedY > 0 ? dashSpeedY : jumpHeight;
-                momentumY = 0;
                 dashAmount++;
             }
         }
     }
-        // if (Keyboard.isKeyDown(DASH_KEY) /* &&  */ && !keyLocker.isKeyLocked(DASH_KEY)) {
-        //     keyLocker.lockKey(DASH_KEY);
-        //     //if (dashAmount != 0) {
-        //     if (Keyboard.isKeyDown(MOVE_RIGHT_KEY) || Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
-        //         if (airGroundState == AirGroundState.AIR) {
-        //            if (dashAmount <= dashCap) {
-        //                 velocity += facingDirection == Direction.RIGHT ?  dashSpeed : -dashSpeed;
-        //                 dashAmount++;
-        //             }
-        //         }
-        //         else if (airGroundState == AirGroundState.GROUND) {
-        //             if (dashAmount <= dashCap) {
-        //                 velocity += facingDirection == Direction.RIGHT ? dashSpeed : -dashSpeed;
-        //                 dashAmount++;
-        //             }
-        //         }
-        //     }
-        // }
     protected void fallGravity() {
         if (reducedFallSpeed) {
             gravity = gravity / 2;
@@ -310,7 +313,7 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
             velocityStartFrame = framecount;
             velocity -= walkSpeed;
-            if (velocity < -maxVelocity && !isDashing ) {
+            if (velocity < -maxVelocity  && !isDashing ) {
                 velocity = -maxVelocity;
             }
             facingDirection = Direction.LEFT;
@@ -319,7 +322,7 @@ public abstract class Player extends GameObject {
         else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
             velocityStartFrame = framecount;
             velocity += walkSpeed;
-            if (velocity > maxVelocity && !isDashing) {
+            if (velocity > maxVelocity  && !isDashing ) {
                 velocity = maxVelocity;
             }
             facingDirection = Direction.RIGHT;
@@ -407,7 +410,7 @@ public abstract class Player extends GameObject {
             if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
                 velocityStartFrame = framecount;
                 velocity -= walkSpeed;
-                if (velocity < -maxVelocity && !isDashing) {
+                if (velocity < -maxVelocity  && !isDashing ) {
                     velocity = -maxVelocity;
                 }
                 facingDirection = Direction.LEFT;
@@ -420,7 +423,7 @@ public abstract class Player extends GameObject {
             } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
                 velocityStartFrame = framecount;
                 velocity += walkSpeed;
-                if (velocity > maxVelocity && !isDashing) {
+                if (velocity > maxVelocity  && !isDashing ) {
                     velocity = maxVelocity;
                 }
             facingDirection = Direction.RIGHT;

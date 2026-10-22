@@ -27,6 +27,7 @@ public class Rose extends Player {
         dashSpeed = 35f;
         floatSpeed = 1.5f; 
         airSpeed = 8f;
+        dashCap = 1;
     }
 
     public void update() {
