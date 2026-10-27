@@ -88,6 +88,7 @@ public abstract class Player extends GameObject {
     private static SoundEffectPlayer jumpSound;
     private static boolean jumpSoundLoadAttempted;
     private static boolean soundEffectsMuted;
+    private static float soundEffectsVolume = 1.0f;
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
@@ -144,6 +145,7 @@ public abstract class Player extends GameObject {
             try {
                 jumpSound = new SoundEffectPlayer("Mario Jump - Sound Effect (HD) 0.wav");
                 jumpSound.setMuted(soundEffectsMuted);
+                jumpSound.setVolume(soundEffectsVolume);
             } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                 System.err.println("Unable to load the player jump sound.");
                 e.printStackTrace(System.err);
@@ -156,6 +158,13 @@ public abstract class Player extends GameObject {
         soundEffectsMuted = muted;
         if (jumpSound != null) {
             jumpSound.setMuted(muted);
+        }
+    }
+
+    public static void setSoundEffectsVolume(float volume) {
+        soundEffectsVolume = Math.max(0.0f, Math.min(volume, 1.0f));
+        if (jumpSound != null) {
+            jumpSound.setVolume(soundEffectsVolume);
         }
     }
 

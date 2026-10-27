@@ -26,6 +26,9 @@ music.close();
 
 The constructor can throw `IOException`, `UnsupportedAudioFileException`, and `LineUnavailableException` if the file cannot be loaded or audio is unavailable.
 
+## Adjusting game audio
+Choose **VOLUME SETTINGS** from the main menu to adjust music and sound-effect volume independently. Use **W/S** to choose a slider, **A/D** to change its volume, and **Space** or **Escape** to return to the menu.
+
 ## Documentation
 This project includes a GitHub pages website in the `docs` folder where the documentation resides.<br>
 It can be accessed at [https://a-r-t.github.io/SER-225-Game-Platformer/](https://a-r-t.github.io/SER-225-Game-Platformer/).

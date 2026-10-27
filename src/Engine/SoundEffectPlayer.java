@@ -4,6 +4,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
@@ -59,6 +60,17 @@ public class SoundEffectPlayer implements AutoCloseable {
             clip.stop();
             clip.setMicrosecondPosition(0);
         }
+    }
+
+    public void setVolume(float volume) {
+        if (!clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            return;
+        }
+
+        FloatControl gain = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        float boundedVolume = Math.max(0, Math.min(volume, 1));
+        float decibels = boundedVolume == 0 ? gain.getMinimum() : (float) (20 * Math.log10(boundedVolume));
+        gain.setValue(Math.max(gain.getMinimum(), Math.min(decibels, gain.getMaximum())));
     }
 
     @Override

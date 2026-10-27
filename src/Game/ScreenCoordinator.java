@@ -12,6 +12,7 @@ import Screens.CreditsScreen;
 import Screens.MenuScreen;
 import Screens.PlayLevelScreen;
 import Screens.ControlsScreen;
+import Screens.SettingsScreen;
 import Maps.Introbeforemenu;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -26,6 +27,8 @@ public class ScreenCoordinator extends Screen {
 	// currently shown Screen
 	protected Screen currentScreen = new DefaultScreen();
 	private MusicPlayer menuMusic;
+	private float musicVolume = 1.0f;
+	private float soundEffectsVolume = 1.0f;
 	private boolean soundEffectsMuted;
 	private final KeyLocker muteKeyLocker = new KeyLocker();
 
@@ -92,6 +95,10 @@ public class ScreenCoordinator extends Screen {
 						break;
 					case CONTROLS:
 						currentScreen = new ControlsScreen(this);
+						break;
+					case SETTINGS:
+						currentScreen = new SettingsScreen(this);
+						break;
 				}
 				currentScreen.initialize();
 			}
@@ -113,6 +120,7 @@ public class ScreenCoordinator extends Screen {
 			if (menuMusic == null) {
 				menuMusic = new MusicPlayer("Start Menu 0.wav");
 			}
+			menuMusic.setVolume(musicVolume);
 			menuMusic.play(true);
 		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
 			System.err.println("Unable to play menu music.");
@@ -125,6 +133,7 @@ public class ScreenCoordinator extends Screen {
 			if (levelMusic == null) {
 				levelMusic = new MusicPlayer("Castlevania_ Symphony of the Night OST - Abandoned Pit.wav");
 			}
+			levelMusic.setVolume(musicVolume);
 			levelMusic.play(true);
 		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
 			System.err.println("Unable to play level music.");
@@ -136,6 +145,33 @@ public class ScreenCoordinator extends Screen {
 		if (levelMusic != null) {
 			levelMusic.stop();
 		}
+	}
+
+	public float getMusicVolume() {
+		return musicVolume;
+	}
+
+	public void setMusicVolume(float volume) {
+		musicVolume = clampVolume(volume);
+		if (menuMusic != null) {
+			menuMusic.setVolume(musicVolume);
+		}
+		if (levelMusic != null) {
+			levelMusic.setVolume(musicVolume);
+		}
+	}
+
+	public float getSoundEffectsVolume() {
+		return soundEffectsVolume;
+	}
+
+	public void setSoundEffectsVolume(float volume) {
+		soundEffectsVolume = clampVolume(volume);
+		Player.setSoundEffectsVolume(soundEffectsVolume);
+	}
+
+	private float clampVolume(float volume) {
+		return Math.max(0.0f, Math.min(volume, 1.0f));
 	}
 
 }

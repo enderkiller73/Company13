@@ -24,6 +24,7 @@ public class MenuScreen extends Screen {
     protected KeyLocker keyLocker = new KeyLocker();
     protected SpriteFont title;
     protected SpriteFont controls;
+    protected SpriteFont settings;
 
     public MenuScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
@@ -41,6 +42,10 @@ public class MenuScreen extends Screen {
         credits = new SpriteFont("CONTROLS", 100, 290, "Georgia", 30, new Color(240, 40, 100));
         credits.setOutlineColor(Color.black);
         credits.setOutlineThickness(3);
+
+        settings = new SpriteFont("VOLUME SETTINGS", 100, 340, "Georgia", 30, new Color(240, 40, 100));
+        settings.setOutlineColor(Color.black);
+        settings.setOutlineThickness(3);
         background = new TitleScreenMap();
         background.setAdjustCamera(false);
         keyPressTimer = 0;
@@ -73,10 +78,10 @@ public class MenuScreen extends Screen {
         }
 
         // if down is pressed on last menu item or up is pressed on first menu item, "loop" the selection back around to the beginning/end
-        if (currentMenuItemHovered > 2) {
+        if (currentMenuItemHovered > 3) {
             currentMenuItemHovered = 0;
         } else if (currentMenuItemHovered < 0) {
-            currentMenuItemHovered = 2;
+            currentMenuItemHovered = 3;
         }
 
         // sets location for blue square in front of text (pointerLocation) and also sets color of spritefont text based on which menu item is being hovered
@@ -87,6 +92,8 @@ public class MenuScreen extends Screen {
             controls.setOutlineColor(Color.black);
             credits.setColor(new Color(240,40, 100));
             credits.setOutlineColor(Color.black);
+            settings.setColor(new Color(240, 40, 100));
+            settings.setOutlineColor(Color.black);
             pointerLocationX = 70;
             pointerLocationY = 200;
         } else if (currentMenuItemHovered == 1) {
@@ -96,6 +103,8 @@ public class MenuScreen extends Screen {
             controls.setOutlineColor(Color.lightGray);
             credits.setColor(new Color(240, 40, 100));
             credits.setOutlineColor(Color.black);
+            settings.setColor(new Color(240, 40, 100));
+            settings.setOutlineColor(Color.black);
             pointerLocationX = 70;
             pointerLocationY = 250;
         } else if (currentMenuItemHovered == 2) {
@@ -105,8 +114,21 @@ public class MenuScreen extends Screen {
             controls.setOutlineColor(Color.black);
             credits.setColor(new Color(140, 40, 100));
             credits.setOutlineColor(Color.lightGray);
+            settings.setColor(new Color(240, 40, 100));
+            settings.setOutlineColor(Color.black);
             pointerLocationX = 70;
             pointerLocationY = 300;
+        } else if (currentMenuItemHovered == 3) {
+            playGame.setColor(new Color(200, 0, 100));
+            playGame.setOutlineColor(Color.black);
+            controls.setColor(new Color(220, 20, 100));
+            controls.setOutlineColor(Color.black);
+            credits.setColor(new Color(240, 40, 100));
+            credits.setOutlineColor(Color.black);
+            settings.setColor(new Color(140, 40, 100));
+            settings.setOutlineColor(Color.lightGray);
+            pointerLocationX = 70;
+            pointerLocationY = 350;
         }
 
         // if space is pressed on menu item, change to appropriate screen based on which menu item was chosen
@@ -122,6 +144,8 @@ public class MenuScreen extends Screen {
             }
             else if (menuItemSelected == 2) {
                 screenCoordinator.setGameState(GameState.CONTROLS);
+            } else if (menuItemSelected == 3) {
+                screenCoordinator.setGameState(GameState.SETTINGS);
             }
         }
     }
@@ -132,6 +156,7 @@ public class MenuScreen extends Screen {
         playGame.draw(graphicsHandler);
         credits.draw(graphicsHandler);
         controls.draw(graphicsHandler);
+        settings.draw(graphicsHandler);
         graphicsHandler.drawFilledRectangleWithBorder(pointerLocationX, pointerLocationY, 20, 20, new Color(255, 255, 255), Color.black, 2);
     }
 
