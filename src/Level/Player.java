@@ -86,7 +86,9 @@ public abstract class Player extends GameObject {
     protected Key DASH_KEY = Key.J;
     protected Key PLACE_KEY = Key.K;
     private static SoundEffectPlayer jumpSound;
+    private static SoundEffectPlayer dashSound;
     private static boolean jumpSoundLoadAttempted;
+    private static boolean dashSoundLoadAttempted;
     private static boolean soundEffectsMuted;
     private static float soundEffectsVolume = 1.0f;
 
@@ -151,6 +153,17 @@ public abstract class Player extends GameObject {
                 e.printStackTrace(System.err);
             }
         }
+        if (!dashSoundLoadAttempted) {
+            dashSoundLoadAttempted = true;
+            try {
+                dashSound = new SoundEffectPlayer("dash.wav");
+                dashSound.setMuted(soundEffectsMuted);
+                dashSound.setVolume(soundEffectsVolume);
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+                System.err.println("Unable to load the player dash sound.");
+                e.printStackTrace(System.err);
+            }
+        }
 
     }
 
@@ -159,12 +172,18 @@ public abstract class Player extends GameObject {
         if (jumpSound != null) {
             jumpSound.setMuted(muted);
         }
+        if (dashSound != null) {
+            dashSound.setMuted(muted);
+        }
     }
 
     public static void setSoundEffectsVolume(float volume) {
         soundEffectsVolume = Math.max(0.0f, Math.min(volume, 1.0f));
         if (jumpSound != null) {
             jumpSound.setVolume(soundEffectsVolume);
+        }
+        if (dashSound != null) {
+            dashSound.setVolume(soundEffectsVolume);
         }
     }
 
@@ -294,6 +313,9 @@ public abstract class Player extends GameObject {
         if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
             keyLocker.lockKey(DASH_KEY);
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
+            if (dashSound != null) {
+                dashSound.playFirstHalf();
+            }
             if (dashAmount < dashCap && framecount >= dashReadyFrame) {
                 dashRampDir = facingDirection == Direction.RIGHT ? 1 : -1;
                 dashRampLeft = DASH_RAMP_FRAMES;
