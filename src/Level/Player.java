@@ -78,7 +78,8 @@ public abstract class Player extends GameObject {
 
     // define keys
     protected KeyLocker keyLocker = new KeyLocker();
-    protected Key JUMP_KEY = Key.W;
+    protected Key JUMP_KEY = Key.W; 
+    protected Key ALTJUMP_KEY = Key.SPACE;
     protected Key MOVE_LEFT_KEY = Key.A;
     protected Key MOVE_RIGHT_KEY = Key.D;
     protected Key CROUCH_KEY = Key.S;
@@ -349,8 +350,9 @@ public abstract class Player extends GameObject {
         }
 
         // if jump key is pressed, player enters JUMPING state
-        else if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
+        else if ((Keyboard.isKeyDown(JUMP_KEY) || Keyboard.isKeyDown(ALTJUMP_KEY)) && (!keyLocker.isKeyLocked(JUMP_KEY) || !keyLocker.isKeyLocked(ALTJUMP_KEY))) {
             keyLocker.lockKey(JUMP_KEY);
+            keyLocker.lockKey(ALTJUMP_KEY);
             playerState = PlayerState.JUMPING;
         }
 
@@ -387,8 +389,9 @@ public abstract class Player extends GameObject {
             playerState = PlayerState.STANDING;
         }
         // if jump key is pressed, player enters JUMPING state
-        if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
+        if ((Keyboard.isKeyDown(JUMP_KEY) || Keyboard.isKeyDown(ALTJUMP_KEY))&& (!keyLocker.isKeyLocked(JUMP_KEY) || !keyLocker.isKeyLocked(ALTJUMP_KEY))) {
             keyLocker.lockKey(JUMP_KEY);
+            keyLocker.lockKey(ALTJUMP_KEY);
             playerState = PlayerState.JUMPING;
         }
         // if crouch key is pressed,
@@ -420,8 +423,9 @@ public abstract class Player extends GameObject {
         }
 
         // if jump key is pressed, player enters JUMPING state
-        if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
+        if ((Keyboard.isKeyDown(JUMP_KEY) || Keyboard.isKeyDown(ALTJUMP_KEY)) && (!keyLocker.isKeyLocked(JUMP_KEY) || !keyLocker.isKeyLocked(ALTJUMP_KEY))) {
             keyLocker.lockKey(JUMP_KEY);
+            keyLocker.lockKey(ALTJUMP_KEY);
             playerState = PlayerState.JUMPING;
         }
     }
@@ -567,6 +571,7 @@ public abstract class Player extends GameObject {
     protected void updateLockedKeys() {
         if (Keyboard.isKeyUp(JUMP_KEY)) {
             keyLocker.unlockKey(JUMP_KEY);
+            keyLocker.unlockKey(ALTJUMP_KEY);
         }
         if (Keyboard.isKeyUp(DASH_KEY)) {
             keyLocker.unlockKey(DASH_KEY);
