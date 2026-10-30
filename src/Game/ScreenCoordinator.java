@@ -194,7 +194,9 @@ public class ScreenCoordinator extends Screen {
 				menuMusic = new MusicPlayer("Dark Souls II Soundtrack OST - Main Menu Theme.wav");
 			}
 			menuMusic.setVolume(musicVolume);
-			menuMusic.play(true);
+			if (!menuMusic.isPlaying()) {
+				menuMusic.play(true);
+			}
 		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
 			System.err.println("Unable to play menu music.");
 			e.printStackTrace(System.err);
