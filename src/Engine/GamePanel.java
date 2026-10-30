@@ -17,11 +17,8 @@ public class GamePanel extends JPanel {
 	// used to draw graphics to the panel
 	private GraphicsHandler graphicsHandler;
 
-	private boolean isGamePaused = false;
-	private SpriteFont pauseLabel;
 	private KeyLocker keyLocker = new KeyLocker();
 	private final Key fullscreenKey = Key.EQUALS;
-	private final Key pauseKey = Key.P;
 	private Thread gameLoopProcess;
 
 	private Key showFPSKey = Key.G;
@@ -43,10 +40,6 @@ public class GamePanel extends JPanel {
 		graphicsHandler = new GraphicsHandler();
 
 		screenManager = new ScreenManager();
-
-		pauseLabel = new SpriteFont("PAUSE", 365, 280, "Arial", 24, Color.white);
-		pauseLabel.setOutlineColor(Color.black);
-		pauseLabel.setOutlineThickness(2.0f);
 
 		fpsDisplayLabel = new SpriteFont("FPS", 4, 3, "Arial", 12, Color.black);
 
@@ -84,12 +77,8 @@ public class GamePanel extends JPanel {
 
 	public void update() {
 		updateFullscreenState();
-		updatePauseState();
 		updateShowFPSState();
-
-		if (!isGamePaused) {
-			screenManager.update();
-		}
+		screenManager.update();
 	}
 
 	private void updateFullscreenState() {
@@ -100,17 +89,6 @@ public class GamePanel extends JPanel {
 
 		if (Keyboard.isKeyUp(fullscreenKey)) {
 			keyLocker.unlockKey(fullscreenKey);
-		}
-	}
-
-	private void updatePauseState() {
-		if (Keyboard.isKeyDown(pauseKey) && !keyLocker.isKeyLocked(pauseKey)) {
-			isGamePaused = !isGamePaused;
-			keyLocker.lockKey(pauseKey);
-		}
-
-		if (Keyboard.isKeyUp(pauseKey)) {
-			keyLocker.unlockKey(pauseKey);
 		}
 	}
 
@@ -129,12 +107,6 @@ public class GamePanel extends JPanel {
 
 	public void draw() {
 		screenManager.draw(graphicsHandler);
-
-		// if game is paused, draw pause gfx over Screen gfx
-		if (isGamePaused) {
-			pauseLabel.draw(graphicsHandler);
-			graphicsHandler.drawFilledRectangle(0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), new Color(0, 0, 0, 100));
-		}
 
 		if (showFPS) {
 			fpsDisplayLabel.draw(graphicsHandler);

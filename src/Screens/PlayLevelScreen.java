@@ -176,6 +176,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         return playLevelScreenState;
     }
 
+    public boolean isRunning() {
+        return playLevelScreenState == PlayLevelScreenState.RUNNING;
+    }
+
     @Override
     public void onLevelCompleted() {
         if (playLevelScreenState != PlayLevelScreenState.LEVEL_COMPLETED) {

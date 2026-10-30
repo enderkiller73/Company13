@@ -36,11 +36,7 @@ This is all the `GameWindow` brings up on its own:
 The `GamePanel` class in the `Engine` package extends the Java Swing `JPanel` class and is responsible for rendering the game's graphics.
 Additionally, the `GamePanel` class also sets up various other essential game resources like the `graphicsHandler` and the thread that runs the game loop.
 
-The `GamePanel` class is also home to the universal pause function. 
-Pressing the `P` key at any point while the game is running will immediately stop the game loop's `update` cycle but will continue the game's `draw` cycle,
-which essentially "pauses" the game. 
-It will also show the [sprite font](../../GameCodeDetails/GameCodeDetailsSubSections/sprite-font.md) text "PAUSE" in the middle of the screen while the game is paused. 
-The `pauseLabel` variable is what defines that "PAUSE" text, and the `update` method and `draw` method contain the pause logic.
+During active gameplay, pressing `Escape` pauses the level and displays the pause menu. Press `Escape` again to resume, or press `Enter` to return to the main menu. The pause state is managed by the `ScreenCoordinator`, so other screens retain their own `Escape` behavior.
 
 Additionally, the class has functionality for displaying the game's current FPS to the user. 
 Pressing the `G` key at any point while the game is running will display an FPS label at the top right of the screen.
