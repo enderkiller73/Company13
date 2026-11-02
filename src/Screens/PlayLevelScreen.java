@@ -13,13 +13,18 @@ import Level.PlayerListener;
 import Maps.*;
 //import Players.Cat;
 import Players.Rose;
-import SpriteFont.SpriteFont;
-import Level.MapTile;
 
 import java.awt.Color;
+import java.awt.RadialGradientPaint;
+import java.awt.geom.Point2D;
+import java.awt.Graphics2D;
 
 // This class is for when the platformer game is actually being played
 public class PlayLevelScreen extends Screen implements PlayerListener {
+    private static final int SPAWN_INTRO_FRAMES = 150;
+    private static final int SPOTLIGHT_HOLD_FRAMES = 45;
+    private static final float SPAWN_START_ZOOM = 2.6f;
+
     protected ScreenCoordinator screenCoordinator;
     protected Map map;
     protected Player player;
@@ -29,8 +34,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     protected LevelClearedScreen levelClearedScreen;
     protected LevelLoseScreen levelLoseScreen;
     protected boolean levelCompletedStateChangeStart;
-    protected SpriteFont levelIntro;
-    protected int levelIntroTimer;
+    protected int spawnIntroTimer;
     protected GameObject gameObject;
     protected float scaleX = 1f;
     protected float scaleY = 1f;
@@ -76,10 +80,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, scaleX, scaleY);
         player.setMap(map);
         player.addListener(this);
+        map.update(player);
         levelClearedScreen = new LevelClearedScreen();
         levelLoseScreen = new LevelLoseScreen(this);
-        levelIntro = new SpriteFont("Level " + currentLevel, 0, 0, "Arial", 36, Color.white);
-        levelIntroTimer = 120;
+        spawnIntroTimer = 0;
         levelCompletedStateChangeStart = false;
         playLevelScreenState = PlayLevelScreenState.LEVEL_INTRO;
     }
@@ -112,8 +116,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     public void update() {
         switch (playLevelScreenState) {
             case LEVEL_INTRO:
-                levelIntroTimer--;
-                if (levelIntroTimer <= 0) {
+                spawnIntroTimer++;
+                if (spawnIntroTimer >= SPAWN_INTRO_FRAMES) {
                     playLevelScreenState = PlayLevelScreenState.RUNNING;
                 }
                 break;
@@ -148,15 +152,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         // based on screen state, draw appropriate graphics
         switch (playLevelScreenState) {
             case LEVEL_INTRO:
-            graphicsHandler.drawFilledRectangle(0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), Color.black);
-            int textWidth = graphicsHandler.getGraphics().getFontMetrics(levelIntro.getFont()).stringWidth(levelIntro.getText());
-            int textHeight = graphicsHandler.getGraphics().getFontMetrics(levelIntro.getFont()).getHeight();
-            levelIntro.setLocation(
-                (ScreenManager.getScreenWidth() - textWidth) / 2f,
-                (ScreenManager.getScreenHeight() - textHeight) / 2f
-            );
-            levelIntro.draw(graphicsHandler);
-            break;
+                drawSpawnIntro(graphicsHandler);
+                break;
             case RUNNING:
                 graphicsHandler.beginZoom(map.getZoom(), ScreenManager.getScreenWidth() / 2f, ScreenManager.getScreenHeight() / 2f);
                 map.draw(graphicsHandler);
@@ -170,6 +167,42 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 levelLoseScreen.draw(graphicsHandler);
                 break;
         }
+    }
+
+    private void drawSpawnIntro(GraphicsHandler graphicsHandler) {
+        float progress = Math.max(0f, Math.min(1f,
+            (spawnIntroTimer - SPOTLIGHT_HOLD_FRAMES) / (float) (SPAWN_INTRO_FRAMES - SPOTLIGHT_HOLD_FRAMES)));
+        progress = progress * progress * (3f - 2f * progress);
+
+        float focusX = player.getCalibratedXLocation() + player.getWidth() / 2f;
+        float focusY = player.getCalibratedYLocation() + player.getHeight() / 2f;
+        float zoom = map.getZoom() * (SPAWN_START_ZOOM - (SPAWN_START_ZOOM - 1f) * progress);
+
+        graphicsHandler.beginZoom(zoom, focusX, focusY);
+        map.draw(graphicsHandler);
+        player.draw(graphicsHandler);
+        graphicsHandler.endZoom();
+
+        int screenWidth = ScreenManager.getScreenWidth();
+        int screenHeight = ScreenManager.getScreenHeight();
+        float startRadius = Math.max(player.getWidth(), player.getHeight()) * 2.5f;
+        float screenRadius = (float) Math.hypot(screenWidth, screenHeight);
+        float radius = startRadius + (screenRadius - startRadius) * progress;
+        int darkness = Math.round(220f * (1f - progress));
+
+        Graphics2D overlay = (Graphics2D) graphicsHandler.getGraphics().create();
+        overlay.setPaint(new RadialGradientPaint(
+            new Point2D.Float(focusX, focusY),
+            Math.max(radius, 1f),
+            new float[] { 0f, 0.35f, 1f },
+            new Color[] {
+                new Color(0, 0, 0, 0),
+                new Color(0, 0, 0, Math.round(darkness * 0.35f)),
+                new Color(0, 0, 0, darkness)
+            }
+        ));
+        overlay.fillRect(0, 0, screenWidth, screenHeight);
+        overlay.dispose();
     }
 
     public PlayLevelScreenState getPlayLevelScreenState() {
