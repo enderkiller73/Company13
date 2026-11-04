@@ -91,7 +91,8 @@ public abstract class Player extends GameObject {
     private static boolean jumpSoundLoadAttempted;
     private static boolean dashSoundLoadAttempted;
     private static boolean soundEffectsMuted;
-    private static float soundEffectsVolume = 1.0f;
+    private static float soundEffectsVolume = 0.5f;
+    private static final float DASH_SOUND_VOLUME_BOOST = 2.0f;
 
     // flags
     protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
@@ -146,7 +147,7 @@ public abstract class Player extends GameObject {
         if (!jumpSoundLoadAttempted) {
             jumpSoundLoadAttempted = true;
             try {
-                jumpSound = new SoundEffectPlayer("Mario Jump - Sound Effect (HD) 0.wav");
+                jumpSound = new SoundEffectPlayer("hollow-knight-hornet-voice-8.wav");
                 jumpSound.setMuted(soundEffectsMuted);
                 jumpSound.setVolume(soundEffectsVolume);
             } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
@@ -157,9 +158,9 @@ public abstract class Player extends GameObject {
         if (!dashSoundLoadAttempted) {
             dashSoundLoadAttempted = true;
             try {
-                dashSound = new SoundEffectPlayer("dash.wav");
+                dashSound = new SoundEffectPlayer("dash2.wav");
                 dashSound.setMuted(soundEffectsMuted);
-                dashSound.setVolume(soundEffectsVolume);
+                dashSound.setVolume(getDashSoundVolume());
             } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                 System.err.println("Unable to load the player dash sound.");
                 e.printStackTrace(System.err);
@@ -184,8 +185,12 @@ public abstract class Player extends GameObject {
             jumpSound.setVolume(soundEffectsVolume);
         }
         if (dashSound != null) {
-            dashSound.setVolume(soundEffectsVolume);
+            dashSound.setVolume(getDashSoundVolume());
         }
+    }
+
+    private static float getDashSoundVolume() {
+        return Math.min(soundEffectsVolume * DASH_SOUND_VOLUME_BOOST, 1.0f);
     }
 
     public void update() {
@@ -315,7 +320,7 @@ public abstract class Player extends GameObject {
             keyLocker.lockKey(DASH_KEY);
             this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
             if (dashSound != null) {
-                dashSound.playFirstHalf();
+                dashSound.play();
             }
             if (dashAmount < dashCap && framecount >= dashReadyFrame) {
                 dashRampDir = facingDirection == Direction.RIGHT ? 1 : -1;
