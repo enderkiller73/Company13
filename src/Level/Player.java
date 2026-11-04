@@ -158,7 +158,7 @@ public abstract class Player extends GameObject {
         if (!dashSoundLoadAttempted) {
             dashSoundLoadAttempted = true;
             try {
-                dashSound = new SoundEffectPlayer("dash2.wav");
+                dashSound = new SoundEffectPlayer("whoosh_a365Q57.wav");
                 dashSound.setMuted(soundEffectsMuted);
                 dashSound.setVolume(getDashSoundVolume());
             } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
