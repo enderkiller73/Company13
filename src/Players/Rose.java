@@ -23,8 +23,8 @@ public class Rose extends Player {
         momentumXdecrease = .8f;
         maxMomentum = 1.7f;
         maxVelocity = 6f;
-        dashDegrade = .5f;
-        dashSpeed = 25f;
+        dashDegrade = .2f;
+        dashSpeed = 18f;
         floatSpeed = 1.5f; 
         airSpeed = 8f;
         dashCap = 1;
