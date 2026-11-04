@@ -120,7 +120,7 @@ public abstract class Player extends GameObject {
     protected static final float TURN_BRAKE = 0.7f;
 
     // the dash's speed boost is spread over this many frames instead of all at once
-    protected static final int DASH_RAMP_FRAMES = 6;
+    protected static final int DASH_RAMP_FRAMES = 7;
     protected int dashRampLeft = 0;
     protected float dashRampDir = 0;
     protected int lastDashFrame = -1;
