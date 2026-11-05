@@ -204,7 +204,7 @@ public class ScreenCoordinator extends Screen {
 	}
 
 	public void startLevelMusic(int level) {
-		String musicFile = level == 5 ? "FinalBattle.wav"
+		String musicFile = level >= 3 ? "FinalBattle.wav"
 			: "Castlevania_ Symphony of the Night OST - Abandoned Pit.wav";
 		if (levelMusic != null && !musicFile.equals(levelMusicFile)) {
 			levelMusic.stop();

@@ -246,7 +246,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
 
     @Override
     public void onLevelCompletionTriggered() {
-        if (currentLevel >= 4) {
+        if (currentLevel == 2 || currentLevel == 5) {
             screenCoordinator.stopLevelMusic();
         }
     }
