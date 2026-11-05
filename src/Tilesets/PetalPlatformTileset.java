@@ -7,6 +7,7 @@ import GameObject.Rectangle;
 import Level.TileType;
 import Level.Tileset;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 // This class represents a "common" tileset of standard tiles defined in the CommonTileset.png file
@@ -14,6 +15,10 @@ public class PetalPlatformTileset extends Tileset {
 
     public PetalPlatformTileset() {
         super(ImageLoader.load("PetalPlatform.png"), 32, 32, 2);
+    }
+
+    public BufferedImage getPetalImage(int index) {
+        return getSubImage(0, index);
     }
 
     @Override

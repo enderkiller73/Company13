@@ -19,6 +19,9 @@ import java.lang.System.Logger.Level;
 import java.nio.file.WatchKey;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.awt.image.BufferedImage;
+import Engine.ImageLoader;
+import EnhancedMapTiles.PetalPlatformTile;
 
 import Builders.MapTileBuilder;
 
@@ -108,10 +111,38 @@ public abstract class Player extends GameObject {
 
     // Resources for Placeable Tiles 
     CommonTileset commonTileset = new CommonTileset();
-    ArrayList<MapTile> placedTiles = new ArrayList<>();
-    ArrayList<Integer> placedAtFrame =  new ArrayList<>();
     PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
-    ArrayList<MapTile> originalTiles = new ArrayList<>();
+
+    private static final int PLATFORM_LIFETIME_FRAMES = 180;
+    private static final int PLATFORM_COOLDOWN_FRAMES = 150;
+    private static final int MAX_PLATFORM_PAIRS = 2;
+    private static final TileType PLATFORM_TILE_TYPE = TileType.NOT_PASSABLE;
+
+    private final ArrayList<PlacedPlatform> placedPlatforms = new ArrayList<>();
+    private BufferedImage petalLeftImage;
+    private BufferedImage petalRightImage;
+
+    private static class PlacedPlatform {
+        final PetalPlatformTile left;
+        final PetalPlatformTile right;
+        final int placedAtFrame;
+
+        PlacedPlatform(PetalPlatformTile left, PetalPlatformTile right, int placedAtFrame) {
+            this.left = left;
+            this.right = right;
+            this.placedAtFrame = placedAtFrame;
+        }
+
+        boolean occupies(int x, int y) {
+            return (Math.round(left.getX()) == x && Math.round(left.getY()) == y)
+                    || (Math.round(right.getX()) == x && Math.round(right.getY()) == y);
+        }
+
+        void remove() {
+            left.remove();
+            right.remove();
+        }
+    }
 
     // Extra Rescources for Dash
     protected ArrayList<Key> latestInput = new ArrayList<>();
@@ -865,6 +896,13 @@ public abstract class Player extends GameObject {
         drawBounds(graphicsHandler, new Color(255, 0, 0, 100));
     }
     */
+    private void loadPetalImages() {
+        if (petalLeftImage == null) {
+            petalLeftImage = petalPlatformTileset.getPetalImage(0);
+            petalRightImage = petalPlatformTileset.getPetalImage(1);
+        }
+    }
+
     protected void placePlatform() {
         if (Keyboard.isKeyDown(PLACE_KEY)) {
             keyLocker.lockKey(PLACE_KEY);
@@ -872,60 +910,44 @@ public abstract class Player extends GameObject {
             int tileHeight = map.getTileset().getScaledSpriteHeight();
             int targetX;
             int targetX2;
-            if (this.facingDirection == Direction.RIGHT) {
-                targetX = (Math.round(this.x) + tileWidth * 2) / tileWidth * tileWidth;
-                targetX2 = (Math.round(this.x) + tileWidth * 3) / tileWidth * tileWidth;
+            int targetY;
+
+            if (Keyboard.isKeyDown(CROUCH_KEY)) {
+                float centerX = (getBounds().getX1() + getBounds().getX2()) / 2f;
+                targetX = Math.round(centerX / tileWidth) * tileWidth - tileWidth;
+                targetX2 = targetX + tileWidth;
+                targetY = (int) Math.ceil(getBounds().getY2() / (double) tileHeight) * tileHeight;
             }
             else {
-                targetX = (Math.round(this.x) - tileWidth * 2) / tileWidth * tileWidth;
-                targetX2 = (Math.round(this.x) - tileWidth * 3) / tileWidth * tileWidth;
-            }
-            int targetY = (Math.round(this.y) - 32) / tileHeight * tileHeight;
-            int targetY2 = targetY;
-
-            try {
-                map.getTileByPosition(targetX, targetY).getTileType();
-                map.getTileByPosition(targetX2, targetY2).getTileType();
-            } catch (Exception e) {
-                System.out.println("placing out of bounds");
-                return;
+                if (this.facingDirection == Direction.RIGHT) {
+                    targetX = (Math.round(this.x) + tileWidth * 2) / tileWidth * tileWidth;
+                    targetX2 = (Math.round(this.x) + tileWidth * 3) / tileWidth * tileWidth;
+                }
+                else {
+                    targetX = (Math.round(this.x) - tileWidth * 2) / tileWidth * tileWidth;
+                    targetX2 = (Math.round(this.x) - tileWidth * 3) / tileWidth * tileWidth;
+                }
+                targetY = (Math.round(this.y) - 32) / tileHeight * tileHeight;
             }
 
-            boolean canPlace = map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && map.getTileByPosition(targetX2, targetY2).getTileType() == TileType.PASSABLE && this.x != targetX && this.x != targetX2;
+            boolean spotsFree = isPlatformSpotFree(targetX, targetY) && isPlatformSpotFree(targetX2, targetY);
+            boolean offCooldown = placedPlatforms.isEmpty() || (placedPlatforms.size() < MAX_PLATFORM_PAIRS && framecount - placedPlatforms.get(0).placedAtFrame >= PLATFORM_COOLDOWN_FRAMES);
 
-            if (canPlace && placedAtFrame.size() == 0) {
-                originalTiles.add(map.getTileByPosition(targetX, targetY));
-                MapTile newTile = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX, targetY);
-                newTile.setMap(map);
-                map.setMapTile(targetX / tileWidth, targetY / tileHeight, newTile);
-                placedTiles.add(map.getTileByPosition(targetX, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+            if (spotsFree && offCooldown) {
+                PetalPlatformTile.configure(tileWidth);
+                loadPetalImages();
 
-                originalTiles.add(map.getTileByPosition(targetX2, targetY2));
-                MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(1).build(targetX2, targetY2);
-                newTile2.setMap(map);
-                map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
-                placedTiles.add(map.getTileByPosition(targetX2, targetY2));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
-            }
-            else if (canPlace && placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4) {
-                originalTiles.add(map.getTileByPosition(targetX, targetY));
-                MapTile newTile = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX, targetY);
-                newTile.setMap(map);
-                map.setMapTile(targetX / tileWidth, targetY / tileHeight, newTile);
-                placedTiles.add(map.getTileByPosition(targetX, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+                int leftX = Math.min(targetX, targetX2);
+                int rightX = Math.max(targetX, targetX2);
 
-                originalTiles.add(map.getTileByPosition(targetX2, targetY2));
-                MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(1).build(targetX2, targetY2);
-                newTile2.setMap(map);
-                map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
-                placedTiles.add(map.getTileByPosition(targetX2, targetY2));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
+                PetalPlatformTile left = new PetalPlatformTile(petalLeftImage, leftX, targetY, PLATFORM_TILE_TYPE);
+                PetalPlatformTile right = new PetalPlatformTile(petalRightImage, rightX, targetY, PLATFORM_TILE_TYPE);
+                left.setMap(map);
+                right.setMap(map);
+                map.addEnhancedMapTile(left);
+                map.addEnhancedMapTile(right);
+
+                placedPlatforms.add(new PlacedPlatform(left, right, framecount));
             }
             else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
                 playerState = PlayerState.STANDING;
@@ -933,27 +955,32 @@ public abstract class Player extends GameObject {
         }
     }
 
+    private boolean isPlatformSpotFree(int x, int y) {
+        MapTile tile;
+        try {
+            tile = map.getTileByPosition(x, y);
+        } catch (Exception e) {
+            return false;
+        }
+        if (tile == null || tile.getTileType() != TileType.PASSABLE) {
+            return false;
+        }
+        for (PlacedPlatform platform : placedPlatforms) {
+            if (platform.occupies(x, y)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     protected void unPlacePlatform() {
-            int tileWidth = map.getTileset().getScaledSpriteWidth();
-            int tileHeight = map.getTileset().getScaledSpriteHeight();
-
-            if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
-                MapTile oldTile = originalTiles.get(0);
-                map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile);
-                System.out.println("unplaced");
-                placedTiles.remove(0);
-                placedAtFrame.remove(0);
-                originalTiles.remove(0);
+        placedPlatforms.removeIf(platform -> {
+            if (framecount - platform.placedAtFrame >= PLATFORM_LIFETIME_FRAMES) {
+                platform.remove();
+                return true;
             }
-            if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
-                MapTile oldTile2 = originalTiles.get(0);
-                map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile2);
-                System.out.println("unplaced");
-                placedTiles.remove(0);
-                placedAtFrame.remove(0);
-                originalTiles.remove(0);
-
-            }
+            return false;
+        });
     }
     protected void lastInput() {
         if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
