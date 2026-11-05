@@ -28,8 +28,8 @@ public class TutorialMap extends Map {
         //BuddingFlower bf = new BuddingFlower(getMapTile(6, 15).getLocation().addY(2), getMapTile(22, 1).getLocation().addY(2), Direction.RIGHT);
         //enemies.add(bf);
 
-        // SporeFlower spFl = new SporeFlower(getMapTile(6, 12).getLocation().subtractY(25), Direction.LEFT);
-        // enemies.add(spFl);
+        SporeFlower spFl = new SporeFlower(getMapTile(6, 12).getLocation().subtractY(25), Direction.LEFT);
+        enemies.add(spFl);
         return enemies;
     }
 
