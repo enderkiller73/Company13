@@ -15,18 +15,21 @@ import Utils.Direction;
 import Utils.Point;
 
 import java.util.HashMap;
+import java.util.Random;
 
 // This class is for the black bug enemy
 
 public class BuddingFlower extends Enemy {
     private float gravity = .5f;
     private float fallAmount = 1.0f;
-    private float movementSpeed = 1.5f;
+    private float movementSpeed = 2f;
     private int walkingTime;
     private int idleTime;
+    private int coinFlip;
     private Direction startFacingDirection;
     private Direction facingDirection;
     private AirGroundState airGroundState;
+    private Random rand = new Random();
     protected Point startLocation;
     protected Point endLocation;
     protected BuddingState buddingState;
@@ -56,15 +59,17 @@ public class BuddingFlower extends Enemy {
         float startBound = startLocation.x;
         float endBound = endLocation.x;
         float moveAmountY = 0;
+        walkingTime ++;
 
         moveAmountY += gravity + fallAmount;
-        // if (buddingState == BuddingState.WALKING) {
             if (facingDirection == Direction.RIGHT) {
                 currentAnimationName = "WALK_RIGHT";
                 moveXHandleCollision(movementSpeed);
+                buddingState = BuddingState.WALKING;
             } else {
                 currentAnimationName = "WALK_LEFT";
                 moveXHandleCollision(-movementSpeed);
+                buddingState = BuddingState.WALKING;
             }
 
             if (getX1() + getWidth() >= endBound) {
@@ -76,7 +81,14 @@ public class BuddingFlower extends Enemy {
                 moveXHandleCollision(difference);
                 facingDirection = Direction.RIGHT;
             }
-        // }
+        
+        if (walkingTime >= 120) {
+            coinFlip = rand.nextInt(2);
+            if (coinFlip == 0) {
+                buddingState = BuddingState.IDLE;
+            }
+            walkingTime = 0;
+        }
 
         moveYHandleCollision(moveAmountY);
         super.update(player);
@@ -115,90 +127,97 @@ public class BuddingFlower extends Enemy {
             put("IDLE_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 1), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
-                            .build(),
-                    new FrameBuilder(spriteSheet.getSprite(0, 2), 4)
-                            .withScale(2)
-                            .withBounds(10, 0, 8, 63)
-                            .build(),
-                    new FrameBuilder(spriteSheet.getSprite(0, 3), 4)
-                            .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .build()
+            
             });
 
             put("IDLE_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 1), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
-                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .build(),
-                    new FrameBuilder(spriteSheet.getSprite(0, 2), 4)
-                            .withScale(2)
-                            .withBounds(10, 0, 8, 63)
-                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .build(),
-                    new FrameBuilder(spriteSheet.getSprite(0, 3), 4)
-                            .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()
             });
+
             put("WALK_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 2), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 3), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .build()
             });
 
             put("WALK_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 2), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 3), 4)
                             .withScale(2)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+
+            put("SPROUT_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(2, 0), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 1), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 2), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 3), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 4), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
                             .build()
             });
         }};
     }
 
     public enum BuddingState {
-        WALKING, IDLE
+        WALKING, IDLE, SPROUT
     }
 
      public void touchedPlayer(Player player) {

@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class FakeRose extends Enemy {
     private float gravity = .5f;
-    private float movementSpeed = .5f;
+    private float movementSpeed = 0f;
     private Direction startFacingDirection;
     private Direction facingDirection;
     private AirGroundState airGroundState;
@@ -96,63 +96,63 @@ public class FakeRose extends Enemy {
             put("IDLE_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 1), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 2), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 3), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .build()
             });
 
             put("IDLE_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 1), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 2), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 3), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()
             });
             put("WALK_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 2), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 3), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()
             });
@@ -160,22 +160,22 @@ public class FakeRose extends Enemy {
             put("WALK_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 2), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 3), 8)
                             .withScale(3)
-                            .withBounds(10, 0, 8, 63)
+                            .withBounds(25, 8, 12, 55)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()
             });

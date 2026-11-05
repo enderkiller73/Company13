@@ -1,7 +1,10 @@
 package Enemies;
 
+import java.util.HashMap;
+
 import Builders.FrameBuilder;
 import Enemies.DinosaurEnemy.DinosaurState;
+import Enemies.SporeFlower.SporeState;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
@@ -14,8 +17,8 @@ import Utils.Direction;
 import Utils.Point;
 
 public class SporeFlower extends Enemy {
-    private float gravity = .5f;
-    private float movementSpeed = .5f;
+    private float gravity = 100f;
+    private float movementSpeed = 0f;
     private Direction startFacingDirection;
     private Direction facingDirection;
     private AirGroundState airGroundState;
@@ -27,7 +30,7 @@ public class SporeFlower extends Enemy {
     protected SporeState prevSporeState;
 
     public SporeFlower(Point location, Direction facingDirection) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("SporeFlower.png"), 63, 63), "WALK_LEFT");
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("SporeFlower.png"), 63, 63), "IDLE");
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
@@ -38,11 +41,12 @@ public class SporeFlower extends Enemy {
         sporeState = SporeState.SHOOT_WAIT;
         prevSporeState = sporeState;
         facingDirection = startFacingDirection;
-        if (facingDirection == Direction.RIGHT) {
-            currentAnimationName = "WALK_RIGHT";
-        } else if (facingDirection == Direction.LEFT) {
-            currentAnimationName = "WALK_LEFT";
+        currentAnimationName = "IDLE";
+
+        if (sporeState == SporeState.SHOOT) {
+            currentAnimationName = "SPORE_SHOOT";
         }
+    
         airGroundState = AirGroundState.GROUND;
 
         // every certain number of frames, the fireball will be shot out
@@ -51,24 +55,11 @@ public class SporeFlower extends Enemy {
 
     @Override
     public void update(Player player) {
-        float moveAmountX = 0;
         float moveAmountY = 0;
 
-        // add gravity (if in air, this will cause bug to fall)
         moveAmountY += gravity;
 
-        // if on ground, walk forward based on facing direction
-        if (airGroundState == AirGroundState.GROUND) {
-            if (facingDirection == Direction.RIGHT) {
-                moveAmountX += movementSpeed;
-            } else {
-                moveAmountX -= movementSpeed;
-            }
-        }
-
-        // move bug
         moveYHandleCollision(moveAmountY);
-        moveXHandleCollision(moveAmountX);
 
         super.update(player);
     }
@@ -100,7 +91,33 @@ public class SporeFlower extends Enemy {
             }
         }
     }
+     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
+        return new HashMap<String, Frame[]>() {{
+            put("IDLE", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
+                            .withScale(2)
+                            .withBounds(7, 48, 56, 16)
+                            .build()
+            });
+
+            put("SPORE_SHOOT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 10)
+                            .withScale(2)
+                            .withBounds(7, 48, 56, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 20)
+                            .withScale(2)
+                            .withBounds(7, 48, 56, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 10)
+                            .withScale(2)
+                            .withBounds(7, 48, 56, 16)
+                            .build()
+            });
+        }};
+    }
+
     public enum SporeState {
-        WALK, SHOOT_WAIT, SHOOT
+        IDLE, SHOOT_WAIT, SHOOT
     }
 }
