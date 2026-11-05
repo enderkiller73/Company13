@@ -368,6 +368,15 @@ public abstract class Map {
         float speed = (player != null && player.maxVelocity > 0) ? Math.abs(player.velocity) / player.maxVelocity : 0;
         float targetZoom = 1f - MAX_ZOOM_OUT * Math.min(speed, 1.5f) / 1.5f;
         zoom += (targetZoom - zoom) * ZOOM_SMOOTHING;
+        if (adjustCamera) {
+            // Leave room for pixel rounding, and never zoom out farther than the map can fill.
+            float minimumZoom = Math.max(
+                ScreenManager.getScreenWidth() / (float) Math.max(1, endBoundX - startBoundX - 2),
+                ScreenManager.getScreenHeight() / (float) Math.max(1, endBoundY - startBoundY - 2)
+            );
+            zoom = Math.max(zoom, minimumZoom);
+            camera.clampToMap();
+        }
 
         // shake, whole pixels only so tiles don't show seams
         if (shakeFrames > 0) {
@@ -378,8 +387,16 @@ public abstract class Map {
         } else {
             shakeX = shakeY = 0;
         }
+        float cameraX = camera.getX();
+        float cameraY = camera.getY();
         camera.moveX(shakeX);
         camera.moveY(shakeY);
+        if (adjustCamera) {
+            camera.clampToMap();
+        }
+        // Undo only the shake that was actually applied after clamping.
+        shakeX = camera.getX() - cameraX;
+        shakeY = camera.getY() - cameraY;
 
         camera.update(player);
     }

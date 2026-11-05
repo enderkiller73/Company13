@@ -43,8 +43,8 @@ public class Camera extends Rectangle {
     // gets the tile index that the camera's x and y values are currently on (top left tile)
     // this is used to determine a starting place for the rectangle of area the camera currently contains on the map
     public Point getTileIndexByCameraPosition() {
-        int xIndex = Math.round(getX()) / tileWidth;
-        int yIndex = Math.round(getY()) / tileHeight;
+        int xIndex = (int) Math.floor(getStartBoundX() / tileWidth);
+        int yIndex = (int) Math.floor(getStartBoundY() / tileHeight);
         return new Point(xIndex, yIndex);
     }
 
@@ -162,8 +162,10 @@ public class Camera extends Rectangle {
     // so this does not include the extra range granted by the UPDATE_OFF_SCREEN_RANGE value
     public void drawMapTiles(GraphicsHandler graphicsHandler) {
         Point tileIndex = getTileIndexByCameraPosition();
-        for (int i = tileIndex.y - 1; i <= tileIndex.y + height + 1; i++) {
-            for (int j = tileIndex.x - 1; j <= tileIndex.x + width + 1; j++) {
+        int lastColumn = (int) Math.floor(getEndBoundX() / tileWidth) + 1;
+        int lastRow = (int) Math.floor(getEndBoundY() / tileHeight) + 1;
+        for (int i = tileIndex.y - 1; i <= lastRow; i++) {
+            for (int j = tileIndex.x - 1; j <= lastColumn; j++) {
                 MapTile tile = map.getMapTile(j, i);
                 if (tile != null) {
                     tile.draw(graphicsHandler);
@@ -193,17 +195,17 @@ public class Camera extends Rectangle {
 
     // checks if a game object's position falls within the camera's current radius
     public boolean containsUpdate(GameObject gameObject) {
-        return getX1() - (tileWidth * UPDATE_OFF_SCREEN_RANGE) < gameObject.getX() + gameObject.getWidth() &&
+        return getStartBoundX() - (tileWidth * UPDATE_OFF_SCREEN_RANGE) < gameObject.getX() + gameObject.getWidth() &&
                 getEndBoundX() + (tileWidth * UPDATE_OFF_SCREEN_RANGE) > gameObject.getX() &&
-                getY1() - (tileHeight * UPDATE_OFF_SCREEN_RANGE) <  gameObject.getY() + gameObject.getHeight()
+                getStartBoundY() - (tileHeight * UPDATE_OFF_SCREEN_RANGE) <  gameObject.getY() + gameObject.getHeight()
                 && getEndBoundY() + (tileHeight * UPDATE_OFF_SCREEN_RANGE) > gameObject.getY();
     }
 
     // checks if a game object's position falls within the camera's current radius
     // this does not include the extra range granted by the UDPATE_OFF_SCREEN_RANGE value, because there is no point to drawing graphics that can't be seen
     public boolean containsDraw(GameObject gameObject) {
-        return getX1() - tileWidth < gameObject.getX() + gameObject.getWidth() && getEndBoundX() + tileWidth > gameObject.getX() &&
-                getY1() - tileHeight <  gameObject.getY() + gameObject.getHeight() && getEndBoundY() + tileHeight >  gameObject.getY();
+        return getStartBoundX() - tileWidth < gameObject.getX() + gameObject.getWidth() && getEndBoundX() + tileWidth > gameObject.getX() &&
+                getStartBoundY() - tileHeight <  gameObject.getY() + gameObject.getHeight() && getEndBoundY() + tileHeight >  gameObject.getY();
     }
 
     public ArrayList<Enemy> getActiveEnemies() {
@@ -218,18 +220,44 @@ public class Camera extends Rectangle {
         return activeNPCs;
     }
 
-    // gets end bound X position of the camera (start position is always 0)
+    // Zoom is centered on the screen, so zooming out reveals space on all four sides.
+    private float getZoomPaddingX() {
+        return ScreenManager.getScreenWidth() * (1f / map.getZoom() - 1f) / 2f;
+    }
+
+    private float getZoomPaddingY() {
+        return ScreenManager.getScreenHeight() * (1f / map.getZoom() - 1f) / 2f;
+    }
+
+    public float getStartBoundX() {
+        return x - getZoomPaddingX();
+    }
+
+    public float getStartBoundY() {
+        return y - getZoomPaddingY();
+    }
+
+    // Keep the entire visible area inside the map, including during screen shake.
+    public void clampToMap() {
+        float minX = (float) Math.ceil(getZoomPaddingX());
+        float minY = (float) Math.ceil(getZoomPaddingY());
+        float maxX = (float) Math.floor(map.getEndBoundX() - ScreenManager.getScreenWidth() - getZoomPaddingX());
+        float maxY = (float) Math.floor(map.getEndBoundY() - ScreenManager.getScreenHeight() - getZoomPaddingY());
+        setX(Math.max(minX, Math.min(x, maxX)));
+        setY(Math.max(minY, Math.min(y, maxY)));
+    }
+
     public float getEndBoundX() {
-        return x + (width * tileWidth) + leftoverSpaceX;
+        return x + (width * tileWidth) + leftoverSpaceX + getZoomPaddingX();
     }
 
     // gets end bound Y position of the camera (start position is always 0)
     public float getEndBoundY() {
-        return y + (height * tileHeight) + leftoverSpaceY;
+        return y + (height * tileHeight) + leftoverSpaceY + getZoomPaddingY();
     }
 
     public boolean isAtTopOfMap() {
-        return this.getY() <= 0;
+        return getStartBoundY() <= 0;
     }
 
     public boolean isAtBottomOfMap() {
@@ -239,7 +267,7 @@ public class Camera extends Rectangle {
     public boolean isAtRightOfMap() { return this.getEndBoundX() >= map.getEndBoundX(); }
 
     public boolean isAtLeftOfMap() {
-        return this.getX() <= 0;
+        return getStartBoundX() <= 0;
     }
 
 }
