@@ -1,6 +1,7 @@
 package Enemies;
 
 import Builders.FrameBuilder;
+import Enemies.DinosaurEnemy.DinosaurState;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
@@ -8,6 +9,7 @@ import GameObject.SpriteSheet;
 import Level.Enemy;
 import Level.MapEntity;
 import Level.Player;
+import Level.PlayerState;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
@@ -18,13 +20,21 @@ import java.util.HashMap;
 
 public class BuddingFlower extends Enemy {
     private float gravity = .5f;
-    private float movementSpeed = .5f;
+    private float fallAmount = 1.0f;
+    private float movementSpeed = 1.5f;
+    private int walkingTime;
+    private int idleTime;
     private Direction startFacingDirection;
     private Direction facingDirection;
     private AirGroundState airGroundState;
+    protected Point startLocation;
+    protected Point endLocation;
+    protected BuddingState buddingState;
 
-    public BuddingFlowerEnemy(Point location, Direction facingDirection) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("BuddingFlower.png"), 24, 15), "WALK_LEFT");
+    public BuddingFlower(Point startLocation, Point endLocation, Direction facingDirection) {
+        super(startLocation.x, startLocation.y, new SpriteSheet(ImageLoader.load("BuddingFlower.png"), 63, 63), "WALK_RIGHT");
+        this.startLocation = startLocation;
+        this.endLocation = endLocation;
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
@@ -43,25 +53,32 @@ public class BuddingFlower extends Enemy {
 
     @Override
     public void update(Player player) {
-        float moveAmountX = 0;
+        float startBound = startLocation.x;
+        float endBound = endLocation.x;
         float moveAmountY = 0;
 
-        // add gravity (if in air, this will cause bug to fall)
-        moveAmountY += gravity;
-
-        // if on ground, walk forward based on facing direction
-        if (airGroundState == AirGroundState.GROUND) {
+        moveAmountY += gravity + fallAmount;
+        // if (buddingState == BuddingState.WALKING) {
             if (facingDirection == Direction.RIGHT) {
-                moveAmountX += movementSpeed;
+                currentAnimationName = "WALK_RIGHT";
+                moveXHandleCollision(movementSpeed);
             } else {
-                moveAmountX -= movementSpeed;
+                currentAnimationName = "WALK_LEFT";
+                moveXHandleCollision(-movementSpeed);
             }
-        }
 
-        // move bug
+            if (getX1() + getWidth() >= endBound) {
+                float difference = endBound - (getX2());
+                moveXHandleCollision(-difference);
+                facingDirection = Direction.LEFT;
+            } else if (getX1() <= startBound) {
+                float difference = startBound - getX1();
+                moveXHandleCollision(difference);
+                facingDirection = Direction.RIGHT;
+            }
+        // }
+
         moveYHandleCollision(moveAmountY);
-        moveXHandleCollision(moveAmountX);
-
         super.update(player);
     }
 
@@ -90,6 +107,103 @@ public class BuddingFlower extends Enemy {
             } else {
                 airGroundState = AirGroundState.AIR;
             }
+        }
+    }
+
+    public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
+        return new HashMap<String, Frame[]>() {{
+            put("IDLE_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 3), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build()
+            });
+
+            put("IDLE_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 3), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+            put("WALK_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build()
+            });
+
+            put("WALK_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 4)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+        }};
+    }
+
+    public enum BuddingState {
+        WALKING, IDLE
+    }
+
+     public void touchedPlayer(Player player) {
+        if (buddingState == BuddingState.WALKING) {
+            player.hurtPlayer(this);
         }
     }
 }

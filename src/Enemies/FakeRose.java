@@ -1,6 +1,5 @@
 package Enemies;
 
-import java.util.HashMap;
 import Builders.FrameBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
@@ -13,6 +12,8 @@ import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
 
+import java.util.HashMap;
+
 public class FakeRose extends Enemy {
     private float gravity = .5f;
     private float movementSpeed = .5f;
@@ -20,7 +21,7 @@ public class FakeRose extends Enemy {
     private Direction facingDirection;
     private AirGroundState airGroundState;
 
-    public FakeRoseEnemy(Point location, Direction facingDirection) {
+    public FakeRose(Point location, Direction facingDirection) {
         super(location.x, location.y, new SpriteSheet(ImageLoader.load("FakeRose.png"), 63, 63), "IDLE_LEFT");
         this.startFacingDirection = facingDirection;
         this.initialize();
@@ -94,63 +95,63 @@ public class FakeRose extends Enemy {
         return new HashMap<String, Frame[]>() {{
             put("IDLE_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 1), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 2), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 3), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .build()
             });
 
             put("IDLE_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 1), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 2), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(0, 3), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()
             });
             put("WALK_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 2), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 3), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()
@@ -158,22 +159,22 @@ public class FakeRose extends Enemy {
 
             put("WALK_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 2), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 3), 8)
-                            .withScale(2)
+                            .withScale(3)
                             .withBounds(10, 0, 8, 63)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()

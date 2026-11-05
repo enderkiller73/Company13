@@ -3,8 +3,11 @@ package Maps;
 import EnhancedMapTiles.EndLevelBox;
 import Level.*;
 import Tilesets.GrassLevelsTileset;
+import Utils.Direction;
 
 import java.util.ArrayList;
+
+import Enemies.*;
 
 // Represents a test map to be used in a level
 public class TutorialMap extends Map {

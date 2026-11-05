@@ -1,6 +1,7 @@
 package Enemies;
 
 import Builders.FrameBuilder;
+import Enemies.DinosaurEnemy.DinosaurState;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
@@ -19,8 +20,14 @@ public class SporeFlower extends Enemy {
     private Direction facingDirection;
     private AirGroundState airGroundState;
 
-    public SporeFlowerEnemy(Point location, Direction facingDirection) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("SporeFlower.png"), 24, 15), "WALK_LEFT");
+    protected int shootWaitTimer;
+    protected int shootTimer;
+
+    protected SporeState sporeState;
+    protected SporeState prevSporeState;
+
+    public SporeFlower(Point location, Direction facingDirection) {
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("SporeFlower.png"), 63, 63), "WALK_LEFT");
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
@@ -28,6 +35,8 @@ public class SporeFlower extends Enemy {
     @Override
     public void initialize() {
         super.initialize();
+        sporeState = SporeState.SHOOT_WAIT;
+        prevSporeState = sporeState;
         facingDirection = startFacingDirection;
         if (facingDirection == Direction.RIGHT) {
             currentAnimationName = "WALK_RIGHT";
@@ -35,6 +44,9 @@ public class SporeFlower extends Enemy {
             currentAnimationName = "WALK_LEFT";
         }
         airGroundState = AirGroundState.GROUND;
+
+        // every certain number of frames, the fireball will be shot out
+        shootWaitTimer = 60;
     }
 
     @Override
@@ -87,5 +99,8 @@ public class SporeFlower extends Enemy {
                 airGroundState = AirGroundState.AIR;
             }
         }
+    }
+    public enum SporeState {
+        WALK, SHOOT_WAIT, SHOOT
     }
 }

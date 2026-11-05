@@ -1,5 +1,6 @@
 package Enemies;
 
+import java.util.HashMap;
 import Builders.FrameBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
@@ -12,17 +13,16 @@ import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
 
-import java.util.HashMap;
 
 public class EvilFlower extends Enemy {
-    private float gravity = .5f;
-    private float movementSpeed = .5f;
+    private float gravity = 100f;
+    private float movementSpeed = .0f;
     private Direction startFacingDirection;
     private Direction facingDirection;
     private AirGroundState airGroundState;
 
-    public EvilFlowerEnemy(Point location, Direction facingDirection) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("EvilFlower.png"), 24, 15), "WALK_LEFT");
+    public EvilFlower(Point location, Direction facingDirection) {
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("EvilFlower.png"), 63, 63), "IDLE_LEFT");
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
@@ -32,33 +32,20 @@ public class EvilFlower extends Enemy {
         super.initialize();
         facingDirection = startFacingDirection;
         if (facingDirection == Direction.RIGHT) {
-            currentAnimationName = "WALK_RIGHT";
+            currentAnimationName = "IDLE_RIGHT";
         } else if (facingDirection == Direction.LEFT) {
-            currentAnimationName = "WALK_LEFT";
+            currentAnimationName = "IDLE_LEFT";
         }
         airGroundState = AirGroundState.GROUND;
     }
 
     @Override
     public void update(Player player) {
-        float moveAmountX = 0;
         float moveAmountY = 0;
 
-        // add gravity (if in air, this will cause bug to fall)
         moveAmountY += gravity;
 
-        // if on ground, walk forward based on facing direction
-        if (airGroundState == AirGroundState.GROUND) {
-            if (facingDirection == Direction.RIGHT) {
-                moveAmountX += movementSpeed;
-            } else {
-                moveAmountX -= movementSpeed;
-            }
-        }
-
-        // move bug
         moveYHandleCollision(moveAmountY);
-        moveXHandleCollision(moveAmountX);
 
         super.update(player);
     }
@@ -89,6 +76,51 @@ public class EvilFlower extends Enemy {
                 airGroundState = AirGroundState.AIR;
             }
         }
+    }
+    public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
+        return new HashMap<String, Frame[]>() {{
+            put("IDLE_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 20)
+                            .withScale(2)
+                            .withBounds(25, 15, 5, 48)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 20)
+                            .withScale(2)
+                            .withBounds(25, 15, 5, 48)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 20)
+                            .withScale(2)
+                            .withBounds(25, 15, 5, 48)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 3), 20)
+                            .withScale(2)
+                            .withBounds(25, 15, 5, 48)
+                            .build()
+            });
+
+            put("IDLE_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 20)
+                            .withScale(2)
+                            .withBounds(25, 15, 5, 48)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 20)
+                            .withScale(2)
+                            .withBounds(25, 15, 5, 48)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 20)
+                            .withScale(2)
+                            .withBounds(25, 15, 5, 48)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 3), 20)
+                            .withScale(2)
+                            .withBounds(25, 15, 5, 48)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+        }};
     }
 }
 
