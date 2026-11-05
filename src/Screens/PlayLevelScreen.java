@@ -12,13 +12,10 @@ import Level.PlayerListener;
 import Maps.*;
 import Players.Rose;
 import java.awt.Color;
-<<<<<<< HEAD
 import java.awt.Graphics2D;
-=======
 import java.awt.AlphaComposite;
 import java.awt.Font;
 import java.awt.RenderingHints;
->>>>>>> 414d4f489f2570d3d6d1b8a30ed01cdb1419d2ad
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Point2D;
 
