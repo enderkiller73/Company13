@@ -61,6 +61,45 @@ public class SporeFlower extends Enemy {
 
         moveYHandleCollision(moveAmountY);
 
+        if (sporeState == SporeState.SHOOT_WAIT) {
+            // currentAnimationName = "SPORE_SHOOT";
+            if (prevSporeState == SporeState.IDLE) {
+                shootTimer = 65;
+            } else if (shootTimer == 0) {
+                sporeState = SporeState.SHOOT;
+            }
+            else {
+                shootTimer--;
+            }
+        }
+
+        // this is for actually having the dinosaur spit out the fireball
+        if (sporeState == SporeState.SHOOT) {
+            // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
+            // and define its movement speed
+            int sporeY;
+            float movementSpeed;
+            
+            sporeY = Math.round(getY()) + getHeight();
+            movementSpeed = -2f;
+            
+
+            // define where fireball will spawn on the map (y location) relative to dinosaur enemy's location
+            int sporeX = Math.round(getX()) + 4;
+
+            // create Fireball enemy
+            SporeCloud sporeCloud = new SporeCloud(new Point(sporeX, sporeY), movementSpeed, 120);
+
+
+            map.addEnemy(sporeCloud);
+
+            // change dinosaur back to its WALK state after shooting, reset shootTimer to wait a certain number of frames before shooting again
+            sporeState = SporeState.IDLE;
+
+            // reset shoot wait timer so the process can happen again (dino walks around, then waits, then shoots)
+            shootWaitTimer = 130;
+        }
+
         super.update(player);
     }
 
