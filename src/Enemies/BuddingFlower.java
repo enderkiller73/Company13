@@ -25,6 +25,7 @@ public class BuddingFlower extends Enemy {
     private float movementSpeed = 2f;
     private int walkingTime;
     private int idleTime;
+    private int sproutTime = 20;
     private int coinFlip;
     private Direction startFacingDirection;
     private Direction facingDirection;
@@ -48,10 +49,13 @@ public class BuddingFlower extends Enemy {
         facingDirection = startFacingDirection;
         if (facingDirection == Direction.RIGHT) {
             currentAnimationName = "WALK_RIGHT";
+            buddingState = BuddingState.WALKING;
         } else if (facingDirection == Direction.LEFT) {
             currentAnimationName = "WALK_LEFT";
         }
         airGroundState = AirGroundState.GROUND;
+
+        idleTime = 120;
     }
 
     @Override
@@ -62,6 +66,9 @@ public class BuddingFlower extends Enemy {
         walkingTime ++;
 
         moveAmountY += gravity + fallAmount;
+
+        if (buddingState == BuddingState.WALKING) {
+            movementSpeed = 2;
             if (facingDirection == Direction.RIGHT) {
                 currentAnimationName = "WALK_RIGHT";
                 moveXHandleCollision(movementSpeed);
@@ -81,8 +88,32 @@ public class BuddingFlower extends Enemy {
                 moveXHandleCollision(difference);
                 facingDirection = Direction.RIGHT;
             }
+        }
+
+        if (buddingState == BuddingState.IDLE) {
+            movementSpeed = 0;
+            currentAnimationName = facingDirection == Direction.RIGHT ? "IDLE_RIGHT" : "IDLE_LEFT";
+            idleTime --;
+            if (idleTime == 0) {
+                buddingState = BuddingState.SPROUT;
+                idleTime = 120;
+            }
+        }
+
+        if (buddingState == BuddingState.SPROUT) {
+            movementSpeed = 0;
+            currentAnimationName = facingDirection == Direction.RIGHT ? "SPROUT_RIGHT" : "SPROUT_LEFT";
+            sproutTime --;
+            if (sproutTime == 0) {
+                buddingState = BuddingState.WALKING;
+                sproutTime = 20;
+            }
+        }
+
+
         
-        if (walkingTime >= 120) {
+        
+        if (walkingTime >= 180) {
             coinFlip = rand.nextInt(2);
             if (coinFlip == 0) {
                 buddingState = BuddingState.IDLE;
@@ -125,11 +156,11 @@ public class BuddingFlower extends Enemy {
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<String, Frame[]>() {{
             put("IDLE_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(0, 0), 4)
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 10)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(0, 1), 4)
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 10)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
                             .build()
@@ -137,12 +168,12 @@ public class BuddingFlower extends Enemy {
             });
 
             put("IDLE_RIGHT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(0, 0), 4)
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 10)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(0, 1), 4)
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 10)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
@@ -211,6 +242,33 @@ public class BuddingFlower extends Enemy {
                     new FrameBuilder(spriteSheet.getSprite(2, 4), 4)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
+                            .build()
+            });
+            put("SPROUT_RIGHT", new Frame[] {
+                new FrameBuilder(spriteSheet.getSprite(2, 0), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 1), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 2), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 3), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 4), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()
             });
         }};
