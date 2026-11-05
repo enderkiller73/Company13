@@ -19,8 +19,8 @@ public class TutorialMap extends Map {
     @Override
     public ArrayList<Enemy> loadEnemies() {
          ArrayList<Enemy> enemies = new ArrayList<>();
-        FakeRose fakeRose = new FakeRose(getMapTile(6, 12).getLocation().subtractY(25), Direction.LEFT);
-        enemies.add(fakeRose);
+        // FakeRose fakeRose = new FakeRose(getMapTile(6, 12).getLocation().subtractY(25), Direction.LEFT);
+        // enemies.add(fakeRose);
 
         // EvilFlower evFl = new EvilFlower(getMapTile(6, 12).getLocation().subtractY(25), Direction.LEFT);
         // enemies.add(evFl);
