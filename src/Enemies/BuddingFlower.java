@@ -155,7 +155,7 @@ public class BuddingFlower extends Enemy {
 
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<String, Frame[]>() {{
-            put("IDLE_LEFT", new Frame[] {
+            put("IDLE_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0), 10)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
@@ -167,7 +167,7 @@ public class BuddingFlower extends Enemy {
             
             });
 
-            put("IDLE_RIGHT", new Frame[] {
+            put("IDLE_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0), 10)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
@@ -180,29 +180,29 @@ public class BuddingFlower extends Enemy {
                             .build()
             });
 
-            put("WALK_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
-                            .withScale(2)
-                            .withBounds(25, 30, 20, 33)
-                            .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
-                            .withScale(2)
-                            .withBounds(25, 30, 20, 33)
-                            .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 2), 4)
-                            .withScale(2)
-                            .withBounds(25, 30, 20, 33)
-                            .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 3), 4)
-                            .withScale(2)
-                            .withBounds(25, 30, 20, 33)
-                            .build()
-            });
-
             put("WALK_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build()
+            });
+
+            put("WALK_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
@@ -222,7 +222,7 @@ public class BuddingFlower extends Enemy {
                             .build()
             });
 
-            put("SPROUT_LEFT", new Frame[] {
+            put("SPROUT_RIGHT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(2, 0), 4)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
@@ -244,7 +244,7 @@ public class BuddingFlower extends Enemy {
                             .withBounds(25, 30, 20, 33)
                             .build()
             });
-            put("SPROUT_RIGHT", new Frame[] {
+            put("SPROUT_LEFT", new Frame[] {
                 new FrameBuilder(spriteSheet.getSprite(2, 0), 4)
                             .withScale(2)
                             .withBounds(25, 30, 20, 33)
