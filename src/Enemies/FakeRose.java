@@ -1,6 +1,7 @@
 package Enemies;
 
 import Builders.FrameBuilder;
+import Enemies.BuddingFlower.BuddingState;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
@@ -11,15 +12,17 @@ import Level.Player;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
+import Level.PlayerState;
 
 import java.util.HashMap;
 
 public class FakeRose extends Enemy {
     private float gravity = .5f;
-    private float movementSpeed = 0f;
+    private float movementSpeed = 1f;
     private Direction startFacingDirection;
     private Direction facingDirection;
     private AirGroundState airGroundState;
+    private PlayerState playerState;
 
     public FakeRose(Point location, Direction facingDirection) {
         super(location.x, location.y, new SpriteSheet(ImageLoader.load("FakeRose.png"), 63, 63), "IDLE_LEFT");
@@ -180,5 +183,11 @@ public class FakeRose extends Enemy {
                             .build()
             });
         }};
+    }
+    public void touchedPlayer(Player player) {
+        playerState = player.getPlayerState();
+        if (playerState != PlayerState.STANDING) {
+            player.hurtPlayer(this);
+        }
     }
 }

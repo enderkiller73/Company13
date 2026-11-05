@@ -12,7 +12,13 @@ import Level.PlayerListener;
 import Maps.*;
 import Players.Rose;
 import java.awt.Color;
+<<<<<<< HEAD
 import java.awt.Graphics2D;
+=======
+import java.awt.AlphaComposite;
+import java.awt.Font;
+import java.awt.RenderingHints;
+>>>>>>> 414d4f489f2570d3d6d1b8a30ed01cdb1419d2ad
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Point2D;
 
@@ -21,6 +27,11 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     private static final int SPAWN_INTRO_FRAMES = 150;
     private static final int SPOTLIGHT_HOLD_FRAMES = 45;
     private static final float SPAWN_START_ZOOM = 2.6f;
+    private static final String LEVEL_TITLE_TEXT = "haunted hill's";
+    private static final Font LEVEL_TITLE_FONT = new Font("Georgia", Font.BOLD, 28);
+    private static final int LEVEL_TITLE_HOLD_FRAMES = 60;
+    private static final int LEVEL_TITLE_FADE_FRAMES = 30;
+    private int levelTitleTimer;
 
     protected ScreenCoordinator screenCoordinator;
     protected Map map;
@@ -81,8 +92,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         levelClearedScreen = new LevelClearedScreen();
         levelLoseScreen = new LevelLoseScreen(this);
         spawnIntroTimer = 0;
+        levelTitleTimer = 0;
         levelCompletedStateChangeStart = false;
         playLevelScreenState = PlayLevelScreenState.LEVEL_INTRO;
+        screenCoordinator.startLevelMusic(currentLevel);
     }
 
     private Map createLevelMap() {
@@ -111,6 +124,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void update() {
+        if (currentLevel == 1 && playLevelScreenState == PlayLevelScreenState.RUNNING
+                && levelTitleTimer < LEVEL_TITLE_HOLD_FRAMES + LEVEL_TITLE_FADE_FRAMES) {
+            levelTitleTimer++;
+        }
         switch (playLevelScreenState) {
             case LEVEL_INTRO:
                 spawnIntroTimer++;
@@ -156,6 +173,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 map.draw(graphicsHandler);
                 player.draw(graphicsHandler);
                 graphicsHandler.endZoom();
+                drawLevelTitle(graphicsHandler);
                 break;
             case LEVEL_COMPLETED:
                 levelClearedScreen.draw(graphicsHandler);
@@ -164,6 +182,25 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 levelLoseScreen.draw(graphicsHandler);
                 break;
         }
+    }
+
+    private void drawLevelTitle(GraphicsHandler graphicsHandler) {
+        if (currentLevel != 1 || spawnIntroTimer < SPAWN_INTRO_FRAMES
+                || levelTitleTimer >= LEVEL_TITLE_HOLD_FRAMES + LEVEL_TITLE_FADE_FRAMES) {
+            return;
+        }
+        float opacity = 1f - Math.max(0, levelTitleTimer - LEVEL_TITLE_HOLD_FRAMES)
+                / (float) LEVEL_TITLE_FADE_FRAMES;
+        Graphics2D overlay = (Graphics2D) graphicsHandler.getGraphics().create();
+        overlay.setComposite(AlphaComposite.SrcOver.derive(opacity));
+        overlay.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        overlay.setFont(LEVEL_TITLE_FONT);
+        int textWidth = overlay.getFontMetrics().stringWidth(LEVEL_TITLE_TEXT);
+        int textX = (ScreenManager.getScreenWidth() - textWidth) / 2;
+        int textY = ScreenManager.getScreenHeight() * 2 / 5 + overlay.getFontMetrics().getAscent();
+        overlay.setColor(new Color(245, 233, 213));
+        overlay.drawString(LEVEL_TITLE_TEXT, textX, textY);
+        overlay.dispose();
     }
 
     private void drawSpawnIntro(GraphicsHandler graphicsHandler) {
@@ -208,6 +245,13 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
 
     public boolean isRunning() {
         return playLevelScreenState == PlayLevelScreenState.RUNNING;
+    }
+
+    @Override
+    public void onLevelCompletionTriggered() {
+        if (currentLevel >= 3) {
+            screenCoordinator.stopLevelMusic();
+        }
     }
 
     @Override

@@ -46,6 +46,7 @@ public class ScreenCoordinator extends Screen {
 	protected GameState previousGameState;
 
 	private MusicPlayer levelMusic;
+	private String levelMusicFile;
 	private Introbeforemenu introScreen;
 
 	public GameState getGameState() {
@@ -104,7 +105,6 @@ public class ScreenCoordinator extends Screen {
 						if (menuMusic != null) {
 							menuMusic.stop();
 						}
-						startLevelMusic();
 						currentScreen = new PlayLevelScreen(this);
 						break;
 					case CREDITS:
@@ -203,20 +203,31 @@ public class ScreenCoordinator extends Screen {
 		}
 	}
 
-	private void startLevelMusic() {
+	public void startLevelMusic(int level) {
+		String musicFile = level == 4 ? "FinalBattle.wav"
+			: "Castlevania_ Symphony of the Night OST - Abandoned Pit.wav";
+		if (levelMusic != null && !musicFile.equals(levelMusicFile)) {
+			levelMusic.stop();
+			levelMusic.close();
+			levelMusic = null;
+			levelMusicFile = null;
+		}
 		try {
 			if (levelMusic == null) {
-				levelMusic = new MusicPlayer("Castlevania_ Symphony of the Night OST - Abandoned Pit.wav");
+				levelMusic = new MusicPlayer(musicFile);
+				levelMusicFile = musicFile;
 			}
 			levelMusic.setVolume(musicVolume);
-			levelMusic.play(true);
+			if (!levelMusic.isPlaying()) {
+				levelMusic.play(true);
+			}
 		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
 			System.err.println("Unable to play level music.");
 			e.printStackTrace(System.err);
 		}
 	}
 
-	private void stopLevelMusic() {
+	public void stopLevelMusic() {
 		if (levelMusic != null) {
 			levelMusic.stop();
 		}

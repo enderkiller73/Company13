@@ -14,6 +14,7 @@ import Tilesets.PetalPlatformTileset;
 import java.util.ArrayList;
 import java.awt.image.BufferedImage;
 import EnhancedMapTiles.PetalPlatformTile;
+import Level.PlayerState;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -659,7 +660,7 @@ public abstract class Player extends GameObject {
         System.out.println("Bro Should be Dead");
       }
       if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-        levelState = LevelState.LEVEL_COMPLETED;
+        completeLevel();
         System.out.println("Diddly Blud beat the level");
       }
 
@@ -671,7 +672,7 @@ public abstract class Player extends GameObject {
         System.out.println("Bro Should be Dead");
       }
       if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-        levelState = LevelState.LEVEL_COMPLETED;
+        completeLevel();
         System.out.println("Diddly Blud beat the level");
       }
 
@@ -683,7 +684,7 @@ public abstract class Player extends GameObject {
         System.out.println("Bro Should be Dead");
       }
       if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-        levelState = LevelState.LEVEL_COMPLETED;
+        completeLevel();
         System.out.println("Diddly Blud beat the level");
       }
     } else if (playerState == PlayerState.JUMPING) {
@@ -699,7 +700,7 @@ public abstract class Player extends GameObject {
         System.out.println("Bro Should be Dead");
       }
       if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-        levelState = LevelState.LEVEL_COMPLETED;
+        completeLevel();
         System.out.println("Diddly Blud beat the level");
       }
     } else if (playerState == PlayerState.CLIMBING) {
@@ -715,7 +716,7 @@ public abstract class Player extends GameObject {
         System.out.println("Bro Should be Dead");
       }
       if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-        levelState = LevelState.LEVEL_COMPLETED;
+        completeLevel();
         System.out.println("Diddly Blud beat the level");
       }
     } else if (playerState == PlayerState.THROWING) {
@@ -725,7 +726,7 @@ public abstract class Player extends GameObject {
         System.out.println("Bro Should be Dead");
       }
       if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-        levelState = LevelState.LEVEL_COMPLETED;
+        completeLevel();
         System.out.println("Diddly Blud beat the level");
       }
     } else if (playerState == PlayerState.DASHING) {
@@ -735,7 +736,7 @@ public abstract class Player extends GameObject {
         System.out.println("Bro Should be Dead");
       }
       if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-        levelState = LevelState.LEVEL_COMPLETED;
+        completeLevel();
         System.out.println("Diddly Blud beat the level");
       }
     }
@@ -800,7 +801,13 @@ public abstract class Player extends GameObject {
 
   // other entities can call this to tell the player they beat a level
   public void completeLevel() {
+    if (levelState != LevelState.RUNNING) {
+      return;
+    }
     levelState = LevelState.LEVEL_COMPLETED;
+    for (PlayerListener listener : listeners) {
+      listener.onLevelCompletionTriggered();
+    }
   }
 
   // if player has beaten level, this will be the update cycle
@@ -880,7 +887,11 @@ public abstract class Player extends GameObject {
   }
 
   public void setLevelState(LevelState levelState) {
-    this.levelState = levelState;
+    if (levelState == LevelState.LEVEL_COMPLETED) {
+      completeLevel();
+    } else {
+      this.levelState = levelState;
+    }
   }
 
   public void addListener(PlayerListener listener) {
