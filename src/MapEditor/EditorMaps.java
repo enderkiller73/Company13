@@ -2,7 +2,6 @@ package MapEditor;
 
 import Level.Map;
 import Maps.*;
-
 import java.util.ArrayList;
 
 public class EditorMaps {
@@ -14,7 +13,7 @@ public class EditorMaps {
             add("LevelTwo");
             add("Level_Three");
             add("Level_Four");
-            // add("Level_Five");
+             add("Level_Five");
             // add("Level_Six");
             // add("Level_Seven");
             // add("Level_Eight");
@@ -38,8 +37,8 @@ public class EditorMaps {
                 return new Level_Three();    
             case "Level_Four":
                 return new Level_Four();   
-            // case "Level_Five":
-            //     return new Level_Five();   
+            case "Level_Five":
+                 return new Level_Five();   
             // case "Level_Six":
             //     return new Level_Six();   
             // case "Level_Seven":

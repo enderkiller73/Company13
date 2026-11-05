@@ -3,7 +3,6 @@ package Screens;
 import Engine.GraphicsHandler;
 import Engine.Screen;
 import Engine.ScreenManager;
-import Game.Game;
 import Game.GameState;
 import Game.ScreenCoordinator;
 import GameObject.GameObject;
@@ -11,13 +10,11 @@ import Level.Map;
 import Level.Player;
 import Level.PlayerListener;
 import Maps.*;
-//import Players.Cat;
 import Players.Rose;
-
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Point2D;
-import java.awt.Graphics2D;
 
 // This class is for when the platformer game is actually being played
 public class PlayLevelScreen extends Screen implements PlayerListener {
@@ -98,8 +95,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 return new Level_Three();
             case 4:
                 return new Level_Four();
-            // case 5:
-            //     return new Level_Five();
+            case 5:
+                return new Level_Five();
             // case 6:
             //     return new Level_Six();
             // case 7:
@@ -133,7 +130,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                     levelClearedScreen.update();
                     screenTimer--;
                     if (screenTimer == 0) {
-                        if (currentLevel < 4) {
+                        if (currentLevel < 5) {
                             currentLevel++;
                             loadLevel();
                         } else {
