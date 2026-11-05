@@ -1,6 +1,7 @@
 package Enemies;
 
 import Builders.FrameBuilder;
+import Enemies.DinosaurEnemy.DinosaurState;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
@@ -8,24 +9,35 @@ import GameObject.SpriteSheet;
 import Level.Enemy;
 import Level.MapEntity;
 import Level.Player;
+import Level.PlayerState;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.Point;
 
 import java.util.HashMap;
+import java.util.Random;
 
 // This class is for the black bug enemy
-// enemy behaves like a Mario goomba -- walks forward until it hits a solid map tile, and then turns around
-// if it ends up in the air from walking off a cliff, it will fall down until it hits the ground again, and then will continue walking
+
 public class BuddingFlower extends Enemy {
     private float gravity = .5f;
-    private float movementSpeed = .5f;
+    private float fallAmount = 1.0f;
+    private float movementSpeed = 2f;
+    private int walkingTime;
+    private int idleTime;
+    private int coinFlip;
     private Direction startFacingDirection;
     private Direction facingDirection;
     private AirGroundState airGroundState;
+    private Random rand = new Random();
+    protected Point startLocation;
+    protected Point endLocation;
+    protected BuddingState buddingState;
 
-    public BuddingFlowerEnemy(Point location, Direction facingDirection) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("BuddingFlower.png"), 24, 15), "WALK_LEFT");
+    public BuddingFlower(Point startLocation, Point endLocation, Direction facingDirection) {
+        super(startLocation.x, startLocation.y, new SpriteSheet(ImageLoader.load("BuddingFlower.png"), 63, 63), "WALK_RIGHT");
+        this.startLocation = startLocation;
+        this.endLocation = endLocation;
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
@@ -44,25 +56,41 @@ public class BuddingFlower extends Enemy {
 
     @Override
     public void update(Player player) {
-        float moveAmountX = 0;
+        float startBound = startLocation.x;
+        float endBound = endLocation.x;
         float moveAmountY = 0;
+        walkingTime ++;
 
-        // add gravity (if in air, this will cause bug to fall)
-        moveAmountY += gravity;
-
-        // if on ground, walk forward based on facing direction
-        if (airGroundState == AirGroundState.GROUND) {
+        moveAmountY += gravity + fallAmount;
             if (facingDirection == Direction.RIGHT) {
-                moveAmountX += movementSpeed;
+                currentAnimationName = "WALK_RIGHT";
+                moveXHandleCollision(movementSpeed);
+                buddingState = BuddingState.WALKING;
             } else {
-                moveAmountX -= movementSpeed;
+                currentAnimationName = "WALK_LEFT";
+                moveXHandleCollision(-movementSpeed);
+                buddingState = BuddingState.WALKING;
             }
+
+            if (getX1() + getWidth() >= endBound) {
+                float difference = endBound - (getX2());
+                moveXHandleCollision(-difference);
+                facingDirection = Direction.LEFT;
+            } else if (getX1() <= startBound) {
+                float difference = startBound - getX1();
+                moveXHandleCollision(difference);
+                facingDirection = Direction.RIGHT;
+            }
+        
+        if (walkingTime >= 120) {
+            coinFlip = rand.nextInt(2);
+            if (coinFlip == 0) {
+                buddingState = BuddingState.IDLE;
+            }
+            walkingTime = 0;
         }
 
-        // move bug
         moveYHandleCollision(moveAmountY);
-        moveXHandleCollision(moveAmountX);
-
         super.update(player);
     }
 
@@ -91,6 +119,110 @@ public class BuddingFlower extends Enemy {
             } else {
                 airGroundState = AirGroundState.AIR;
             }
+        }
+    }
+
+    public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
+        return new HashMap<String, Frame[]>() {{
+            put("IDLE_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build()
+            
+            });
+
+            put("IDLE_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+
+            put("WALK_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build()
+            });
+
+            put("WALK_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+
+            put("SPROUT_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(2, 0), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 1), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 2), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 3), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(2, 4), 4)
+                            .withScale(2)
+                            .withBounds(25, 30, 20, 33)
+                            .build()
+            });
+        }};
+    }
+
+    public enum BuddingState {
+        WALKING, IDLE, SPROUT
+    }
+
+     public void touchedPlayer(Player player) {
+        if (buddingState == BuddingState.WALKING) {
+            player.hurtPlayer(this);
         }
     }
 }

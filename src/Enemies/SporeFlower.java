@@ -1,6 +1,10 @@
 package Enemies;
 
+import java.util.HashMap;
+
 import Builders.FrameBuilder;
+import Enemies.DinosaurEnemy.DinosaurState;
+import Enemies.SporeFlower.SporeState;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
@@ -13,14 +17,20 @@ import Utils.Direction;
 import Utils.Point;
 
 public class SporeFlower extends Enemy {
-    private float gravity = .5f;
-    private float movementSpeed = .5f;
+    private float gravity = 100f;
+    private float movementSpeed = 0f;
     private Direction startFacingDirection;
     private Direction facingDirection;
     private AirGroundState airGroundState;
 
-    public BuddingFlowerEnemy(Point location, Direction facingDirection) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("BugEnemy.png"), 24, 15), "WALK_LEFT");
+    protected int shootWaitTimer;
+    protected int shootTimer;
+
+    protected SporeState sporeState;
+    protected SporeState prevSporeState;
+
+    public SporeFlower(Point location, Direction facingDirection) {
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("SporeFlower.png"), 63, 63), "IDLE");
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
@@ -28,35 +38,67 @@ public class SporeFlower extends Enemy {
     @Override
     public void initialize() {
         super.initialize();
+        sporeState = SporeState.SHOOT_WAIT;
+        prevSporeState = sporeState;
         facingDirection = startFacingDirection;
-        if (facingDirection == Direction.RIGHT) {
-            currentAnimationName = "WALK_RIGHT";
-        } else if (facingDirection == Direction.LEFT) {
-            currentAnimationName = "WALK_LEFT";
+        currentAnimationName = "IDLE";
+
+        if (sporeState == SporeState.SHOOT) {
+            currentAnimationName = "SPORE_SHOOT";
         }
+    
         airGroundState = AirGroundState.GROUND;
+
+        // every certain number of frames, the fireball will be shot out
+        shootWaitTimer = 60;
     }
 
     @Override
     public void update(Player player) {
-        float moveAmountX = 0;
         float moveAmountY = 0;
 
-        // add gravity (if in air, this will cause bug to fall)
         moveAmountY += gravity;
 
-        // if on ground, walk forward based on facing direction
-        if (airGroundState == AirGroundState.GROUND) {
-            if (facingDirection == Direction.RIGHT) {
-                moveAmountX += movementSpeed;
-            } else {
-                moveAmountX -= movementSpeed;
+        moveYHandleCollision(moveAmountY);
+
+        if (sporeState == SporeState.SHOOT_WAIT) {
+            // currentAnimationName = "SPORE_SHOOT";
+            if (prevSporeState == SporeState.IDLE) {
+                shootTimer = 65;
+            } else if (shootTimer == 0) {
+                sporeState = SporeState.SHOOT;
+            }
+            else {
+                shootTimer--;
             }
         }
 
-        // move bug
-        moveYHandleCollision(moveAmountY);
-        moveXHandleCollision(moveAmountX);
+        // this is for actually having the dinosaur spit out the fireball
+        if (sporeState == SporeState.SHOOT) {
+            // define where fireball will spawn on map (x location) relative to dinosaur enemy's location
+            // and define its movement speed
+            int sporeY;
+            float movementSpeed;
+            
+            sporeY = Math.round(getY()) + getHeight();
+            movementSpeed = -2f;
+            
+
+            // define where fireball will spawn on the map (y location) relative to dinosaur enemy's location
+            int sporeX = Math.round(getX()) + 4;
+
+            // create Fireball enemy
+            SporeCloud sporeCloud = new SporeCloud(new Point(sporeX, sporeY), movementSpeed, 120);
+
+
+            map.addEnemy(sporeCloud);
+
+            // change dinosaur back to its WALK state after shooting, reset shootTimer to wait a certain number of frames before shooting again
+            sporeState = SporeState.IDLE;
+
+            // reset shoot wait timer so the process can happen again (dino walks around, then waits, then shoots)
+            shootWaitTimer = 130;
+        }
 
         super.update(player);
     }
@@ -87,5 +129,34 @@ public class SporeFlower extends Enemy {
                 airGroundState = AirGroundState.AIR;
             }
         }
+    }
+     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
+        return new HashMap<String, Frame[]>() {{
+            put("IDLE", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
+                            .withScale(2)
+                            .withBounds(7, 48, 56, 16)
+                            .build()
+            });
+
+            put("SPORE_SHOOT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 10)
+                            .withScale(2)
+                            .withBounds(7, 48, 56, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 20)
+                            .withScale(2)
+                            .withBounds(7, 48, 56, 16)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 10)
+                            .withScale(2)
+                            .withBounds(7, 48, 56, 16)
+                            .build()
+            });
+        }};
+    }
+
+    public enum SporeState {
+        IDLE, SHOOT_WAIT, SHOOT
     }
 }

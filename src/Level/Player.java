@@ -4,968 +4,999 @@ import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import Engine.SoundEffectPlayer;
-import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
-import Level.MapEntity;
-import MapEditor.TileBuilder;
 import Tilesets.CommonTileset;
-import Tilesets.GrasslandTileset;
 import Utils.AirGroundState;
 import Utils.Direction;
 import Utils.AirWallState;
 import Tilesets.PetalPlatformTileset;
-import java.lang.System.Logger.Level;
-import java.nio.file.WatchKey;
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import Builders.MapTileBuilder;
+import java.awt.image.BufferedImage;
+import EnhancedMapTiles.PetalPlatformTile;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 public abstract class Player extends GameObject {
-    // values that affect player movement
-    // these should be set in a subclass
-    protected float walkSpeed = 0;
-    protected float dashSpeed = 0;
-    protected float currentDashSpeed = 0;
-    protected float dashDestinationX = 0f;
-    protected float gravity = 0;
-    protected float jumpHeight = 0;
-    protected float jumpDegrade = 0;
-    protected float terminalVelocityY = 0;
-    protected float momentumYIncrease = 0;
-    protected float momentumXdecrease = 0;
-    protected float scaleX = 1f;
-    protected float scaleY = 1f;
-    protected float maxMomentum = 0f;
-    protected float prevMoveAmountY;
-    protected float dashDegrade = 0;
-    protected float floatFallCounter = 0;
-    protected float floatFallMax = 0;
-    protected float floatSpeed = 0;
-    protected float deathScreenFall = 3f;
-    protected float deathScreenFallMax = 15f;
+  // values that affect player movement
+  // these should be set in a subclass
+  protected float walkSpeed = 0;
+  protected float dashSpeed = 0;
+  protected float currentDashSpeed = 0;
+  protected float dashDestinationX = 0f;
+  protected float gravity = 0;
+  protected float jumpHeight = 0;
+  protected float jumpDegrade = 0;
+  protected float terminalVelocityY = 0;
+  protected float momentumYIncrease = 0;
+  protected float momentumXdecrease = 0;
+  protected float scaleX = 1f;
+  protected float scaleY = 1f;
+  protected float maxMomentum = 0f;
+  protected float prevMoveAmountY;
+  protected float dashDegrade = 0;
+  protected float floatFallCounter = 0;
+  protected float floatFallMax = 0;
+  protected float floatSpeed = 0;
+  protected float deathScreenFall = 3f;
+  protected float deathScreenFallMax = 15f;
 
-    // values used to handle player movement
-    protected float jumpForce = 0;
-    protected float momentumX = 0;
-    protected float momentumY = 0;
-    protected float velocity = 0;
-    protected float maxVelocity = 0;
-    protected float moveAmountX, moveAmountY;
-    protected float lastAmountMovedX, lastAmountMovedY;
-    protected int dashAmount;
-    protected int dashCap;
-    protected float airSpeed;
-    protected float dashSpeedY = 0; 
+  // values used to handle player movement
+  protected float jumpForce = 0;
+  protected float momentumX = 0;
+  protected float momentumY = 0;
+  protected float velocity = 0;
+  protected float maxVelocity = 0;
+  protected float moveAmountX, moveAmountY;
+  protected float lastAmountMovedX, lastAmountMovedY;
+  protected int dashAmount;
+  protected int dashCap;
+  protected float airSpeed;
+  protected float dashSpeedY = 0;
 
-    // values used to keep track of player's current state
-    protected PlayerState playerState;
-    protected PlayerState previousPlayerState;
-    protected Direction facingDirection;
-    protected AirGroundState airGroundState;
-    protected AirGroundState previousAirGroundState;
-    protected AirWallState airWallState;
-    protected AirWallState previousAirWallState;
-    protected LevelState levelState;
+  // values used to keep track of player's current state
+  protected PlayerState playerState;
+  protected PlayerState previousPlayerState;
+  protected Direction facingDirection;
+  protected AirGroundState airGroundState;
+  protected AirGroundState previousAirGroundState;
+  protected AirWallState airWallState;
+  protected AirWallState previousAirWallState;
+  protected LevelState levelState;
 
-    // classes that listen to player events can be added to this list
-    protected ArrayList<PlayerListener> listeners = new ArrayList<>();
+  // classes that listen to player events can be added to this list
+  protected ArrayList<PlayerListener> listeners = new ArrayList<>();
 
-    // define keys
-    protected KeyLocker keyLocker = new KeyLocker();
-    protected Key JUMP_KEY = Key.W;
-    protected Key MOVE_LEFT_KEY = Key.A;
-    protected Key MOVE_RIGHT_KEY = Key.D;
-    protected Key CROUCH_KEY = Key.S;
-    protected Key CLIMB_KEY = Key.L;
-    protected Key DASH_KEY = Key.J;
-    protected Key PLACE_KEY = Key.K;
-    private static SoundEffectPlayer jumpSound;
-    private static SoundEffectPlayer dashSound;
-    private static boolean jumpSoundLoadAttempted;
-    private static boolean dashSoundLoadAttempted;
-    private static boolean soundEffectsMuted;
-    private static float soundEffectsVolume = 0.5f;
-    private static final float DASH_SOUND_VOLUME_BOOST = 2.0f;
+  // define keys
+  protected KeyLocker keyLocker = new KeyLocker();
+  protected Key JUMP_KEY = Key.W;
+  protected Key ALTJUMP_KEY = Key.SPACE;
+  protected Key MOVE_LEFT_KEY = Key.A;
+  protected Key MOVE_RIGHT_KEY = Key.D;
+  protected Key CROUCH_KEY = Key.S;
+  protected Key CLIMB_KEY = Key.L;
+  protected Key DASH_KEY = Key.J;
+  protected Key PLACE_KEY = Key.K;
+  private static SoundEffectPlayer jumpSound;
+  private static SoundEffectPlayer dashSound;
+  private static boolean jumpSoundLoadAttempted;
+  private static boolean dashSoundLoadAttempted;
+  private static boolean soundEffectsMuted;
+  private static float soundEffectsVolume = 0.5f;
+  private static final float DASH_SOUND_VOLUME_BOOST = 2.0f;
 
-    // flags
-    protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
-    protected boolean reducedFallSpeed = false;
-    protected boolean isDashing = false;
+  // flags
+  protected boolean isInvincible = false; // if true, player cannot be hurt by enemies (good for testing)
+  protected boolean reducedFallSpeed = false;
+  protected boolean isDashing = false;
 
+  // frame counts
+  int climbFrameCount = 0;
+  int climbStartFrame = -1;
+  int velocityStartFrame = 0;
+  int framecount = 0;
 
-    //frame counts
-    int climbFrameCount = 0;
-    int climbStartFrame = -1;
-    int velocityStartFrame = 0;
-    int framecount = 0;
+  // Resources for Placeable Tiles
+  CommonTileset commonTileset = new CommonTileset();
+  PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
 
-    // Resources for Placeable Tiles 
-    CommonTileset commonTileset = new CommonTileset();
-    ArrayList<MapTile> placedTiles = new ArrayList<>();
-    ArrayList<Integer> placedAtFrame =  new ArrayList<>();
-    PetalPlatformTileset petalPlatformTileset = new PetalPlatformTileset();
-    ArrayList<MapTile> originalTiles = new ArrayList<>();
+  private static final int PLATFORM_LIFETIME_FRAMES = 180;
+  private static final int PLATFORM_COOLDOWN_FRAMES = 150;
+  private static final int MAX_PLATFORM_PAIRS = 2;
+  private static final TileType PLATFORM_TILE_TYPE = TileType.NOT_PASSABLE;
 
-    // Extra Rescources for Dash
-    protected ArrayList<Key> latestInput = new ArrayList<>();
-    protected ArrayList<Integer> latestInputFrame = new ArrayList<>();
+  private final ArrayList<PlacedPlatform> placedPlatforms = new ArrayList<>();
+  private BufferedImage petalLeftImage;
+  private BufferedImage petalRightImage;
 
-    // how much speed is kept each frame while holding the opposite direction of motion (lower = snappier turn)
-    protected static final float TURN_BRAKE = 0.7f;
+  private static class PlacedPlatform {
+    final PetalPlatformTile left;
+    final PetalPlatformTile right;
+    final int placedAtFrame;
 
-    // the dash's speed boost is spread over this many frames instead of all at once
-    protected static final int DASH_RAMP_FRAMES = 6;
-    protected int dashRampLeft = 0;
-    protected float dashRampDir = 0;
-    protected int lastDashFrame = -1;
+    PlacedPlatform(PetalPlatformTile left, PetalPlatformTile right, int placedAtFrame) {
+      this.left = left;
+      this.right = right;
+      this.placedAtFrame = placedAtFrame;
+    }
 
-    // frames the player has to wait after starting a dash before they can dash again (60 frames = 1 second)
-    protected static final int DASH_COOLDOWN_FRAMES = 30;
-    protected int dashReadyFrame = 0;   // the framecount at which the next dash is allowed
+    boolean occupies(int x, int y) {
+      return (Math.round(left.getX()) == x && Math.round(left.getY()) == y)
+          || (Math.round(right.getX()) == x && Math.round(right.getY()) == y);
+    }
 
-    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, float scaleX, float scaleY) {
-        super(spriteSheet, x, y, startingAnimationName, scaleX, scaleY);
-        facingDirection = Direction.RIGHT;
-        airGroundState = AirGroundState.AIR;
-        previousAirGroundState = airGroundState;
-        playerState = PlayerState.STANDING;
+    void remove() {
+      left.remove();
+      right.remove();
+    }
+  }
+
+  // Extra Rescources for Dash
+  protected ArrayList<Key> latestInput = new ArrayList<>();
+  protected ArrayList<Integer> latestInputFrame = new ArrayList<>();
+
+  // how much speed is kept each frame while holding the opposite direction of
+  // motion (lower = snappier turn)
+  protected static final float TURN_BRAKE = 0.7f;
+
+  // the dash's speed boost is spread over this many frames instead of all at once
+  protected static final int DASH_RAMP_FRAMES = 7;
+  protected int dashRampLeft = 0;
+  protected float dashRampDir = 0;
+  protected int lastDashFrame = -1;
+
+  // frames the player has to wait after starting a dash before they can dash
+  // again (60 frames = 1 second)
+  protected static final int DASH_COOLDOWN_FRAMES = 30;
+  protected int dashReadyFrame = 0; // the framecount at which the next dash is allowed
+
+  public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, float scaleX, float scaleY) {
+    super(spriteSheet, x, y, startingAnimationName, scaleX, scaleY);
+    facingDirection = Direction.RIGHT;
+    airGroundState = AirGroundState.AIR;
+    previousAirGroundState = airGroundState;
+    playerState = PlayerState.STANDING;
+    previousPlayerState = playerState;
+    levelState = LevelState.RUNNING;
+    airWallState = AirWallState.AIR;
+    previousAirWallState = airWallState;
+    latestInputFrame.add(0);
+    latestInputFrame.add(0);
+    latestInput.add(Key.D);
+    latestInput.add(Key.D);
+    if (!jumpSoundLoadAttempted) {
+      jumpSoundLoadAttempted = true;
+      try {
+        jumpSound = new SoundEffectPlayer("hollow-knight-hornet-voice-8.wav");
+        jumpSound.setMuted(soundEffectsMuted);
+        jumpSound.setVolume(soundEffectsVolume);
+      } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+        System.err.println("Unable to load the player jump sound.");
+        e.printStackTrace(System.err);
+      }
+    }
+    if (!dashSoundLoadAttempted) {
+      dashSoundLoadAttempted = true;
+      try {
+        dashSound = new SoundEffectPlayer("whoosh_a365Q57.wav");
+        dashSound.setMuted(soundEffectsMuted);
+        dashSound.setVolume(getDashSoundVolume());
+      } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+        System.err.println("Unable to load the player dash sound.");
+        e.printStackTrace(System.err);
+      }
+    }
+
+  }
+
+  public static void setSoundEffectsMuted(boolean muted) {
+    soundEffectsMuted = muted;
+    if (jumpSound != null) {
+      jumpSound.setMuted(muted);
+    }
+    if (dashSound != null) {
+      dashSound.setMuted(muted);
+    }
+  }
+
+  public static void setSoundEffectsVolume(float volume) {
+    soundEffectsVolume = Math.max(0.0f, Math.min(volume, 1.0f));
+    if (jumpSound != null) {
+      jumpSound.setVolume(soundEffectsVolume);
+    }
+    if (dashSound != null) {
+      dashSound.setVolume(getDashSoundVolume());
+    }
+  }
+
+  private static float getDashSoundVolume() {
+    return Math.min(soundEffectsVolume * DASH_SOUND_VOLUME_BOOST, 1.0f);
+  }
+
+  public void update() {
+    moveAmountX = 0;
+    moveAmountY = 0;
+
+    // if player is currently playing through level (has not won or lost)
+    if (levelState == LevelState.RUNNING) {
+      applyGravity();
+      applyTurnBrake();
+
+      // update player's state and current actions, which includes things like
+      // determining how much it should move each frame and if its walking or jumping
+      do {
         previousPlayerState = playerState;
-        levelState = LevelState.RUNNING;
-        airWallState = AirWallState.AIR;
-        previousAirWallState = airWallState;
-        latestInputFrame.add(0);
-        latestInputFrame.add(0);
-        latestInput.add(Key.D); 
-        latestInput.add(Key.D);
-        if (!jumpSoundLoadAttempted) {
-            jumpSoundLoadAttempted = true;
-            try {
-                jumpSound = new SoundEffectPlayer("hollow-knight-hornet-voice-8.wav");
-                jumpSound.setMuted(soundEffectsMuted);
-                jumpSound.setVolume(soundEffectsVolume);
-            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
-                System.err.println("Unable to load the player jump sound.");
-                e.printStackTrace(System.err);
-            }
-        }
-        if (!dashSoundLoadAttempted) {
-            dashSoundLoadAttempted = true;
-            try {
-                dashSound = new SoundEffectPlayer("dash2.wav");
-                dashSound.setMuted(soundEffectsMuted);
-                dashSound.setVolume(getDashSoundVolume());
-            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
-                System.err.println("Unable to load the player dash sound.");
-                e.printStackTrace(System.err);
-            }
-        }
+        handlePlayerState();
+        lastInput();
+        handleDash();
+        slip();
+      } while (previousPlayerState != playerState);
+      framecount++;
+      playerClimbing();
+      climbFrameCount++;
+      placePlatform();
+      unPlacePlatform();
+      previousAirGroundState = airGroundState;
+      previousAirWallState = airWallState;
 
+      // move player with respect to map collisions based on how much player needs to
+      // move this frame
+      lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
+      lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
+
+      handlePlayerAnimation();
+
+      updateLockedKeys();
+
+      // update player's animation
+      super.update();
     }
 
-    public static void setSoundEffectsMuted(boolean muted) {
-        soundEffectsMuted = muted;
-        if (jumpSound != null) {
-            jumpSound.setMuted(muted);
-        }
-        if (dashSound != null) {
-            dashSound.setMuted(muted);
-        }
+    // if player has beaten level
+    else if (levelState == LevelState.LEVEL_COMPLETED) {
+      updateLevelCompleted();
     }
 
-    public static void setSoundEffectsVolume(float volume) {
-        soundEffectsVolume = Math.max(0.0f, Math.min(volume, 1.0f));
-        if (jumpSound != null) {
-            jumpSound.setVolume(soundEffectsVolume);
-        }
-        if (dashSound != null) {
-            dashSound.setVolume(getDashSoundVolume());
-        }
+    // if player has lost level
+    else if (levelState == LevelState.PLAYER_DEAD) {
+      updatePlayerDead();
+    }
+  }
+
+  // add gravity to player, which is a downward force
+  protected void applyGravity() {
+    moveAmountY += gravity + momentumY;
+  }
+
+  // protected void handleDash()
+  // if(airGroundState == AirGroundState.GROUND) {
+  // dashAmount = 0;
+  // }
+
+  // // slow the horizontal dash back down; once it's at normal speed, the clamps
+  // apply again
+  // if (isDashing) {
+  // velocity *= (dashDegrade > 0 ? dashDegrade : 0.9f);
+  // if (Math.abs(velocity) <= maxVelocity) {
+  // isDashing = false;
+  // }
+  // }
+
+  // if (latestInput.size() < 2) {
+  // return;
+  // }
+
+  // int last = latestInput.size() - 1;
+  // Key lastKey = latestInput.get(last);
+  // int gap = latestInputFrame.get(last) - latestInputFrame.get(last - 1);
+
+  // // same key pressed twice, a short time apart
+  // if (lastKey == latestInput.get(last - 1) && gap >= 2 && gap <= 15 &&
+  // dashAmount <= dashCap) {
+  // if (lastKey == MOVE_RIGHT_KEY) {
+  // velocity += dashSpeed;
+  // isDashing = true;
+  // dashAmount++;
+  // }
+  // else if (lastKey == MOVE_LEFT_KEY) {
+  // velocity -= dashSpeed;
+  // isDashing = true;
+  // dashAmount++;
+  // }
+  // else if (lastKey == JUMP_KEY) {
+  // jumpForce = dashSpeedY > 0 ? dashSpeedY : jumpHeight;
+  // momentumY = 0;
+  // dashAmount++;
+  // }
+  // }
+  // }
+  // when the player holds the opposite direction of their motion, bleed off speed
+  // extra fast
+  protected void applyTurnBrake() {
+    if (isDashing)
+      return;
+    boolean pressingLeft = Keyboard.isKeyDown(MOVE_LEFT_KEY);
+    boolean pressingRight = !pressingLeft && Keyboard.isKeyDown(MOVE_RIGHT_KEY);
+    if ((pressingLeft && velocity > 0) || (pressingRight && velocity < 0)) {
+      velocity *= TURN_BRAKE;
+    }
+  }
+
+  protected void handleDash() {
+    if (airGroundState == AirGroundState.GROUND) {
+      dashAmount = 0;
     }
 
-    private static float getDashSoundVolume() {
-        return Math.min(soundEffectsVolume * DASH_SOUND_VOLUME_BOOST, 1.0f);
+    if (lastDashFrame == framecount) {
+      return;
+    }
+    lastDashFrame = framecount;
+
+    if (dashRampLeft > 0) {
+      velocity += dashRampDir * (dashSpeed / DASH_RAMP_FRAMES);
+      dashRampLeft--;
+    } else if (isDashing) {
+      velocity *= (dashDegrade > 0 ? dashDegrade : 0.9f);
+      if (Math.abs(velocity) <= maxVelocity) {
+        isDashing = false;
+      }
     }
 
-    public void update() {
-        moveAmountX = 0;
-        moveAmountY = 0;
+    if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
+      keyLocker.lockKey(DASH_KEY);
+      this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
+      if (dashSound != null) {
+        dashSound.play();
+      }
+      if (dashAmount < dashCap && framecount >= dashReadyFrame) {
+        dashRampDir = facingDirection == Direction.RIGHT ? 1 : -1;
+        dashRampLeft = DASH_RAMP_FRAMES;
+        dashReadyFrame = framecount + DASH_COOLDOWN_FRAMES;
+        isDashing = true;
+        dashAmount++;
+      }
+    }
+  }
 
-        // if player is currently playing through level (has not won or lost)
-        if (levelState == LevelState.RUNNING) {
-            applyGravity();
-            applyTurnBrake();
+  protected void fallGravity() {
+    if (reducedFallSpeed) {
+      gravity = gravity / 2;
+      terminalVelocityY = terminalVelocityY / 2;
+    } else {
+      gravity *= 2;
+      terminalVelocityY *= 2;
+    }
+  }
 
-            // update player's state and current actions, which includes things like determining how much it should move each frame and if its walking or jumping
-            do {
-                previousPlayerState = playerState;
-                handlePlayerState();
-                lastInput();
-                handleDash();
-                slip(); 
-            } while (previousPlayerState != playerState);
-            framecount++;
-            playerClimbing();
-            climbFrameCount ++;
-            placePlatform();
-            unPlacePlatform();
-            previousAirGroundState = airGroundState;
-            previousAirWallState = airWallState;
+  // based on player's current state, call appropriate player state handling
+  // method
+  protected void handlePlayerState() {
+    switch (playerState) {
+      case STANDING:
+        playerStanding();
+        break;
+      case WALKING:
+        playerWalking();
+        break;
+      case CROUCHING:
+        playerCrouching();
+        break;
+      case JUMPING:
+        playerJumping();
+        break;
+      case CLIMBING:
+        playerClimbing();
+        break;
+      case THROWING:
+        placePlatform();
+        break;
+      case DASHING:
+        handleDash();
+        break;
+    }
+  }
 
-            // move player with respect to map collisions based on how much player needs to move this frame
-            lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
-            lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
-
-            handlePlayerAnimation();
-
-            updateLockedKeys();
-
-            // update player's animation
-            super.update();
-        }
-
-        // if player has beaten level
-        else if (levelState == LevelState.LEVEL_COMPLETED) {
-            updateLevelCompleted();
-        }
-
-        // if player has lost level
-        else if (levelState == LevelState.PLAYER_DEAD) {
-            updatePlayerDead();
-        }
+  // player STANDING state logic
+  protected void playerStanding() {
+    // if walk left or walk right key is pressed, player enters WALKING state
+    if (Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
+      playerState = PlayerState.WALKING;
     }
 
-    // add gravity to player, which is a downward force
-    protected void applyGravity() {
-        moveAmountY += gravity + momentumY;
+    // if jump key is pressed, player enters JUMPING state
+    else if ((Keyboard.isKeyDown(JUMP_KEY) || Keyboard.isKeyDown(ALTJUMP_KEY))
+        && (!keyLocker.isKeyLocked(JUMP_KEY) || !keyLocker.isKeyLocked(ALTJUMP_KEY))) {
+      keyLocker.lockKey(JUMP_KEY);
+      keyLocker.lockKey(ALTJUMP_KEY);
+      playerState = PlayerState.JUMPING;
     }
 
-    // protected void handleDash()
-    //     if(airGroundState == AirGroundState.GROUND) {
-    //         dashAmount = 0;
-    //     }
-
-    //     // slow the horizontal dash back down; once it's at normal speed, the clamps apply again
-    //     if (isDashing) {
-    //         velocity *= (dashDegrade > 0 ? dashDegrade : 0.9f);
-    //         if (Math.abs(velocity) <= maxVelocity) {
-    //             isDashing = false;
-    //         }
-    //     }
-
-    //     if (latestInput.size() < 2) {
-    //         return;
-    //     }
-
-    //     int last = latestInput.size() - 1;
-    //     Key lastKey = latestInput.get(last);
-    //     int gap = latestInputFrame.get(last) - latestInputFrame.get(last - 1);
-
-    //     // same key pressed twice, a short time apart
-    //     if (lastKey == latestInput.get(last - 1) && gap >= 2 && gap <= 15 && dashAmount <= dashCap) {
-    //         if (lastKey == MOVE_RIGHT_KEY) {
-    //             velocity += dashSpeed;
-    //             isDashing = true;
-    //             dashAmount++;
-    //         }
-    //         else if (lastKey == MOVE_LEFT_KEY) {
-    //             velocity -= dashSpeed;
-    //             isDashing = true;
-    //             dashAmount++;
-    //         }
-    //         else if (lastKey == JUMP_KEY) {
-    //             jumpForce = dashSpeedY > 0 ? dashSpeedY : jumpHeight;
-    //             momentumY = 0;
-    //             dashAmount++;
-    //         }
-    //     }
-    // }
-    // when the player holds the opposite direction of their motion, bleed off speed extra fast
-    protected void applyTurnBrake() {
-        if (isDashing) return;
-        boolean pressingLeft = Keyboard.isKeyDown(MOVE_LEFT_KEY);
-        boolean pressingRight = !pressingLeft && Keyboard.isKeyDown(MOVE_RIGHT_KEY);
-        if ((pressingLeft && velocity > 0) || (pressingRight && velocity < 0)) {
-            velocity *= TURN_BRAKE;
-        }
+    // if crouch key is pressed, player enters CROUCHING state
+    else if (Keyboard.isKeyDown(CROUCH_KEY)) {
+      playerState = PlayerState.CROUCHING;
     }
 
-    protected void handleDash() {
-        if (airGroundState == AirGroundState.GROUND) {
-            dashAmount = 0;
-        }
-
-        if (lastDashFrame == framecount) {
-            return;
-        }
-        lastDashFrame = framecount;
-
-        if (dashRampLeft > 0) {
-            velocity += dashRampDir * (dashSpeed / DASH_RAMP_FRAMES);
-            dashRampLeft--;
-        } else if (isDashing) {
-            velocity *= (dashDegrade > 0 ? dashDegrade : 0.9f);
-            if (Math.abs(velocity) <= maxVelocity) {
-                isDashing = false;
-            }
-        }
-
-        if (Keyboard.isKeyDown(DASH_KEY) && !keyLocker.isKeyLocked(DASH_KEY)) {
-            keyLocker.lockKey(DASH_KEY);
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
-            if (dashSound != null) {
-                dashSound.play();
-            }
-            if (dashAmount < dashCap && framecount >= dashReadyFrame) {
-                dashRampDir = facingDirection == Direction.RIGHT ? 1 : -1;
-                dashRampLeft = DASH_RAMP_FRAMES;
-                dashReadyFrame = framecount + DASH_COOLDOWN_FRAMES;
-                isDashing = true;
-                dashAmount++;
-            }
-        }
+    if (Keyboard.isKeyDown(PLACE_KEY)) {
+      playerState = PlayerState.THROWING;
     }
-    protected void fallGravity() {
-        if (reducedFallSpeed) {
-            gravity = gravity / 2;
-            terminalVelocityY = terminalVelocityY / 2;
-        }
-        else {
-            gravity *= 2;
-            terminalVelocityY *= 2;
-        }
+  }
+
+  // player WALKING state logic
+  protected void playerWalking() {
+    // if walk left key is pressed, move player to the left
+    if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+      velocityStartFrame = framecount;
+      velocity -= walkSpeed;
+      if (velocity < -maxVelocity && !isDashing) {
+        velocity = -maxVelocity;
+      }
+      facingDirection = Direction.LEFT;
+    }
+    // if walk right key is pressed, move player to the right
+    else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
+      velocityStartFrame = framecount;
+      velocity += walkSpeed;
+      if (velocity > maxVelocity && !isDashing) {
+        velocity = maxVelocity;
+      }
+      facingDirection = Direction.RIGHT;
+    } else if (Keyboard.isKeyUp(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
+      playerState = PlayerState.STANDING;
+    }
+    // if jump key is pressed, player enters JUMPING state
+    if ((Keyboard.isKeyDown(JUMP_KEY) || Keyboard.isKeyDown(ALTJUMP_KEY))
+        && (!keyLocker.isKeyLocked(JUMP_KEY) || !keyLocker.isKeyLocked(ALTJUMP_KEY))) {
+      keyLocker.lockKey(JUMP_KEY);
+      keyLocker.lockKey(ALTJUMP_KEY);
+      playerState = PlayerState.JUMPING;
+    }
+    // if crouch key is pressed,
+    else if (Keyboard.isKeyDown(CROUCH_KEY)) {
+      playerState = PlayerState.CROUCHING;
     }
 
-    // based on player's current state, call appropriate player state handling method
-    protected void handlePlayerState() {
-        switch (playerState) {
-            case STANDING:
-                playerStanding();
-                break;
-            case WALKING:
-                playerWalking();
-                break;
-            case CROUCHING:
-                playerCrouching();
-                break;
-            case JUMPING:
-                playerJumping();
-                break;
-            case CLIMBING:
-                playerClimbing();
-                break;
-            case THROWING:
-                placePlatform();
-                break;
-            case DASHING:
-                handleDash();
-                break;
-        }
+    if (Keyboard.isKeyDown(PLACE_KEY)) {
+      playerState = PlayerState.THROWING;
     }
 
-    // player STANDING state logic
-    protected void playerStanding() {
-        // if walk left or walk right key is pressed, player enters WALKING state
-        if (Keyboard.isKeyDown(MOVE_LEFT_KEY) || Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-            playerState = PlayerState.WALKING;
-        }
+    moveAmountX += velocity;
+  }
 
-        // if jump key is pressed, player enters JUMPING state
-        else if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
-            keyLocker.lockKey(JUMP_KEY);
-            playerState = PlayerState.JUMPING;
-        }
+  protected void slip() {
+    if (framecount - velocityStartFrame > 2 && playerState != PlayerState.WALKING) {
+      velocity *= momentumXdecrease;
+      moveAmountX += velocity;
+      if (Math.abs(velocity) < 0.01f) {
+        velocity = 0;
+      }
+    }
+  }
 
-        // if crouch key is pressed, player enters CROUCHING state
-        else if (Keyboard.isKeyDown(CROUCH_KEY)) {
-            playerState = PlayerState.CROUCHING;
-        }
-
-        if (Keyboard.isKeyDown(PLACE_KEY)) {
-            playerState = PlayerState.THROWING;
-        }
+  // player CROUCHING state logic
+  protected void playerCrouching() {
+    // if crouch key is released, player enters STANDING state
+    if (Keyboard.isKeyUp(CROUCH_KEY)) {
+      playerState = PlayerState.STANDING;
     }
 
-    // player WALKING state logic
-    protected void playerWalking() {
-        // if walk left key is pressed, move player to the left
-        if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
-            velocityStartFrame = framecount;
-            velocity -= walkSpeed;
-            if (velocity < -maxVelocity  && !isDashing ) {
-                velocity = -maxVelocity;
-            }
-            facingDirection = Direction.LEFT;
-        }
-        // if walk right key is pressed, move player to the right
-        else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-            velocityStartFrame = framecount;
-            velocity += walkSpeed;
-            if (velocity > maxVelocity  && !isDashing ) {
-                velocity = maxVelocity;
-            }
-            facingDirection = Direction.RIGHT;
-        } else if (Keyboard.isKeyUp(MOVE_LEFT_KEY) && Keyboard.isKeyUp(MOVE_RIGHT_KEY)) {
-            playerState = PlayerState.STANDING;
-        }
-        // if jump key is pressed, player enters JUMPING state
-        if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
-            keyLocker.lockKey(JUMP_KEY);
-            playerState = PlayerState.JUMPING;
-        }
-        // if crouch key is pressed,
-        else if (Keyboard.isKeyDown(CROUCH_KEY)) {
-            playerState = PlayerState.CROUCHING;
-        }
+    // if jump key is pressed, player enters JUMPING state
+    if ((Keyboard.isKeyDown(JUMP_KEY) || Keyboard.isKeyDown(ALTJUMP_KEY))
+        && (!keyLocker.isKeyLocked(JUMP_KEY) || !keyLocker.isKeyLocked(ALTJUMP_KEY))) {
+      keyLocker.lockKey(JUMP_KEY);
+      keyLocker.lockKey(ALTJUMP_KEY);
+      playerState = PlayerState.JUMPING;
+    }
+  }
 
-        if (Keyboard.isKeyDown(PLACE_KEY)) {
-            playerState = PlayerState.THROWING;
+  // player JUMPING state logic
+  protected void playerJumping() {
+    // if last frame player was on ground and this frame player is still on ground,
+    // the jump needs to be setup
+    if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND) {
+      if (jumpSound != null) {
+        jumpSound.play();
+      }
+
+      // sets animation to a JUMP animation based on which way player is facing
+      currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
+
+      // player is set to be in air and then player is sent into the air
+      airGroundState = AirGroundState.AIR;
+      jumpForce = jumpHeight;
+      if (jumpForce > 0) {
+        moveAmountY -= jumpForce;
+        jumpForce -= jumpDegrade;
+        if (jumpForce < 0) {
+          jumpForce = 0;
         }
-    
-        moveAmountX += velocity;
+      }
+      if (Keyboard.isKeyDown(CLIMB_KEY)) {
+        playerState = PlayerState.CLIMBING;
+      }
+      if (Keyboard.isKeyDown(DASH_KEY)) {
+        playerState = PlayerState.DASHING;
+      }
     }
 
-    protected void slip() {
-        if (framecount - velocityStartFrame > 2 && playerState != PlayerState.WALKING) {
-            velocity *= momentumXdecrease;
-            moveAmountX += velocity;
-            if (Math.abs(velocity) < 0.01f) {
-                velocity = 0;
-            }
+    // if player is in air (currently in a jump) and has more jumpForce, continue
+    // sending player upwards
+    else if (airGroundState == AirGroundState.AIR) {
+      if (jumpForce > 0) {
+        moveAmountY -= jumpForce;
+        jumpForce -= jumpDegrade;
+        if (jumpForce < 0) {
+          jumpForce = 0;
         }
-    }
-    // player CROUCHING state logic
-    protected void playerCrouching() {
-        // if crouch key is released, player enters STANDING state
-        if (Keyboard.isKeyUp(CROUCH_KEY)) {
-            playerState = PlayerState.STANDING;
-        }
+      }
 
-        // if jump key is pressed, player enters JUMPING state
-        if (Keyboard.isKeyDown(JUMP_KEY) && !keyLocker.isKeyLocked(JUMP_KEY)) {
-            keyLocker.lockKey(JUMP_KEY);
-            playerState = PlayerState.JUMPING;
-        }
-    }
-
-    // player JUMPING state logic
-    protected void playerJumping() {
-        // if last frame player was on ground and this frame player is still on ground, the jump needs to be setup
-        if (previousAirGroundState == AirGroundState.GROUND && airGroundState == AirGroundState.GROUND) {
-            if (jumpSound != null) {
-                jumpSound.play();
-            }
-
-            // sets animation to a JUMP animation based on which way player is facing
-            currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
-
-            // player is set to be in air and then player is sent into the air
-            airGroundState = AirGroundState.AIR;
-            jumpForce = jumpHeight;
-            if (jumpForce > 0) {
-                moveAmountY -= jumpForce;
-                jumpForce -= jumpDegrade;
-                if (jumpForce < 0) {
-                    jumpForce = 0;
-                }
-            }
-            if (Keyboard.isKeyDown(CLIMB_KEY)) {
-            playerState = PlayerState.CLIMBING;
-            }
-            if (Keyboard.isKeyDown(DASH_KEY)) {
-                playerState = PlayerState.DASHING;
-            }
-        }
-       
-
-    
-
-        // if player is in air (currently in a jump) and has more jumpForce, continue sending player upwards
-        else if (airGroundState == AirGroundState.AIR) {
-            if (jumpForce > 0) {
-                moveAmountY -= jumpForce;
-                jumpForce -= jumpDegrade;
-                if (jumpForce < 0) {
-                    jumpForce = 0;
-                }
-            }
-
-            // allows you to move left and right while in the air
-            if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
-                velocityStartFrame = framecount;
-                velocity -= walkSpeed;
-                if (velocity < -maxVelocity  && !isDashing ) {
-                    velocity = -maxVelocity;
-                }
-
-                facingDirection = Direction.LEFT;
-                if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                    playerState = PlayerState.CLIMBING;
-                    velocity -= walkSpeed;
-                    if (velocity < -floatSpeed) {
-                        velocity = -floatSpeed;
-                    }
-                }
-
-                // if (Keyboard.isKeyDown(DASH_KEY)) {
-                //     playerState = PlayerState.DASHING;
-                // }
-
-            } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-                velocityStartFrame = framecount;
-                velocity += walkSpeed;
-                if (velocity > maxVelocity  && !isDashing ) {
-                    velocity = maxVelocity;
-                }
-            facingDirection = Direction.RIGHT;
-                if (Keyboard.isKeyDown(CLIMB_KEY)) {
-                    playerState = PlayerState.CLIMBING;
-                    velocity += walkSpeed;
-                    if (velocity > floatSpeed) {
-                        velocity = floatSpeed;
-                    }
-                }
-                // if (Keyboard.isKeyDown(DASH_KEY)) {
-                //     playerState = PlayerState.DASHING;
-                // }
-            }
-            // if player is falling, increases momentum as player falls so it falls faster over time
-            if (moveAmountY > 0) {
-                increaseMomentumY();
-            }
-            moveAmountX += velocity;
+      // allows you to move left and right while in the air
+      if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+        velocityStartFrame = framecount;
+        velocity -= walkSpeed;
+        if (velocity < -maxVelocity && !isDashing) {
+          velocity = -maxVelocity;
         }
 
-        
-
-        // if player last frame was in air and this frame is now on ground, player enters STANDING state
-        else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
-            playerState = PlayerState.STANDING;
-        }
-    }
-
-    
-
-    protected void playerClimbing() {
-       
+        facingDirection = Direction.LEFT;
         if (Keyboard.isKeyDown(CLIMB_KEY)) {
-
-            if (climbStartFrame == -1) {
-                climbStartFrame = climbFrameCount;
-            }
-
-            int heldFrames = climbFrameCount - climbStartFrame;
-
-            if (heldFrames < 60) {
-                moveAmountY = gravity * 2; 
-            } else {
-                playerState = PlayerState.STANDING;
-            }
+          playerState = PlayerState.CLIMBING;
+          velocity -= walkSpeed;
+          if (velocity < -floatSpeed) {
+            velocity = -floatSpeed;
+          }
         }
-        if (airGroundState == AirGroundState.GROUND) {
-            climbStartFrame = -1;
+
+        // if (Keyboard.isKeyDown(DASH_KEY)) {
+        // playerState = PlayerState.DASHING;
+        // }
+
+      } else if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
+        velocityStartFrame = framecount;
+        velocity += walkSpeed;
+        if (velocity > maxVelocity && !isDashing) {
+          velocity = maxVelocity;
         }
-        
-        if (airGroundState == AirGroundState.GROUND && moveAmountX == 0) {
-            playerState = PlayerState.STANDING;
+        facingDirection = Direction.RIGHT;
+        if (Keyboard.isKeyDown(CLIMB_KEY)) {
+          playerState = PlayerState.CLIMBING;
+          velocity += walkSpeed;
+          if (velocity > floatSpeed) {
+            velocity = floatSpeed;
+          }
         }
+        // if (Keyboard.isKeyDown(DASH_KEY)) {
+        // playerState = PlayerState.DASHING;
+        // }
+      }
+      // if player is falling, increases momentum as player falls so it falls faster
+      // over time
+      if (moveAmountY > 0) {
+        increaseMomentumY();
+      }
+      moveAmountX += velocity;
     }
 
-    // while player is in air, this is called, and will increase momentumY by a set amount until player reaches terminal velocity
-    protected void increaseMomentumY() {
-        momentumY += momentumYIncrease;
-        if (momentumY > terminalVelocityY) {
-            momentumY = terminalVelocityY;
-        }
+    // if player last frame was in air and this frame is now on ground, player
+    // enters STANDING state
+    else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
+      playerState = PlayerState.STANDING;
+    }
+  }
+
+  protected void playerClimbing() {
+
+    if (Keyboard.isKeyDown(CLIMB_KEY)) {
+
+      if (climbStartFrame == -1) {
+        climbStartFrame = climbFrameCount;
+      }
+
+      int heldFrames = climbFrameCount - climbStartFrame;
+
+      if (heldFrames < 60) {
+        moveAmountY = gravity * 2;
+      } else {
+        playerState = PlayerState.STANDING;
+      }
+    }
+    if (airGroundState == AirGroundState.GROUND) {
+      climbStartFrame = -1;
     }
 
-    protected void increaseMomentumX() {
-        momentumX += momentumX;
-        if (momentumX < maxMomentum) {
-            momentumX = 4;
-        }
+    if (airGroundState == AirGroundState.GROUND && moveAmountX == 0) {
+      playerState = PlayerState.STANDING;
     }
+  }
 
-    protected void updateLockedKeys() {
-        if (Keyboard.isKeyUp(JUMP_KEY)) {
-            keyLocker.unlockKey(JUMP_KEY);
-        }
-        if (Keyboard.isKeyUp(DASH_KEY)) {
-            keyLocker.unlockKey(DASH_KEY);
-        }
-        if(Keyboard.isKeyUp(PLACE_KEY)) {
-            keyLocker.unlockKey(PLACE_KEY);
-        }
+  // while player is in air, this is called, and will increase momentumY by a set
+  // amount until player reaches terminal velocity
+  protected void increaseMomentumY() {
+    momentumY += momentumYIncrease;
+    if (momentumY > terminalVelocityY) {
+      momentumY = terminalVelocityY;
     }
+  }
 
-    // anything extra the player should do based on interactions can be handled here
-    protected void handlePlayerAnimation() {
-        int centerX = Math.round(getBounds().getX1()) + Math.round(getBounds().getWidth() / 2f);
-        int centerY = Math.round(getBounds().getY1()) + Math.round(getBounds().getHeight() / 2f);
-        MapTile currentMapTile = map.getTileByPosition(centerX, centerY);
-
-        if (playerState == PlayerState.STANDING) {
-            // sets animation to a STAND animation based on which way player is facing
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "STAND_RIGHT" : "STAND_LEFT";
-
-            // handles putting goggles on when standing in water
-            // checks if the center of the player is currently touching a water tile
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.WATER) {
-                this.currentAnimationName = facingDirection == Direction.RIGHT ? "SWIM_STAND_RIGHT" : "SWIM_STAND_LEFT";
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
-                levelState = LevelState.PLAYER_DEAD;
-                System.out.println("Bro Should be Dead");
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-                levelState = LevelState.LEVEL_COMPLETED;
-                System.out.println("Diddly Blud beat the level");
-            }
-
-        }
-        else if (playerState == PlayerState.WALKING) {
-            // sets animation to a WALK animation based on which way player is facing
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "WALK_RIGHT" : "WALK_LEFT";
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
-                levelState = LevelState.PLAYER_DEAD;
-                System.out.println("Bro Should be Dead");
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-                levelState = LevelState.LEVEL_COMPLETED;
-                System.out.println("Diddly Blud beat the level");
-            }
-            
-        }
-        else if (playerState == PlayerState.CROUCHING) {
-            // sets animation to a CROUCH animation based on which way player is facing
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "CROUCH_RIGHT" : "CROUCH_LEFT";
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
-                levelState = LevelState.PLAYER_DEAD;
-                System.out.println("Bro Should be Dead");
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-                levelState = LevelState.LEVEL_COMPLETED;
-                System.out.println("Diddly Blud beat the level");
-            }
-        }
-        else if (playerState == PlayerState.JUMPING) {
-            // if player is moving upwards, set player's animation to jump. if player moving downwards, set player's animation to fall
-            if (lastAmountMovedY <= 0) {
-                this.currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
-            } else {
-                this.currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
-                levelState = LevelState.PLAYER_DEAD;
-                System.out.println("Bro Should be Dead");
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-                levelState = LevelState.LEVEL_COMPLETED;
-                System.out.println("Diddly Blud beat the level");
-            }
-        }
-        else if (playerState == PlayerState.CLIMBING) {
-            if (airGroundState == AirGroundState.AIR) {
-                if (climbFrameCount + climbStartFrame <= 40) {
-                currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
-                } else {
-                currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
-                }
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
-                levelState = LevelState.PLAYER_DEAD;
-                System.out.println("Bro Should be Dead");
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-                levelState = LevelState.LEVEL_COMPLETED;
-                System.out.println("Diddly Blud beat the level");
-            }
-        }
-        else if (playerState == PlayerState.THROWING) {
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "THROW_RIGHT" : "THROW_LEFT";
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
-                levelState = LevelState.PLAYER_DEAD;
-                System.out.println("Bro Should be Dead");
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-                levelState = LevelState.LEVEL_COMPLETED;
-                System.out.println("Diddly Blud beat the level");
-            }
-        }
-        else if (playerState == PlayerState.DASHING) {
-            this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
-                levelState = LevelState.PLAYER_DEAD;
-                System.out.println("Bro Should be Dead");
-            }
-            if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
-                levelState = LevelState.LEVEL_COMPLETED;
-                System.out.println("Diddly Blud beat the level");
-            }
-        }
+  protected void increaseMomentumX() {
+    momentumX += momentumX;
+    if (momentumX < maxMomentum) {
+      momentumX = 4;
     }
+  }
 
-    @Override
-    public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
-        if (direction == Direction.LEFT) {
-            if ((hasCollided) && (entityCollidedWith.getMapEntityStatus() == MapEntityStatus.ACTIVE)) {
-                moveAmountX = 0;
-                momentumX = 0;
-                airWallState = AirWallState.WALL;
-                System.out.println("Player collided with wall on left");
-            }
-        } else if (direction == Direction.RIGHT) {
-                if ((hasCollided) && (entityCollidedWith.getMapEntityStatus() == MapEntityStatus.ACTIVE)) {
-                moveAmountX = 0;
-                momentumX = 0;
-                airWallState = AirWallState.WALL;
-                System.out.println("Player collided with wall on right");
-            }
-        } else {
-            airWallState = AirWallState.AIR;
-        }
+  protected void updateLockedKeys() {
+    if (Keyboard.isKeyUp(JUMP_KEY)) {
+      keyLocker.unlockKey(JUMP_KEY);
+      keyLocker.unlockKey(ALTJUMP_KEY);
     }
-
-    @Override
-    public void onEndCollisionCheckY(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
-        // if player collides with a map tile below it, it is now on the ground
-        // if player does not collide with a map tile below, it is in air
-        if (direction == Direction.DOWN) {
-            if (hasCollided) {
-                if (airGroundState == AirGroundState.AIR && momentumY > terminalVelocityY * 0.35f) {
-                    map.shake(2f, 8);
-                }
-                momentumY = 0;
-                airGroundState = AirGroundState.GROUND;
-            } else {
-                playerState = PlayerState.JUMPING;
-                airGroundState = AirGroundState.AIR;
-            }
-        }
-
-        // if player collides with map tile upwards, it means it was jumping and then hit into a ceiling -- immediately stop upwards jump velocity
-        else if (direction == Direction.UP) {
-            if (hasCollided) {
-                jumpForce = 0;
-            }
-        }
+    if (Keyboard.isKeyUp(DASH_KEY)) {
+      keyLocker.unlockKey(DASH_KEY);
     }
-
-    // other entities can call this method to hurt the player
-    public void hurtPlayer(MapEntity mapEntity) {
-        if (!isInvincible) {
-            // if map entity is an enemy, kill player on touch
-            if (mapEntity instanceof Enemy) {
-                levelState = LevelState.PLAYER_DEAD;
-            }
-        }
+    if (Keyboard.isKeyUp(PLACE_KEY)) {
+      keyLocker.unlockKey(PLACE_KEY);
     }
+  }
 
-    // other entities can call this to tell the player they beat a level
-    public void completeLevel() {
+  // anything extra the player should do based on interactions can be handled here
+  protected void handlePlayerAnimation() {
+    int centerX = Math.round(getBounds().getX1()) + Math.round(getBounds().getWidth() / 2f);
+    int centerY = Math.round(getBounds().getY1()) + Math.round(getBounds().getHeight() / 2f);
+    MapTile currentMapTile = map.getTileByPosition(centerX, centerY);
+
+    if (playerState == PlayerState.STANDING) {
+      // sets animation to a STAND animation based on which way player is facing
+      this.currentAnimationName = facingDirection == Direction.RIGHT ? "STAND_RIGHT" : "STAND_LEFT";
+
+      // handles putting goggles on when standing in water
+      // checks if the center of the player is currently touching a water tile
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.WATER) {
+        this.currentAnimationName = facingDirection == Direction.RIGHT ? "SWIM_STAND_RIGHT" : "SWIM_STAND_LEFT";
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+        levelState = LevelState.PLAYER_DEAD;
+        System.out.println("Bro Should be Dead");
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
         levelState = LevelState.LEVEL_COMPLETED;
-    }
+        System.out.println("Diddly Blud beat the level");
+      }
 
-    // if player has beaten level, this will be the update cycle
-    public void updateLevelCompleted() {
-        // if player is not on ground, player should fall until it touches the ground
-        if (airGroundState != AirGroundState.GROUND && map.getCamera().containsDraw(this)) {
-            currentAnimationName = "FALL_RIGHT";
-            applyGravity();
-            increaseMomentumY();
-            super.update();
-            moveYHandleCollision(moveAmountY);
-        }
-        // move player to the right until it walks off screen
-        else if (map.getCamera().containsDraw(this)) {
-            currentAnimationName = "WALK_RIGHT";
-            super.update();
-            moveXHandleCollision(walkSpeed);
+    } else if (playerState == PlayerState.WALKING) {
+      // sets animation to a WALK animation based on which way player is facing
+      this.currentAnimationName = facingDirection == Direction.RIGHT ? "WALK_RIGHT" : "WALK_LEFT";
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+        levelState = LevelState.PLAYER_DEAD;
+        System.out.println("Bro Should be Dead");
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+        levelState = LevelState.LEVEL_COMPLETED;
+        System.out.println("Diddly Blud beat the level");
+      }
+
+    } else if (playerState == PlayerState.CROUCHING) {
+      // sets animation to a CROUCH animation based on which way player is facing
+      this.currentAnimationName = facingDirection == Direction.RIGHT ? "CROUCH_RIGHT" : "CROUCH_LEFT";
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+        levelState = LevelState.PLAYER_DEAD;
+        System.out.println("Bro Should be Dead");
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+        levelState = LevelState.LEVEL_COMPLETED;
+        System.out.println("Diddly Blud beat the level");
+      }
+    } else if (playerState == PlayerState.JUMPING) {
+      // if player is moving upwards, set player's animation to jump. if player moving
+      // downwards, set player's animation to fall
+      if (lastAmountMovedY <= 0) {
+        this.currentAnimationName = facingDirection == Direction.RIGHT ? "JUMP_RIGHT" : "JUMP_LEFT";
+      } else {
+        this.currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+        levelState = LevelState.PLAYER_DEAD;
+        System.out.println("Bro Should be Dead");
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+        levelState = LevelState.LEVEL_COMPLETED;
+        System.out.println("Diddly Blud beat the level");
+      }
+    } else if (playerState == PlayerState.CLIMBING) {
+      if (airGroundState == AirGroundState.AIR) {
+        if (climbFrameCount + climbStartFrame <= 40) {
+          currentAnimationName = facingDirection == Direction.RIGHT ? "CLIMB_RIGHT" : "CLIMB_LEFT";
         } else {
-            // tell all player listeners that the player has finished the level
-            for (PlayerListener listener : listeners) {
-                listener.onLevelCompleted();
-            }
+          currentAnimationName = facingDirection == Direction.RIGHT ? "FALL_RIGHT" : "FALL_LEFT";
         }
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+        levelState = LevelState.PLAYER_DEAD;
+        System.out.println("Bro Should be Dead");
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+        levelState = LevelState.LEVEL_COMPLETED;
+        System.out.println("Diddly Blud beat the level");
+      }
+    } else if (playerState == PlayerState.THROWING) {
+      this.currentAnimationName = facingDirection == Direction.RIGHT ? "THROW_RIGHT" : "THROW_LEFT";
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+        levelState = LevelState.PLAYER_DEAD;
+        System.out.println("Bro Should be Dead");
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+        levelState = LevelState.LEVEL_COMPLETED;
+        System.out.println("Diddly Blud beat the level");
+      }
+    } else if (playerState == PlayerState.DASHING) {
+      this.currentAnimationName = facingDirection == Direction.RIGHT ? "DASH_RIGHT" : "DASH_LEFT";
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.KILL) {
+        levelState = LevelState.PLAYER_DEAD;
+        System.out.println("Bro Should be Dead");
+      }
+      if (currentMapTile != null && currentMapTile.getTileType() == TileType.END) {
+        levelState = LevelState.LEVEL_COMPLETED;
+        System.out.println("Diddly Blud beat the level");
+      }
     }
+  }
 
-    // if player has died, this will be the update cycle
-    public void updatePlayerDead() {
-        // change player animation to DEATH
-        if (!currentAnimationName.startsWith("DEATH")) {
-            if (facingDirection == Direction.RIGHT) {
-                currentAnimationName = "DEATH_RIGHT";
-            } else {
-                currentAnimationName = "DEATH_LEFT";
-            }
-            super.update();
+  @Override
+  public void onEndCollisionCheckX(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
+    if (direction == Direction.LEFT) {
+      if ((hasCollided) && (entityCollidedWith.getMapEntityStatus() == MapEntityStatus.ACTIVE)) {
+        moveAmountX = 0;
+        momentumX = 0;
+        airWallState = AirWallState.WALL;
+        System.out.println("Player collided with wall on left");
+      }
+    } else if (direction == Direction.RIGHT) {
+      if ((hasCollided) && (entityCollidedWith.getMapEntityStatus() == MapEntityStatus.ACTIVE)) {
+        moveAmountX = 0;
+        momentumX = 0;
+        airWallState = AirWallState.WALL;
+        System.out.println("Player collided with wall on right");
+      }
+    } else {
+      airWallState = AirWallState.AIR;
+    }
+  }
+
+  @Override
+  public void onEndCollisionCheckY(boolean hasCollided, Direction direction, MapEntity entityCollidedWith) {
+    // if player collides with a map tile below it, it is now on the ground
+    // if player does not collide with a map tile below, it is in air
+    if (direction == Direction.DOWN) {
+      if (hasCollided) {
+        if (airGroundState == AirGroundState.AIR && momentumY > terminalVelocityY * 0.35f) {
+          map.shake(2f, 8);
         }
-        // if death animation not on last frame yet, continue to play out death animation
-        else if (currentFrameIndex != getCurrentAnimation().length - 1) {
-          super.update();
+        momentumY = 0;
+        airGroundState = AirGroundState.GROUND;
+      } else {
+        playerState = PlayerState.JUMPING;
+        airGroundState = AirGroundState.AIR;
+      }
+    }
+
+    // if player collides with map tile upwards, it means it was jumping and then
+    // hit into a ceiling -- immediately stop upwards jump velocity
+    else if (direction == Direction.UP) {
+      if (hasCollided) {
+        jumpForce = 0;
+      }
+    }
+  }
+
+  // other entities can call this method to hurt the player
+  public void hurtPlayer(MapEntity mapEntity) {
+    if (!isInvincible) {
+      // if map entity is an enemy, kill player on touch
+      if (mapEntity instanceof Enemy) {
+        levelState = LevelState.PLAYER_DEAD;
+      }
+    }
+  }
+
+  // other entities can call this to tell the player they beat a level
+  public void completeLevel() {
+    levelState = LevelState.LEVEL_COMPLETED;
+  }
+
+  // if player has beaten level, this will be the update cycle
+  public void updateLevelCompleted() {
+    // if player is not on ground, player should fall until it touches the ground
+    if (airGroundState != AirGroundState.GROUND && map.getCamera().containsDraw(this)) {
+      currentAnimationName = "FALL_RIGHT";
+      applyGravity();
+      increaseMomentumY();
+      super.update();
+      moveYHandleCollision(moveAmountY);
+    }
+    // move player to the right until it walks off screen
+    else if (map.getCamera().containsDraw(this)) {
+      currentAnimationName = "WALK_RIGHT";
+      super.update();
+      moveXHandleCollision(walkSpeed);
+    } else {
+      // tell all player listeners that the player has finished the level
+      for (PlayerListener listener : listeners) {
+        listener.onLevelCompleted();
+      }
+    }
+  }
+
+  // if player has died, this will be the update cycle
+  public void updatePlayerDead() {
+    // change player animation to DEATH
+    if (!currentAnimationName.startsWith("DEATH")) {
+      if (facingDirection == Direction.RIGHT) {
+        currentAnimationName = "DEATH_RIGHT";
+      } else {
+        currentAnimationName = "DEATH_LEFT";
+      }
+      super.update();
+    }
+    // if death animation not on last frame yet, continue to play out death
+    // animation
+    else if (currentFrameIndex != getCurrentAnimation().length - 1) {
+      super.update();
+    }
+    // if death animation on last frame (it is set up not to loop back to start),
+    // player should continually fall until it goes off screen
+    else if (currentFrameIndex == getCurrentAnimation().length - 1) {
+      if (map.getCamera().containsDraw(this)) {
+        if (deathScreenFall < deathScreenFallMax) {
+          deathScreenFall *= 1.05;
         }
-        // if death animation on last frame (it is set up not to loop back to start), player should continually fall until it goes off screen
-        else if (currentFrameIndex == getCurrentAnimation().length - 1) {
-            if (map.getCamera().containsDraw(this)) {
-                if (deathScreenFall < deathScreenFallMax) {
-                    deathScreenFall *= 1.05;
-                }
-                moveY(deathScreenFall);
-            } else {
-                // tell all player listeners that the player has died in the level
-                for (PlayerListener listener : listeners) {
-                    listener.onDeath();
-                }
-            }
+        moveY(deathScreenFall);
+      } else {
+        // tell all player listeners that the player has died in the level
+        for (PlayerListener listener : listeners) {
+          listener.onDeath();
         }
+      }
     }
+  }
 
-    public PlayerState getPlayerState() {
-        return playerState;
+  public PlayerState getPlayerState() {
+    return playerState;
+  }
+
+  public void setPlayerState(PlayerState playerState) {
+    this.playerState = playerState;
+  }
+
+  public AirGroundState getAirGroundState() {
+    return airGroundState;
+  }
+
+  public Direction getFacingDirection() {
+    return facingDirection;
+  }
+
+  public void setFacingDirection(Direction facingDirection) {
+    this.facingDirection = facingDirection;
+  }
+
+  public void setLevelState(LevelState levelState) {
+    this.levelState = levelState;
+  }
+
+  public void addListener(PlayerListener listener) {
+    listeners.add(listener);
+  }
+
+  // Uncomment this to have game draw player's bounds to make it easier to
+  // visualize
+  /*
+   * public void draw(GraphicsHandler graphicsHandler) {
+   * super.draw(graphicsHandler);
+   * drawBounds(graphicsHandler, new Color(255, 0, 0, 100));
+   * }
+   */
+  private void loadPetalImages() {
+    if (petalLeftImage == null) {
+      petalLeftImage = petalPlatformTileset.getPetalImage(0);
+      petalRightImage = petalPlatformTileset.getPetalImage(1);
     }
+  }
 
-    public void setPlayerState(PlayerState playerState) {
-        this.playerState = playerState;
-    }
+  protected void placePlatform() {
+    if (Keyboard.isKeyDown(PLACE_KEY)) {
+      keyLocker.lockKey(PLACE_KEY);
+      int tileWidth = map.getTileset().getScaledSpriteWidth();
+      int tileHeight = map.getTileset().getScaledSpriteHeight();
+      int targetX;
+      int targetX2;
+      int targetY;
 
-    public AirGroundState getAirGroundState() {
-        return airGroundState;
-    }
-
-    public Direction getFacingDirection() {
-        return facingDirection;
-    }
-
-    public void setFacingDirection(Direction facingDirection) {
-        this.facingDirection = facingDirection;
-    }
-
-    public void setLevelState(LevelState levelState) {
-        this.levelState = levelState;
-    }
-
-    public void addListener(PlayerListener listener) {
-        listeners.add(listener);
-    }
-
-    // Uncomment this to have game draw player's bounds to make it easier to visualize
-    /*
-    public void draw(GraphicsHandler graphicsHandler) {
-        super.draw(graphicsHandler);
-        drawBounds(graphicsHandler, new Color(255, 0, 0, 100));
-    }
-    */
-    protected void placePlatform() {
-        if (Keyboard.isKeyDown(PLACE_KEY)) {
-            keyLocker.lockKey(PLACE_KEY);
-            int tileWidth = map.getTileset().getScaledSpriteWidth();
-            int tileHeight = map.getTileset().getScaledSpriteHeight();
-            int targetX;
-            int targetX2;
-            if (this.facingDirection == Direction.RIGHT) {
-                targetX = (Math.round(this.x) + tileWidth * 2) / tileWidth * tileWidth;
-                targetX2 = (Math.round(this.x) + tileWidth * 3) / tileWidth * tileWidth;
-            }
-            else {
-                targetX = (Math.round(this.x) - tileWidth * 2) / tileWidth * tileWidth;
-                targetX2 = (Math.round(this.x) - tileWidth * 3) / tileWidth * tileWidth;
-            }
-            int targetY = (Math.round(this.y) - 32) / tileHeight * tileHeight;
-            int targetY2 = targetY;
-
-            try {
-                map.getTileByPosition(targetX, targetY).getTileType();
-                map.getTileByPosition(targetX2, targetY2).getTileType();
-            } catch (Exception e) {
-                System.out.println("placing out of bounds");
-                return;
-            }
-
-            boolean canPlace = map.getTileByPosition(targetX, targetY).getTileType() == TileType.PASSABLE && map.getTileByPosition(targetX2, targetY2).getTileType() == TileType.PASSABLE && this.x != targetX && this.x != targetX2;
-
-            if (canPlace && placedAtFrame.size() == 0) {
-                originalTiles.add(map.getTileByPosition(targetX, targetY));
-                MapTile newTile = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX, targetY);
-                newTile.setMap(map);
-                map.setMapTile(targetX / tileWidth, targetY / tileHeight, newTile);
-                placedTiles.add(map.getTileByPosition(targetX, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
-
-                originalTiles.add(map.getTileByPosition(targetX2, targetY2));
-                MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(1).build(targetX2, targetY2);
-                newTile2.setMap(map);
-                map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
-                placedTiles.add(map.getTileByPosition(targetX2, targetY2));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
-            }
-            else if (canPlace && placedAtFrame.size() > 0 && framecount - placedAtFrame.get(0) >= 150 && placedTiles.size() <= 4) {
-                originalTiles.add(map.getTileByPosition(targetX, targetY));
-                MapTile newTile = petalPlatformTileset.defineTiles(tileWidth).get(0).build(targetX, targetY);
-                newTile.setMap(map);
-                map.setMapTile(targetX / tileWidth, targetY / tileHeight, newTile);
-                placedTiles.add(map.getTileByPosition(targetX, targetY));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
-
-                originalTiles.add(map.getTileByPosition(targetX2, targetY2));
-                MapTile newTile2 = petalPlatformTileset.defineTiles(tileWidth).get(1).build(targetX2, targetY2);
-                newTile2.setMap(map);
-                map.setMapTile(targetX2 / tileWidth, targetY2 / tileHeight, newTile2);
-                placedTiles.add(map.getTileByPosition(targetX2, targetY2));
-                System.out.println("placed");
-                placedAtFrame.add(framecount);
-            }
-            else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
-                playerState = PlayerState.STANDING;
-            }
+      if (Keyboard.isKeyDown(CROUCH_KEY)) {
+        float centerX = (getBounds().getX1() + getBounds().getX2()) / 2f;
+        targetX = Math.round(centerX / tileWidth) * tileWidth - tileWidth;
+        targetX2 = targetX + tileWidth;
+        targetY = (int) Math.ceil(getBounds().getY2() / (double) tileHeight) * tileHeight;
+      } else {
+        if (this.facingDirection == Direction.RIGHT) {
+          targetX = (Math.round(this.x) + tileWidth * 2) / tileWidth * tileWidth;
+          targetX2 = (Math.round(this.x) + tileWidth * 3) / tileWidth * tileWidth;
+        } else {
+          targetX = (Math.round(this.x) - tileWidth * 2) / tileWidth * tileWidth;
+          targetX2 = (Math.round(this.x) - tileWidth * 3) / tileWidth * tileWidth;
         }
-    }
+        targetY = (Math.round(this.y) - 32) / tileHeight * tileHeight;
+      }
 
-    protected void unPlacePlatform() {
-            int tileWidth = map.getTileset().getScaledSpriteWidth();
-            int tileHeight = map.getTileset().getScaledSpriteHeight();
+      boolean spotsFree = isPlatformSpotFree(targetX, targetY) && isPlatformSpotFree(targetX2, targetY);
+      boolean offCooldown = placedPlatforms.isEmpty()
+          || (placedPlatforms.size() < MAX_PLATFORM_PAIRS
+              && framecount - placedPlatforms.get(0).placedAtFrame >= PLATFORM_COOLDOWN_FRAMES);
 
-            if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
-                MapTile oldTile = originalTiles.get(0);
-                map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile);
-                System.out.println("unplaced");
-                placedTiles.remove(0);
-                placedAtFrame.remove(0);
-                originalTiles.remove(0);
-            }
-            if (placedTiles.size() > 0 && framecount - placedAtFrame.get(0) >= 180) {
-                MapTile oldTile2 = originalTiles.get(0);
-                map.setMapTile(Math.round(placedTiles.get(0).getX()) / tileWidth, Math.round(placedTiles.get(0).getY()) / tileHeight, oldTile2);
-                System.out.println("unplaced");
-                placedTiles.remove(0);
-                placedAtFrame.remove(0);
-                originalTiles.remove(0);
+      if (spotsFree && offCooldown) {
+        PetalPlatformTile.configure(tileWidth);
+        loadPetalImages();
 
-            }
+        int leftX = Math.min(targetX, targetX2);
+        int rightX = Math.max(targetX, targetX2);
+
+        PetalPlatformTile left = new PetalPlatformTile(petalLeftImage, leftX, targetY, PLATFORM_TILE_TYPE, false);
+        PetalPlatformTile right = new PetalPlatformTile(petalRightImage, rightX, targetY, PLATFORM_TILE_TYPE, true);
+        left.setMap(map);
+        right.setMap(map);
+        map.addEnhancedMapTile(left);
+        map.addEnhancedMapTile(right);
+
+        placedPlatforms.add(new PlacedPlatform(left, right, framecount));
+      } else if (previousAirGroundState == AirGroundState.AIR && airGroundState == AirGroundState.GROUND) {
+        playerState = PlayerState.STANDING;
+      }
     }
-    protected void lastInput() {
-        if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
-            latestInput.add(MOVE_RIGHT_KEY);
-            latestInputFrame.add(framecount);
-        }
-        if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
-            latestInput.add(MOVE_LEFT_KEY);
-            latestInputFrame.add(framecount);
-        }
-        if (Keyboard.isKeyDown(JUMP_KEY)) {
-            latestInput.add(JUMP_KEY);
-            latestInputFrame.add(framecount);
-        }
-        if (Keyboard.isKeyDown(CROUCH_KEY)) {
-            latestInput.add(CROUCH_KEY);
-            latestInputFrame.add(framecount);
-        }
+  }
+
+  private boolean isPlatformSpotFree(int x, int y) {
+    MapTile tile;
+    try {
+      tile = map.getTileByPosition(x, y);
+    } catch (Exception e) {
+      return false;
     }
+    if (tile == null || tile.getTileType() != TileType.PASSABLE) {
+      return false;
+    }
+    for (PlacedPlatform platform : placedPlatforms) {
+      if (platform.occupies(x, y)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  protected void unPlacePlatform() {
+    placedPlatforms.removeIf(platform -> {
+      if (framecount - platform.placedAtFrame >= PLATFORM_LIFETIME_FRAMES) {
+        platform.remove();
+        return true;
+      }
+      return false;
+    });
+  }
+
+  protected void lastInput() {
+    if (Keyboard.isKeyDown(MOVE_RIGHT_KEY)) {
+      latestInput.add(MOVE_RIGHT_KEY);
+      latestInputFrame.add(framecount);
+    }
+    if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
+      latestInput.add(MOVE_LEFT_KEY);
+      latestInputFrame.add(framecount);
+    }
+    if (Keyboard.isKeyDown(JUMP_KEY)) {
+      latestInput.add(JUMP_KEY);
+      latestInputFrame.add(framecount);
+    }
+    if (Keyboard.isKeyDown(CROUCH_KEY)) {
+      latestInput.add(CROUCH_KEY);
+      latestInputFrame.add(framecount);
+    }
+  }
 }
