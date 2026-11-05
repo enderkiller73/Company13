@@ -19,7 +19,7 @@ public class SporeFlower extends Enemy {
     private Direction facingDirection;
     private AirGroundState airGroundState;
 
-    public BuddingFlowerEnemy(Point location, Direction facingDirection) {
+    public SporeFlowerEnemy(Point location, Direction facingDirection) {
         super(location.x, location.y, new SpriteSheet(ImageLoader.load("SporeFlower.png"), 24, 15), "WALK_LEFT");
         this.startFacingDirection = facingDirection;
         this.initialize();

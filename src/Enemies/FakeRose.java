@@ -1,5 +1,6 @@
 package Enemies;
 
+import java.util.HashMap;
 import Builders.FrameBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
@@ -19,8 +20,8 @@ public class FakeRose extends Enemy {
     private Direction facingDirection;
     private AirGroundState airGroundState;
 
-    public BuddingFlowerEnemy(Point location, Direction facingDirection) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("FakeRose.png"), 24, 15), "WALK_LEFT");
+    public FakeRoseEnemy(Point location, Direction facingDirection) {
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("FakeRose.png"), 63, 63), "IDLE_LEFT");
         this.startFacingDirection = facingDirection;
         this.initialize();
     }
@@ -87,5 +88,96 @@ public class FakeRose extends Enemy {
                 airGroundState = AirGroundState.AIR;
             }
         }
+    }
+
+    public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
+        return new HashMap<String, Frame[]>() {{
+            put("IDLE_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 3), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .build()
+            });
+
+            put("IDLE_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 3), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+            put("WALK_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+
+            put("WALK_RIGHT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 2), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 3), 8)
+                            .withScale(2)
+                            .withBounds(10, 0, 8, 63)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .build()
+            });
+        }};
     }
 }
