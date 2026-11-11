@@ -29,6 +29,9 @@ The constructor can throw `IOException`, `UnsupportedAudioFileException`, and `L
 ## Adjusting game audio
 Choose **VOLUME SETTINGS** from the main menu to adjust music and sound-effect volume independently. Use **W/S** to choose a slider, **A/D** to change its volume, and **Space** or **Escape** to return to the menu.
 
+## Speedrun timer
+The speedrun timer is hidden by default; press **T** during play to show or hide it. Timing starts when you gain control in the first level, includes retries and transitions between levels, excludes the pause menu, and stops when you reach the final goal. The final time appears on the last level-cleared screen. Starting a new game resets the timer.
+
 ## Documentation
 This project includes a GitHub pages website in the `docs` folder where the documentation resides.<br>
 It can be accessed at [https://a-r-t.github.io/SER-225-Game-Platformer/](https://a-r-t.github.io/SER-225-Game-Platformer/).

@@ -1,6 +1,9 @@
 package Screens;
 
 import Engine.GraphicsHandler;
+import Engine.Key;
+import Engine.Keyboard;
+import Engine.KeyLocker;
 import Engine.Screen;
 import Engine.ScreenManager;
 import Game.GameState;
@@ -11,6 +14,7 @@ import Level.Player;
 import Level.PlayerListener;
 import Maps.*;
 import Players.Rose;
+import Utils.SpeedrunTimer;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.AlphaComposite;
@@ -29,6 +33,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     private static final int LEVEL_TITLE_HOLD_FRAMES = 60;
     private static final int LEVEL_TITLE_FADE_FRAMES = 30;
     private int levelTitleTimer;
+    private static final Font SPEEDRUN_FONT = new Font(Font.MONOSPACED, Font.BOLD, 18);
+    private final SpeedrunTimer speedrunTimer = new SpeedrunTimer();
+    private final KeyLocker speedrunKeyLocker = new KeyLocker();
+    private boolean speedrunTimerVisible;
 
     protected ScreenCoordinator screenCoordinator;
     protected Map map;
@@ -52,6 +60,9 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void initialize() {
+        speedrunTimer.reset();
+        speedrunTimerVisible = false;
+        speedrunKeyLocker.lockKey(Key.T);
         if (gameObject != null) {
             gameObject.setScaleX(scaleX);
             gameObject.setScaleY(scaleY);
@@ -121,6 +132,12 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void update() {
+        if (Keyboard.isKeyUp(Key.T)) {
+            speedrunKeyLocker.unlockKey(Key.T);
+        } else if (!speedrunKeyLocker.isKeyLocked(Key.T)) {
+            speedrunTimerVisible = !speedrunTimerVisible;
+            speedrunKeyLocker.lockKey(Key.T);
+        }
         if (currentLevel == 1 && playLevelScreenState == PlayLevelScreenState.RUNNING
                 && levelTitleTimer < LEVEL_TITLE_HOLD_FRAMES + LEVEL_TITLE_FADE_FRAMES) {
             levelTitleTimer++;
@@ -130,6 +147,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 spawnIntroTimer++;
                 if (spawnIntroTimer >= SPAWN_INTRO_FRAMES) {
                     playLevelScreenState = PlayLevelScreenState.RUNNING;
+                    speedrunTimer.start();
                 }
                 break;
             case RUNNING:
@@ -178,6 +196,13 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
             case LEVEL_LOSE:
                 levelLoseScreen.draw(graphicsHandler);
                 break;
+        }
+        if (speedrunTimerVisible) {
+            String text = speedrunTimer.getFormattedTime();
+            int textWidth = graphicsHandler.getGraphics().getFontMetrics(SPEEDRUN_FONT).stringWidth(text);
+            int x = ScreenManager.getScreenWidth() - textWidth - 20;
+            graphicsHandler.drawFilledRectangle(x - 8, 12, textWidth + 16, 30, new Color(0, 0, 0, 180));
+            graphicsHandler.drawString(text, x, 34, SPEEDRUN_FONT, Color.WHITE);
         }
     }
 
@@ -244,8 +269,19 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         return playLevelScreenState == PlayLevelScreenState.RUNNING;
     }
 
+    public void pauseSpeedrunTimer() {
+        speedrunTimer.pause();
+    }
+
+    public void resumeSpeedrunTimer() {
+        speedrunTimer.resume();
+    }
+
     @Override
     public void onLevelCompletionTriggered() {
+        if (currentLevel == 5) {
+            speedrunTimer.finish();
+        }
         if (currentLevel == 2 || currentLevel == 5) {
             screenCoordinator.stopLevelMusic();
         }
@@ -254,6 +290,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     @Override
     public void onLevelCompleted() {
         if (playLevelScreenState != PlayLevelScreenState.LEVEL_COMPLETED) {
+            if (currentLevel == 5) {
+                speedrunTimer.finish();
+                levelClearedScreen.setSpeedrunTime(speedrunTimer.getFormattedTime());
+            }
             playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
             levelCompletedStateChangeStart = true;
         }
@@ -270,6 +310,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void goBackToMenu() {
+        speedrunTimer.finish();
         screenCoordinator.setGameState(GameState.MENU);
     }
 

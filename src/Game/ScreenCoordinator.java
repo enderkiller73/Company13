@@ -152,6 +152,7 @@ public class ScreenCoordinator extends Screen {
 		if (isPaused) {
 			if (Keyboard.isKeyDown(Key.ESC) && !pauseKeyLocker.isKeyLocked(Key.ESC)) {
 				isPaused = false;
+				((PlayLevelScreen) currentScreen).resumeSpeedrunTimer();
 				pauseKeyLocker.lockKey(Key.ESC);
 			} else if (Keyboard.isKeyDown(Key.ENTER) && !pauseKeyLocker.isKeyLocked(Key.ENTER)) {
 				isPaused = false;
@@ -167,6 +168,7 @@ public class ScreenCoordinator extends Screen {
 			&& Keyboard.isKeyDown(Key.ESC)
 			&& !pauseKeyLocker.isKeyLocked(Key.ESC)) {
 			isPaused = true;
+			((PlayLevelScreen) currentScreen).pauseSpeedrunTimer();
 			pauseKeyLocker.lockKey(Key.ESC);
 			return true;
 		}
