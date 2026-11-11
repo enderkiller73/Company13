@@ -65,6 +65,14 @@ public class SoundEffectPlayer implements AutoCloseable {
         playForDuration(Math.max(1, clip.getMicrosecondLength() / 2));
     }
 
+    public boolean isPlaying() {
+        return clip.isRunning();
+    }
+
+    public long getDurationMicroseconds() {
+        return clip.getMicrosecondLength();
+    }
+
     private synchronized void playForDuration(long durationMicroseconds) {
         if (muted) {
             return;

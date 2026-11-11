@@ -22,6 +22,7 @@ import java.awt.Font;
 import java.awt.RenderingHints;
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Point2D;
+import java.util.Random;
 
 // This class is for when the platformer game is actually being played
 public class PlayLevelScreen extends Screen implements PlayerListener {
@@ -37,6 +38,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     private final SpeedrunTimer speedrunTimer = new SpeedrunTimer();
     private final KeyLocker speedrunKeyLocker = new KeyLocker();
     private boolean speedrunTimerVisible;
+    private final Random deathOutcomeRandom = new Random();
+    private DeathCutsceneScreen deathCutsceneScreen;
 
     protected ScreenCoordinator screenCoordinator;
     protected Map map;
@@ -132,6 +135,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void update() {
+        if (playLevelScreenState == PlayLevelScreenState.DEATH_CUTSCENE) {
+            deathCutsceneScreen.update();
+            return;
+        }
         if (Keyboard.isKeyUp(Key.T)) {
             speedrunKeyLocker.unlockKey(Key.T);
         } else if (!speedrunKeyLocker.isKeyLocked(Key.T)) {
@@ -196,6 +203,9 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
             case LEVEL_LOSE:
                 levelLoseScreen.draw(graphicsHandler);
                 break;
+            case DEATH_CUTSCENE:
+                deathCutsceneScreen.draw(graphicsHandler);
+                return;
         }
         if (speedrunTimerVisible) {
             String text = speedrunTimer.getFormattedTime();
@@ -300,7 +310,15 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void onDeath() {
-        if (playLevelScreenState != PlayLevelScreenState.LEVEL_LOSE) {
+        if (playLevelScreenState != PlayLevelScreenState.RUNNING) {
+            return;
+        }
+        if (deathOutcomeRandom.nextBoolean()) {
+            speedrunTimer.finish();
+            playLevelScreenState = PlayLevelScreenState.DEATH_CUTSCENE;
+            deathCutsceneScreen = new DeathCutsceneScreen(screenCoordinator, this::goBackToMenu);
+            deathCutsceneScreen.initialize();
+        } else {
             playLevelScreenState = PlayLevelScreenState.LEVEL_LOSE;
         }
     }
@@ -310,12 +328,15 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
 
     public void goBackToMenu() {
+        if (deathCutsceneScreen != null) {
+            deathCutsceneScreen.close();
+        }
         speedrunTimer.finish();
         screenCoordinator.setGameState(GameState.MENU);
     }
 
     // This enum represents the different states this screen can be in
     private enum PlayLevelScreenState {
-        LEVEL_INTRO, RUNNING, LEVEL_COMPLETED, LEVEL_LOSE
+        LEVEL_INTRO, RUNNING, LEVEL_COMPLETED, LEVEL_LOSE, DEATH_CUTSCENE
     }
 }

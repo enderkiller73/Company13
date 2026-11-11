@@ -253,6 +253,10 @@ public class ScreenCoordinator extends Screen {
 		return soundEffectsVolume;
 	}
 
+	public boolean isSoundEffectsMuted() {
+		return soundEffectsMuted;
+	}
+
 	public void setSoundEffectsVolume(float volume) {
 		soundEffectsVolume = clampVolume(volume);
 		Player.setSoundEffectsVolume(soundEffectsVolume);
