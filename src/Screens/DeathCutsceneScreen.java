@@ -35,7 +35,7 @@ public class DeathCutsceneScreen extends Screen implements AutoCloseable {
     public void initialize() {
         screenCoordinator.stopLevelMusic();
         try {
-            image = ImageIO.read(new File(Config.RESOURCES_PATH, "death-cutscene.jpeg"));
+            image = ImageIO.read(new File(Config.RESOURCES_PATH, "MyMommasKindaHomeless.png"));
         } catch (IOException e) {
             System.err.println("Unable to load death cutscene image: " + e.getMessage());
         }
