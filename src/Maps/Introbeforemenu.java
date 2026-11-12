@@ -29,12 +29,44 @@ public class Introbeforemenu extends Screen {
         "|_|   |_|  \\___||___/\\___|_| |_|\\__|___/                "
     };
 
+    // Wrap the supplied ASCII banner at word boundaries to fit the game window.
+    private static final String[] ENGINE_LOGO = {
+        "__________                                      .___ __________",
+        "\\______   \\______  _  __ ___________   ____   __| _/ \\______   \\___.__.",
+        " |     ___/  _ \\ \\/ \\/ // __ \\_  __ \\_/ __ \\ / __ |   |    |  _<   |  |",
+        " |    |  (  <_> )     /\\  ___/|  | \\/\\  ___// /_/ |   |    |   \\\\___  |",
+        " |____|   \\____/ \\/\\_/  \\___  >__|    \\___  >____ |   |______  // ____|",
+        "                            \\/            \\/     \\/          \\/ \\/",
+        "",
+        "",
+        "___________.__             ___________              .__",
+        "\\__    ___/|  |__   ____   \\_   _____/ ____    ____ |__| ____   ____",
+        "  |    |   |  |  \\_/ __ \\   |    __)_ /    \\  / ___\\|  |/    \\_/ __ \\",
+        "  |    |   |   Y  \\  ___/   |        \\   |  \\/ /_/  >  |   |  \\  ___/",
+        "  |____|   |___|  /\\___  > /_______  /___|  /\\___  /|__|___|  /\\___  >",
+        "                \\/     \\/          \\/     \\//_____/         \\/     \\/",
+        "",
+        "",
+        "________   _____     _____  .__  .__    ___________.__",
+        "\\_____  \\_/ ____\\   /  _  \\ |  | |  |   \\__    ___/|__| _____   ____",
+        " /   |   \\   __\\   /  /_\\  \\|  | |  |     |    |   |  |/     \\_/ __ \\",
+        "/    |    \\  |    /    |    \\  |_|  |__   |    |   |  |  Y Y  \\  ___/",
+        "\\_______  /__|    \\____|__  /____/____/   |____|   |__|__|_|  /\\___  >",
+        "        \\/                \\/                                \\/     \\/"
+    };
+
+    private static final long COMPANY_SCREEN_NANOS = 4_000_000_000L;
+    private static final long MIN_INTRO_NANOS = 7_000_000_000L;
+    private static final long PLAYBACK_FALLBACK_NANOS = 11_000_000_000L;
+
     private static final String INTRO_AUDIO = "2012 New Valve Intro (PORTAL 2) (720p HD).wav";
 
     private final ScreenCoordinator screenCoordinator;
     private final KeyLocker keyLocker = new KeyLocker();
     private MusicPlayer introMusic;
     private boolean playbackObserved;
+    private boolean showingEngineBanner;
+    private long startedAtNanos;
 
     public Introbeforemenu(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
@@ -43,14 +75,16 @@ public class Introbeforemenu extends Screen {
     @Override
     public void initialize() {
         keyLocker.lockKey(Key.SPACE);
+        playbackObserved = false;
+        showingEngineBanner = false;
         try {
             introMusic = new MusicPlayer(INTRO_AUDIO);
             introMusic.play();
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             System.err.println("Unable to play startup intro audio.");
             e.printStackTrace(System.err);
-            screenCoordinator.setGameState(GameState.MENU);
         }
+        startedAtNanos = System.nanoTime();
     }
 
     @Override
@@ -62,13 +96,15 @@ public class Introbeforemenu extends Screen {
             return;
         }
 
-        if (introMusic == null) {
-            return;
-        }
+        long elapsedNanos = System.nanoTime() - startedAtNanos;
+        showingEngineBanner = elapsedNanos >= COMPANY_SCREEN_NANOS;
 
-        if (introMusic.isPlaying()) {
-            playbackObserved = true;
-        } else if (playbackObserved) {
+        boolean musicPlaying = introMusic != null && introMusic.isPlaying();
+        playbackObserved |= musicPlaying;
+        boolean musicFinished = introMusic == null || (playbackObserved && !musicPlaying);
+        // If playback never starts, still finish the intro instead of getting stuck.
+        boolean playbackTimedOut = !playbackObserved && elapsedNanos >= PLAYBACK_FALLBACK_NANOS;
+        if (elapsedNanos >= MIN_INTRO_NANOS && (musicFinished || playbackTimedOut)) {
             screenCoordinator.setGameState(GameState.MENU);
         }
     }
@@ -79,19 +115,20 @@ public class Introbeforemenu extends Screen {
             0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), Color.BLACK
         );
 
+        String[] logo = showingEngineBanner ? ENGINE_LOGO : LOGO;
         Font logoFont = new Font(Font.MONOSPACED, Font.BOLD, 13);
         java.awt.FontMetrics fontMetrics = graphicsHandler.getGraphics().getFontMetrics(logoFont);
         int lineHeight = fontMetrics.getHeight();
-        int totalHeight = LOGO.length * lineHeight;
+        int totalHeight = logo.length * lineHeight;
         int startY = (ScreenManager.getScreenHeight() - totalHeight) / 2;
         int maxLineWidth = 0;
-        for (String line : LOGO) {
+        for (String line : logo) {
             maxLineWidth = Math.max(maxLineWidth, fontMetrics.stringWidth(line));
         }
         int startX = (ScreenManager.getScreenWidth() - maxLineWidth) / 2;
 
-        for (int i = 0; i < LOGO.length; i++) {
-            graphicsHandler.drawString(LOGO[i], startX, startY + (i + 1) * lineHeight, logoFont, Color.WHITE);
+        for (int i = 0; i < logo.length; i++) {
+            graphicsHandler.drawString(logo[i], startX, startY + i * lineHeight + fontMetrics.getAscent(), logoFont, Color.WHITE);
         }
     }
 

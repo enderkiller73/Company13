@@ -164,22 +164,18 @@ public class FakeRose extends Enemy {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 8)
                             .withScale(3)
                             .withBounds(25, 8, 12, 55)
-                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 8)
                             .withScale(3)
                             .withBounds(25, 8, 12, 55)
-                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 2), 8)
                             .withScale(3)
                             .withBounds(25, 8, 12, 55)
-                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 3), 8)
                             .withScale(3)
                             .withBounds(25, 8, 12, 55)
-                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .build()
             });
         }};

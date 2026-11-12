@@ -8,7 +8,7 @@ This usually involves adding features and fixing bugs (I'm sure there are bugs..
 ## How to run this project?
 You can clone this repo and run it with Java (minimum version 8). I recommend using a tool such as Visual Studio Code or IntelliJ to run the game.
 
-The main method for the game is in the `Game` package > `Game.java` file. The game opens with an intro screen and plays the "2012 New Valve Intro" WAV before transitioning to the main menu.<br>
+The main method for the game is in the `Game` package > `Game.java` file. The game opens with "Company 13 Presents," followed by the ASCII "Powered By The Engine Of All Time" screen while the "2012 New Valve Intro" WAV plays. After the music finishes, the game transitions to the main menu. Press Space to skip the intro.<br>
 The main method for the map editor is in the `MapEditor` package > `MapEditor.java` file.
 
 ## Playing music
@@ -28,6 +28,12 @@ The constructor can throw `IOException`, `UnsupportedAudioFileException`, and `L
 
 ## Adjusting game audio
 Choose **VOLUME SETTINGS** from the main menu to adjust music and sound-effect volume independently. Use **W/S** to choose a slider, **A/D** to change its volume, and **Space** or **Escape** to return to the menu.
+
+## Speedrun timer
+The speedrun timer is hidden by default; press **T** during play to show or hide it. Timing starts when you gain control in the first level, includes retries and transitions between levels, excludes the pause menu, and stops when you reach the final goal. The final time appears on the last level-cleared screen. Starting a new game resets the timer.
+
+## Death sequence
+Each death has a 50% chance to show the death image and play the full special sound clip before returning to the main menu. This sequence cannot be skipped or paused; muting sound does not shorten it. Otherwise, the normal retry screen appears.
 
 ## Documentation
 This project includes a GitHub pages website in the `docs` folder where the documentation resides.<br>

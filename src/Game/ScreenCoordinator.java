@@ -152,6 +152,7 @@ public class ScreenCoordinator extends Screen {
 		if (isPaused) {
 			if (Keyboard.isKeyDown(Key.ESC) && !pauseKeyLocker.isKeyLocked(Key.ESC)) {
 				isPaused = false;
+				((PlayLevelScreen) currentScreen).resumeSpeedrunTimer();
 				pauseKeyLocker.lockKey(Key.ESC);
 			} else if (Keyboard.isKeyDown(Key.ENTER) && !pauseKeyLocker.isKeyLocked(Key.ENTER)) {
 				isPaused = false;
@@ -167,6 +168,7 @@ public class ScreenCoordinator extends Screen {
 			&& Keyboard.isKeyDown(Key.ESC)
 			&& !pauseKeyLocker.isKeyLocked(Key.ESC)) {
 			isPaused = true;
+			((PlayLevelScreen) currentScreen).pauseSpeedrunTimer();
 			pauseKeyLocker.lockKey(Key.ESC);
 			return true;
 		}
@@ -204,7 +206,7 @@ public class ScreenCoordinator extends Screen {
 	}
 
 	public void startLevelMusic(int level) {
-		String musicFile = level == 4 ? "FinalBattle.wav"
+		String musicFile = level >= 3 ? "FinalBattle.wav"
 			: "Castlevania_ Symphony of the Night OST - Abandoned Pit.wav";
 		if (levelMusic != null && !musicFile.equals(levelMusicFile)) {
 			levelMusic.stop();
@@ -249,6 +251,10 @@ public class ScreenCoordinator extends Screen {
 
 	public float getSoundEffectsVolume() {
 		return soundEffectsVolume;
+	}
+
+	public boolean isSoundEffectsMuted() {
+		return soundEffectsMuted;
 	}
 
 	public void setSoundEffectsVolume(float volume) {
