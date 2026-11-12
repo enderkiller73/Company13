@@ -13,11 +13,7 @@ public class EditorMaps {
             add("LevelTwo");
             add("Level_Three");
             add("Level_Four");
-<<<<<<< HEAD
              add("Level_Five");
-=======
-            add("Level_Five");
->>>>>>> 1dfcb59797153051e53e0edc033ca6708fc8b234
             // add("Level_Six");
             // add("Level_Seven");
             // add("Level_Eight");
@@ -42,11 +38,7 @@ public class EditorMaps {
             case "Level_Four":
                 return new Level_Four();   
             case "Level_Five":
-<<<<<<< HEAD
                  return new Level_Five();   
-=======
-                return new Level_Five();   
->>>>>>> 1dfcb59797153051e53e0edc033ca6708fc8b234
             // case "Level_Six":
             //     return new Level_Six();   
             // case "Level_Seven":
