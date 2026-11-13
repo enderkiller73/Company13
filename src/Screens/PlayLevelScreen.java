@@ -14,20 +14,14 @@ import Level.Player;
 import Level.PlayerListener;
 import Maps.*;
 import Players.Rose;
-<<<<<<< HEAD
-=======
 import Utils.SpeedrunTimer;
 import java.awt.Color;
 import java.awt.Graphics2D;
->>>>>>> e6e0b646bbc04f4379bee5ed027d8ef537ebc349
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
-<<<<<<< HEAD
 import java.awt.Graphics2D;
-=======
 import java.awt.RenderingHints;
->>>>>>> e6e0b646bbc04f4379bee5ed027d8ef537ebc349
 import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
