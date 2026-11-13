@@ -18,328 +18,327 @@ import Utils.SpeedrunTimer;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.RadialGradientPaint;
-import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
 // This class is for when the platformer game is actually being played
 public class PlayLevelScreen extends Screen implements PlayerListener {
-    private static final int SPAWN_INTRO_FRAMES = 150;
-    private static final int SPOTLIGHT_HOLD_FRAMES = 45;
-    private static final float SPAWN_START_ZOOM = 2.6f;
-    private static final String LEVEL_TITLE_TEXT = "haunted hill's";
-    private static final Font LEVEL_TITLE_FONT = new Font("Georgia", Font.BOLD, 28);
-    private static final int LEVEL_TITLE_HOLD_FRAMES = 60;
-    private static final int LEVEL_TITLE_FADE_FRAMES = 30;
-    private int levelTitleTimer;
-    private static final Font SPEEDRUN_FONT = new Font(Font.MONOSPACED, Font.BOLD, 18);
-    private final SpeedrunTimer speedrunTimer = new SpeedrunTimer();
-    private final KeyLocker speedrunKeyLocker = new KeyLocker();
-    private boolean speedrunTimerVisible;
-    private final Random deathOutcomeRandom = new Random();
-    private DeathCutsceneScreen deathCutsceneScreen;
+  private static final int SPAWN_INTRO_FRAMES = 150;
+  private static final int SPOTLIGHT_HOLD_FRAMES = 45;
+  private static final float SPAWN_START_ZOOM = 2.6f;
+  private static final String LEVEL_TITLE_TEXT = "haunted hill's";
+  private static final Font LEVEL_TITLE_FONT = new Font("Georgia", Font.BOLD, 28);
+  private static final int LEVEL_TITLE_HOLD_FRAMES = 60;
+  private static final int LEVEL_TITLE_FADE_FRAMES = 30;
+  private int levelTitleTimer;
+  private static final Font SPEEDRUN_FONT = new Font(Font.MONOSPACED, Font.BOLD, 18);
+  private final SpeedrunTimer speedrunTimer = new SpeedrunTimer();
+  private final KeyLocker speedrunKeyLocker = new KeyLocker();
+  private boolean speedrunTimerVisible;
+  private final Random deathOutcomeRandom = new Random();
+  private DeathCutsceneScreen deathCutsceneScreen;
 
-    protected ScreenCoordinator screenCoordinator;
-    protected Map map;
-    protected Player player;
-    protected PlayLevelScreenState playLevelScreenState;
-    protected int screenTimer;
-    protected int currentLevel = 1;
-    protected LevelClearedScreen levelClearedScreen;
-    protected LevelLoseScreen levelLoseScreen;
-    protected boolean levelCompletedStateChangeStart;
-    protected int spawnIntroTimer;
-    protected GameObject gameObject;
-    protected float scaleX = 1f;
-    protected float scaleY = 1f;
-    // protected float changeScaleX = 0.01f;
-    // protected float changeScaleY = 0.01f;
-    // protected float prevY;
+  protected ScreenCoordinator screenCoordinator;
+  protected Map map;
+  protected Player player;
+  protected PlayLevelScreenState playLevelScreenState;
+  protected int screenTimer;
+  protected int currentLevel = 1;
+  protected LevelClearedScreen levelClearedScreen;
+  protected LevelLoseScreen levelLoseScreen;
+  protected boolean levelCompletedStateChangeStart;
+  protected int spawnIntroTimer;
+  protected GameObject gameObject;
+  protected float scaleX = 1f;
+  protected float scaleY = 1f;
+  // protected float changeScaleX = 0.01f;
+  // protected float changeScaleY = 0.01f;
+  // protected float prevY;
 
-    public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
-        this.screenCoordinator = screenCoordinator;
+  public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
+    this.screenCoordinator = screenCoordinator;
+  }
+
+  public void initialize() {
+    speedrunTimer.reset();
+    speedrunTimerVisible = false;
+    speedrunKeyLocker.lockKey(Key.T);
+    if (gameObject != null) {
+      gameObject.setScaleX(scaleX);
+      gameObject.setScaleY(scaleY);
     }
+    // gameObject.getCalibratedYLocation();
 
-    public void initialize() {
-        speedrunTimer.reset();
-        speedrunTimerVisible = false;
-        speedrunKeyLocker.lockKey(Key.T);
-        if (gameObject != null) {
-            gameObject.setScaleX(scaleX);
-            gameObject.setScaleY(scaleY);
+    loadLevel();
+  }
+
+  private void loadLevel() {
+    map = createLevelMap();
+    // if (gameObject.compareYChange() > 0) {
+    // scaleX = scaleX + changeScaleX;
+    // scaleY = scaleY + changeScaleY;
+    // } else if (gameObject.compareYChange() < 0) {
+    // scaleX = scaleX - changeScaleX;
+    // scaleY = scaleY - changeScaleY;
+    // } else {
+    // while (scaleX != 1 && scaleY != 1) {
+    // if (gameObject.compareYChange() > 0) {
+    // scaleX -= changeScaleX;
+    // scaleY -= changeScaleY;
+    // }
+    // if (gameObject.compareYChange() < 0) {
+    // scaleX += changeScaleX;
+    // scaleY += changeScaleY;
+    // }
+    // }
+    // }
+
+    player = new Rose(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, scaleX, scaleY);
+    player.setMap(map);
+    player.addListener(this);
+    map.update(player);
+    levelClearedScreen = new LevelClearedScreen();
+    levelLoseScreen = new LevelLoseScreen(this);
+    spawnIntroTimer = 0;
+    levelTitleTimer = 0;
+    levelCompletedStateChangeStart = false;
+    playLevelScreenState = PlayLevelScreenState.LEVEL_INTRO;
+    screenCoordinator.startLevelMusic(currentLevel);
+  }
+
+  private Map createLevelMap() {
+    switch (currentLevel) {
+      case 1:
+        return new TutorialMap();
+      case 2:
+        return new LevelTwo();
+      case 3:
+        return new Level_Three();
+      case 4:
+        return new Level_Four();
+      case 5:
+        return new Level_Five();
+      // case 6:
+      // return new Level_Six();
+      // case 7:
+      // return new Level_Seven();
+      // case 8:
+      // return new Level_Eight();
+      // case 9:
+      // return new Level_Nine();
+      default:
+        throw new IllegalStateException("No map configured for level " + currentLevel);
+    }
+  }
+
+  public void update() {
+    if (playLevelScreenState == PlayLevelScreenState.DEATH_CUTSCENE) {
+      deathCutsceneScreen.update();
+      return;
+    }
+    if (Keyboard.isKeyUp(Key.T)) {
+      speedrunKeyLocker.unlockKey(Key.T);
+    } else if (!speedrunKeyLocker.isKeyLocked(Key.T)) {
+      speedrunTimerVisible = !speedrunTimerVisible;
+      speedrunKeyLocker.lockKey(Key.T);
+    }
+    if (currentLevel == 1 && playLevelScreenState == PlayLevelScreenState.RUNNING
+        && levelTitleTimer < LEVEL_TITLE_HOLD_FRAMES + LEVEL_TITLE_FADE_FRAMES) {
+      levelTitleTimer++;
+    }
+    switch (playLevelScreenState) {
+      case LEVEL_INTRO:
+        spawnIntroTimer++;
+        if (spawnIntroTimer >= SPAWN_INTRO_FRAMES) {
+          playLevelScreenState = PlayLevelScreenState.RUNNING;
+          speedrunTimer.start();
         }
-        // gameObject.getCalibratedYLocation();
-
-        loadLevel();
-    }
-
-    private void loadLevel() {
-        map = createLevelMap();
-        // if (gameObject.compareYChange() > 0) {
-        //     scaleX = scaleX + changeScaleX;
-        //     scaleY = scaleY + changeScaleY;
-        // } else if (gameObject.compareYChange() < 0) {
-        //     scaleX = scaleX - changeScaleX;
-        //     scaleY = scaleY - changeScaleY;
-        // } else {
-        //     while (scaleX != 1 && scaleY != 1) {
-        //         if (gameObject.compareYChange() > 0) {
-        //             scaleX -= changeScaleX;
-        //             scaleY -= changeScaleY;
-        //         }
-        //         if (gameObject.compareYChange() < 0) {
-        //             scaleX += changeScaleX;
-        //             scaleY += changeScaleY;
-        //         }
-        //     }
-        // }
-
-        player = new Rose (map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, scaleX, scaleY);
-        player.setMap(map);
-        player.addListener(this);
+        break;
+      case RUNNING:
+        player.update();
         map.update(player);
-        levelClearedScreen = new LevelClearedScreen();
-        levelLoseScreen = new LevelLoseScreen(this);
-        spawnIntroTimer = 0;
-        levelTitleTimer = 0;
-        levelCompletedStateChangeStart = false;
-        playLevelScreenState = PlayLevelScreenState.LEVEL_INTRO;
-        screenCoordinator.startLevelMusic(currentLevel);
+        break;
+      case LEVEL_COMPLETED:
+        if (levelCompletedStateChangeStart) {
+          screenTimer = 130;
+          levelCompletedStateChangeStart = false;
+        } else {
+          levelClearedScreen.update();
+          screenTimer--;
+          if (screenTimer == 0) {
+            if (currentLevel < 5) {
+              currentLevel++;
+              loadLevel();
+            } else {
+              goBackToMenu();
+            }
+          }
+        }
+        break;
+      case LEVEL_LOSE:
+        levelLoseScreen.update();
+        break;
     }
+  }
 
-    private Map createLevelMap() {
-        switch (currentLevel) {
-            case 1:
-                return new TutorialMap();
-            case 2:
-                return new LevelTwo();
-            case 3:
-                return new Level_Three();
-            case 4:
-                return new Level_Four();
-            case 5:
-                return new Level_Five();
-            // case 6:
-            //     return new Level_Six();
-            // case 7:
-            //     return new Level_Seven();
-            // case 8:
-            //     return new Level_Eight();
-            // case 9:
-            //     return new Level_Nine();
-            default:
-                throw new IllegalStateException("No map configured for level " + currentLevel);
-        }
-    }
-
-    public void update() {
-        if (playLevelScreenState == PlayLevelScreenState.DEATH_CUTSCENE) {
-            deathCutsceneScreen.update();
-            return;
-        }
-        if (Keyboard.isKeyUp(Key.T)) {
-            speedrunKeyLocker.unlockKey(Key.T);
-        } else if (!speedrunKeyLocker.isKeyLocked(Key.T)) {
-            speedrunTimerVisible = !speedrunTimerVisible;
-            speedrunKeyLocker.lockKey(Key.T);
-        }
-        if (currentLevel == 1 && playLevelScreenState == PlayLevelScreenState.RUNNING
-                && levelTitleTimer < LEVEL_TITLE_HOLD_FRAMES + LEVEL_TITLE_FADE_FRAMES) {
-            levelTitleTimer++;
-        }
-        switch (playLevelScreenState) {
-            case LEVEL_INTRO:
-                spawnIntroTimer++;
-                if (spawnIntroTimer >= SPAWN_INTRO_FRAMES) {
-                    playLevelScreenState = PlayLevelScreenState.RUNNING;
-                    speedrunTimer.start();
-                }
-                break;
-            case RUNNING:
-                player.update();
-                map.update(player);
-                break;
-            case LEVEL_COMPLETED:
-                if (levelCompletedStateChangeStart) {
-                    screenTimer = 130;
-                    levelCompletedStateChangeStart = false;
-                } else {
-                    levelClearedScreen.update();
-                    screenTimer--;
-                    if (screenTimer == 0) {
-                        if (currentLevel < 5) {
-                            currentLevel++;
-                            loadLevel();
-                        } else {
-                            goBackToMenu();
-                        }
-                    }
-                }
-                break;
-            case LEVEL_LOSE:
-                levelLoseScreen.update();
-                break;
-        }
-    }
-
-    public void draw(GraphicsHandler graphicsHandler) {
-        // based on screen state, draw appropriate graphics
-        switch (playLevelScreenState) {
-            case LEVEL_INTRO:
-                drawSpawnIntro(graphicsHandler);
-                break;
-            case RUNNING:
-                graphicsHandler.beginZoom(map.getZoom(), ScreenManager.getScreenWidth() / 2f, ScreenManager.getScreenHeight() / 2f);
-                map.draw(graphicsHandler);
-                player.draw(graphicsHandler);
-                graphicsHandler.endZoom();
-                drawLevelTitle(graphicsHandler);
-                break;
-            case LEVEL_COMPLETED:
-                levelClearedScreen.draw(graphicsHandler);
-                break;
-            case LEVEL_LOSE:
-                levelLoseScreen.draw(graphicsHandler);
-                break;
-            case DEATH_CUTSCENE:
-                deathCutsceneScreen.draw(graphicsHandler);
-                return;
-        }
-        if (speedrunTimerVisible) {
-            String text = speedrunTimer.getFormattedTime();
-            int textWidth = graphicsHandler.getGraphics().getFontMetrics(SPEEDRUN_FONT).stringWidth(text);
-            int x = ScreenManager.getScreenWidth() - textWidth - 20;
-            graphicsHandler.drawFilledRectangle(x - 8, 12, textWidth + 16, 30, new Color(0, 0, 0, 180));
-            graphicsHandler.drawString(text, x, 34, SPEEDRUN_FONT, Color.WHITE);
-        }
-    }
-
-    private void drawLevelTitle(GraphicsHandler graphicsHandler) {
-        if (currentLevel != 1 || spawnIntroTimer < SPAWN_INTRO_FRAMES
-                || levelTitleTimer >= LEVEL_TITLE_HOLD_FRAMES + LEVEL_TITLE_FADE_FRAMES) {
-            return;
-        }
-        float opacity = 1f - Math.max(0, levelTitleTimer - LEVEL_TITLE_HOLD_FRAMES)
-                / (float) LEVEL_TITLE_FADE_FRAMES;
-        Graphics2D overlay = (Graphics2D) graphicsHandler.getGraphics().create();
-        overlay.setComposite(AlphaComposite.SrcOver.derive(opacity));
-        overlay.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        overlay.setFont(LEVEL_TITLE_FONT);
-        int textWidth = overlay.getFontMetrics().stringWidth(LEVEL_TITLE_TEXT);
-        int textX = (ScreenManager.getScreenWidth() - textWidth) / 2;
-        int textY = ScreenManager.getScreenHeight() * 2 / 5 + overlay.getFontMetrics().getAscent();
-        overlay.setColor(new Color(245, 233, 213));
-        overlay.drawString(LEVEL_TITLE_TEXT, textX, textY);
-        overlay.dispose();
-    }
-
-    private void drawSpawnIntro(GraphicsHandler graphicsHandler) {
-        float progress = Math.max(0f, Math.min(1f,
-            (spawnIntroTimer - SPOTLIGHT_HOLD_FRAMES) / (float) (SPAWN_INTRO_FRAMES - SPOTLIGHT_HOLD_FRAMES)));
-        progress = progress * progress * (3f - 2f * progress);
-
-        float focusX = player.getCalibratedXLocation() + player.getWidth() / 2f;
-        float focusY = player.getCalibratedYLocation() + player.getHeight() / 2f;
-        float zoom = map.getZoom() * (SPAWN_START_ZOOM - (SPAWN_START_ZOOM - 1f) * progress);
-
-        graphicsHandler.beginZoom(zoom, focusX, focusY);
+  public void draw(GraphicsHandler graphicsHandler) {
+    // based on screen state, draw appropriate graphics
+    switch (playLevelScreenState) {
+      case LEVEL_INTRO:
+        drawSpawnIntro(graphicsHandler);
+        break;
+      case RUNNING:
+        graphicsHandler.beginZoom(map.getZoom(), ScreenManager.getScreenWidth() / 2f,
+            ScreenManager.getScreenHeight() / 2f);
         map.draw(graphicsHandler);
         player.draw(graphicsHandler);
         graphicsHandler.endZoom();
-
-        int screenWidth = ScreenManager.getScreenWidth();
-        int screenHeight = ScreenManager.getScreenHeight();
-        float startRadius = Math.max(player.getWidth(), player.getHeight()) * 2.5f;
-        float screenRadius = (float) Math.hypot(screenWidth, screenHeight);
-        float radius = startRadius + (screenRadius - startRadius) * progress;
-        int darkness = Math.round(220f * (1f - progress));
-
-        Graphics2D overlay = (Graphics2D) graphicsHandler.getGraphics().create();
-        overlay.setPaint(new RadialGradientPaint(
-            new Point2D.Float(focusX, focusY),
-            Math.max(radius, 1f),
-            new float[] { 0f, 0.35f, 1f },
-            new Color[] {
-                new Color(0, 0, 0, 0),
-                new Color(0, 0, 0, Math.round(darkness * 0.35f)),
-                new Color(0, 0, 0, darkness)
-            }
-        ));
-        overlay.fillRect(0, 0, screenWidth, screenHeight);
-        overlay.dispose();
+        drawLevelTitle(graphicsHandler);
+        break;
+      case LEVEL_COMPLETED:
+        levelClearedScreen.draw(graphicsHandler);
+        break;
+      case LEVEL_LOSE:
+        levelLoseScreen.draw(graphicsHandler);
+        break;
+      case DEATH_CUTSCENE:
+        deathCutsceneScreen.draw(graphicsHandler);
+        return;
     }
-
-    public PlayLevelScreenState getPlayLevelScreenState() {
-        return playLevelScreenState;
+    if (speedrunTimerVisible) {
+      String text = speedrunTimer.getFormattedTime();
+      int textWidth = graphicsHandler.getGraphics().getFontMetrics(SPEEDRUN_FONT).stringWidth(text);
+      int x = ScreenManager.getScreenWidth() - textWidth - 20;
+      graphicsHandler.drawFilledRectangle(x - 8, 12, textWidth + 16, 30, new Color(0, 0, 0, 180));
+      graphicsHandler.drawString(text, x, 34, SPEEDRUN_FONT, Color.WHITE);
     }
+  }
 
-    public boolean isRunning() {
-        return playLevelScreenState == PlayLevelScreenState.RUNNING;
+  private void drawLevelTitle(GraphicsHandler graphicsHandler) {
+    if (currentLevel != 1 || spawnIntroTimer < SPAWN_INTRO_FRAMES
+        || levelTitleTimer >= LEVEL_TITLE_HOLD_FRAMES + LEVEL_TITLE_FADE_FRAMES) {
+      return;
     }
+    float opacity = 1f - Math.max(0, levelTitleTimer - LEVEL_TITLE_HOLD_FRAMES)
+        / (float) LEVEL_TITLE_FADE_FRAMES;
+    Graphics2D overlay = (Graphics2D) graphicsHandler.getGraphics().create();
+    overlay.setComposite(AlphaComposite.SrcOver.derive(opacity));
+    overlay.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    overlay.setFont(LEVEL_TITLE_FONT);
+    int textWidth = overlay.getFontMetrics().stringWidth(LEVEL_TITLE_TEXT);
+    int textX = (ScreenManager.getScreenWidth() - textWidth) / 2;
+    int textY = ScreenManager.getScreenHeight() * 2 / 5 + overlay.getFontMetrics().getAscent();
+    overlay.setColor(new Color(245, 233, 213));
+    overlay.drawString(LEVEL_TITLE_TEXT, textX, textY);
+    overlay.dispose();
+  }
 
-    public void pauseSpeedrunTimer() {
-        speedrunTimer.pause();
+  private void drawSpawnIntro(GraphicsHandler graphicsHandler) {
+    float progress = Math.max(0f, Math.min(1f,
+        (spawnIntroTimer - SPOTLIGHT_HOLD_FRAMES) / (float) (SPAWN_INTRO_FRAMES - SPOTLIGHT_HOLD_FRAMES)));
+    progress = progress * progress * (3f - 2f * progress);
+
+    float focusX = player.getCalibratedXLocation() + player.getWidth() / 2f;
+    float focusY = player.getCalibratedYLocation() + player.getHeight() / 2f;
+    float zoom = map.getZoom() * (SPAWN_START_ZOOM - (SPAWN_START_ZOOM - 1f) * progress);
+
+    graphicsHandler.beginZoom(zoom, focusX, focusY);
+    map.draw(graphicsHandler);
+    player.draw(graphicsHandler);
+    graphicsHandler.endZoom();
+
+    int screenWidth = ScreenManager.getScreenWidth();
+    int screenHeight = ScreenManager.getScreenHeight();
+    float startRadius = Math.max(player.getWidth(), player.getHeight()) * 2.5f;
+    float screenRadius = (float) Math.hypot(screenWidth, screenHeight);
+    float radius = startRadius + (screenRadius - startRadius) * progress;
+    int darkness = Math.round(220f * (1f - progress));
+
+    Graphics2D overlay = (Graphics2D) graphicsHandler.getGraphics().create();
+    overlay.setPaint(new RadialGradientPaint(
+        new Point2D.Float(focusX, focusY),
+        Math.max(radius, 1f),
+        new float[] { 0f, 0.35f, 1f },
+        new Color[] {
+            new Color(0, 0, 0, 0),
+            new Color(0, 0, 0, Math.round(darkness * 0.35f)),
+            new Color(0, 0, 0, darkness)
+        }));
+    overlay.fillRect(0, 0, screenWidth, screenHeight);
+    overlay.dispose();
+  }
+
+  public PlayLevelScreenState getPlayLevelScreenState() {
+    return playLevelScreenState;
+  }
+
+  public boolean isRunning() {
+    return playLevelScreenState == PlayLevelScreenState.RUNNING;
+  }
+
+  public void pauseSpeedrunTimer() {
+    speedrunTimer.pause();
+  }
+
+  public void resumeSpeedrunTimer() {
+    speedrunTimer.resume();
+  }
+
+  @Override
+  public void onLevelCompletionTriggered() {
+    if (currentLevel == 5) {
+      speedrunTimer.finish();
     }
-
-    public void resumeSpeedrunTimer() {
-        speedrunTimer.resume();
+    if (currentLevel == 2 || currentLevel == 5) {
+      screenCoordinator.stopLevelMusic();
     }
+  }
 
-    @Override
-    public void onLevelCompletionTriggered() {
-        if (currentLevel == 5) {
-            speedrunTimer.finish();
-        }
-        if (currentLevel == 2 || currentLevel == 5) {
-            screenCoordinator.stopLevelMusic();
-        }
-    }
-
-    @Override
-    public void onLevelCompleted() {
-        if (playLevelScreenState != PlayLevelScreenState.LEVEL_COMPLETED) {
-            if (currentLevel == 5) {
-                speedrunTimer.finish();
-                levelClearedScreen.setSpeedrunTime(speedrunTimer.getFormattedTime());
-            }
-            playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
-            levelCompletedStateChangeStart = true;
-        }
-    }
-
-    public void onDeath() {
-        if (playLevelScreenState != PlayLevelScreenState.RUNNING) {
-            return;
-        }
-        if (deathOutcomeRandom.nextBoolean()) {
-            speedrunTimer.finish();
-            playLevelScreenState = PlayLevelScreenState.DEATH_CUTSCENE;
-            deathCutsceneScreen = new DeathCutsceneScreen(screenCoordinator, this::goBackToMenu);
-            deathCutsceneScreen.initialize();
-        } else {
-            playLevelScreenState = PlayLevelScreenState.LEVEL_LOSE;
-        }
-    }
-
-    public void resetLevel() {
-        loadLevel();
-    }
-
-    public void goBackToMenu() {
-        if (deathCutsceneScreen != null) {
-            deathCutsceneScreen.close();
-        }
+  @Override
+  public void onLevelCompleted() {
+    if (playLevelScreenState != PlayLevelScreenState.LEVEL_COMPLETED) {
+      if (currentLevel == 5) {
         speedrunTimer.finish();
-        screenCoordinator.setGameState(GameState.MENU);
+        levelClearedScreen.setSpeedrunTime(speedrunTimer.getFormattedTime());
+      }
+      playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
+      levelCompletedStateChangeStart = true;
     }
+  }
 
-    // This enum represents the different states this screen can be in
-    private enum PlayLevelScreenState {
-        LEVEL_INTRO, RUNNING, LEVEL_COMPLETED, LEVEL_LOSE, DEATH_CUTSCENE
+  public void onDeath() {
+    if (playLevelScreenState != PlayLevelScreenState.RUNNING) {
+      return;
     }
+    int randomthingyfrfr = (int) (Math.random() * 2) + 1;
+    System.out.print(randomthingyfrfr);
+    if (randomthingyfrfr == 2) {
+      speedrunTimer.finish();
+      playLevelScreenState = PlayLevelScreenState.DEATH_CUTSCENE;
+      deathCutsceneScreen = new DeathCutsceneScreen(screenCoordinator, this::goBackToMenu);
+      deathCutsceneScreen.initialize();
+    } else {
+      playLevelScreenState = PlayLevelScreenState.LEVEL_LOSE;
+    }
+  }
+
+  public void resetLevel() {
+    loadLevel();
+  }
+
+  public void goBackToMenu() {
+    if (deathCutsceneScreen != null) {
+      deathCutsceneScreen.close();
+    }
+    speedrunTimer.finish();
+    screenCoordinator.setGameState(GameState.MENU);
+  }
+
+  // This enum represents the different states this screen can be in
+  private enum PlayLevelScreenState {
+    LEVEL_INTRO, RUNNING, LEVEL_COMPLETED, LEVEL_LOSE, DEATH_CUTSCENE
+  }
 }
