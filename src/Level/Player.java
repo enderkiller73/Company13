@@ -14,7 +14,6 @@ import Tilesets.PetalPlatformTileset;
 import java.util.ArrayList;
 import java.awt.image.BufferedImage;
 import EnhancedMapTiles.PetalPlatformTile;
-import Level.PlayerState;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -972,6 +971,7 @@ public abstract class Player extends GameObject {
       return false;
     }
     if (tile == null || tile.getTileType() != TileType.PASSABLE) {
+
       return false;
     }
     for (PlacedPlatform platform : placedPlatforms) {
