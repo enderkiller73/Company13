@@ -313,9 +313,9 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     if (playLevelScreenState != PlayLevelScreenState.RUNNING) {
       return;
     }
-    int randomthingyfrfr = (int) (Math.random() * 2) + 1;
+    int randomthingyfrfr = (int) (Math.random() * 1000) + 1;
     System.out.print(randomthingyfrfr);
-    if (randomthingyfrfr == 2) {
+    if (randomthingyfrfr == 1000) {
       speedrunTimer.finish();
       playLevelScreenState = PlayLevelScreenState.DEATH_CUTSCENE;
       deathCutsceneScreen = new DeathCutsceneScreen(screenCoordinator, this::goBackToMenu);
