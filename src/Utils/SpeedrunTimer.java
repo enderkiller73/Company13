@@ -68,4 +68,8 @@ public class SpeedrunTimer {
         return String.format(Locale.ROOT, "%02d:%02d.%03d",
                 millis / 60_000, (millis / 1_000) % 60, millis % 1_000);
     }
+
+    public SpeedrunRank getRank() {
+        return SpeedrunRank.fromElapsedMillis(getElapsedMillis());
+    }
 }

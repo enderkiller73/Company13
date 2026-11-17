@@ -40,6 +40,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
   private boolean speedrunTimerVisible;
   private final Random deathOutcomeRandom = new Random();
   private DeathCutsceneScreen deathCutsceneScreen;
+  private RankScreen rankScreen;
 
   protected ScreenCoordinator screenCoordinator;
   protected Map map;
@@ -102,6 +103,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     map.update(player);
     levelClearedScreen = new LevelClearedScreen();
     levelLoseScreen = new LevelLoseScreen(this);
+    rankScreen = null;
     spawnIntroTimer = 0;
     levelTitleTimer = 0;
     levelCompletedStateChangeStart = false;
@@ -139,6 +141,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
       deathCutsceneScreen.update();
       return;
     }
+    if (playLevelScreenState == PlayLevelScreenState.RANK_SCREEN) {
+      rankScreen.update();
+      return;
+    }
     if (Keyboard.isKeyUp(Key.T)) {
       speedrunKeyLocker.unlockKey(Key.T);
     } else if (!speedrunKeyLocker.isKeyLocked(Key.T)) {
@@ -173,7 +179,10 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
               currentLevel++;
               loadLevel();
             } else {
-              goBackToMenu();
+              rankScreen = new RankScreen(screenCoordinator, this::goBackToMenu,
+                  speedrunTimer.getElapsedMillis(), speedrunTimer.getFormattedTime());
+              rankScreen.initialize();
+              playLevelScreenState = PlayLevelScreenState.RANK_SCREEN;
             }
           }
         }
@@ -206,6 +215,9 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         break;
       case DEATH_CUTSCENE:
         deathCutsceneScreen.draw(graphicsHandler);
+        return;
+      case RANK_SCREEN:
+        rankScreen.draw(graphicsHandler);
         return;
     }
     if (speedrunTimerVisible) {
@@ -333,12 +345,15 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     if (deathCutsceneScreen != null) {
       deathCutsceneScreen.close();
     }
+    if (rankScreen != null) {
+      rankScreen.close();
+    }
     speedrunTimer.finish();
     screenCoordinator.setGameState(GameState.MENU);
   }
 
   // This enum represents the different states this screen can be in
   private enum PlayLevelScreenState {
-    LEVEL_INTRO, RUNNING, LEVEL_COMPLETED, LEVEL_LOSE, DEATH_CUTSCENE
+    LEVEL_INTRO, RUNNING, LEVEL_COMPLETED, LEVEL_LOSE, DEATH_CUTSCENE, RANK_SCREEN
   }
 }
