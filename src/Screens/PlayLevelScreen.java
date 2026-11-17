@@ -2,8 +2,8 @@ package Screens;
 
 import Engine.GraphicsHandler;
 import Engine.Key;
-import Engine.Keyboard;
 import Engine.KeyLocker;
+import Engine.Keyboard;
 import Engine.Screen;
 import Engine.ScreenManager;
 import Game.GameState;
@@ -14,20 +14,11 @@ import Level.Player;
 import Level.PlayerListener;
 import Maps.*;
 import Players.Rose;
-<<<<<<< HEAD
-=======
 import Utils.SpeedrunTimer;
-import java.awt.Color;
-import java.awt.Graphics2D;
->>>>>>> e6e0b646bbc04f4379bee5ed027d8ef537ebc349
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
-<<<<<<< HEAD
 import java.awt.Graphics2D;
-=======
-import java.awt.RenderingHints;
->>>>>>> e6e0b646bbc04f4379bee5ed027d8ef537ebc349
 import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
@@ -130,8 +121,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                 return new Level_Four();
             case 5:
                 return new Level_Five();
-            // case 6:
-            //     return new Level_Six();
+            case 6:
+                return new Level_Six();
             // case 7:
             //     return new Level_Seven();
             // case 8:
@@ -178,7 +169,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
                     levelClearedScreen.update();
                     screenTimer--;
                     if (screenTimer == 0) {
-                        if (currentLevel < 5) {
+                        if (currentLevel < 6) {
                             currentLevel++;
                             loadLevel();
                         } else {

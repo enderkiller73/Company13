@@ -13,8 +13,8 @@ public class EditorMaps {
             add("LevelTwo");
             add("Level_Three");
             add("Level_Four");
-             add("Level_Five");
-            // add("Level_Six");
+            add("Level_Five");
+            add("Level_Six");
             // add("Level_Seven");
             // add("Level_Eight");
             // add("Level_Nine");
@@ -39,8 +39,8 @@ public class EditorMaps {
                 return new Level_Four();   
             case "Level_Five":
                  return new Level_Five();   
-            // case "Level_Six":
-            //     return new Level_Six();   
+            case "Level_Six":
+                return new Level_Six();   
             // case "Level_Seven":
             //     return new Level_Seven();
             // case "Level_Eight":

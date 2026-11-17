@@ -9,7 +9,7 @@ import EnhancedMapTiles.HorizontalMovingPlatform;
 import GameObject.Rectangle;
 import Level.*;
 import NPCs.Walrus;
-import Tilesets.CommonTileset;
+import Tilesets.GrassLevelsTileset;
 import Utils.Direction;
 import java.util.ArrayList;
 
@@ -19,7 +19,7 @@ public class Level_Six extends Map {
 
 
     public Level_Six() {
-        super("level_six.txt", new CommonTileset());
+        super("level_six.txt", new GrassLevelsTileset());
         this.playerStartPosition = getMapTile(1, 9).getLocation();
     }
 
