@@ -37,7 +37,6 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
   private final SpeedrunTimer speedrunTimer = new SpeedrunTimer();
   private final KeyLocker speedrunKeyLocker = new KeyLocker();
   private boolean speedrunTimerVisible;
-  private final Random deathOutcomeRandom = new Random();
   private DeathCutsceneScreen deathCutsceneScreen;
   private RankScreen rankScreen;
 
@@ -135,55 +134,6 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     }
   }
 
-    public void update() {
-        if (playLevelScreenState == PlayLevelScreenState.DEATH_CUTSCENE) {
-            deathCutsceneScreen.update();
-            return;
-        }
-        if (Keyboard.isKeyUp(Key.T)) {
-            speedrunKeyLocker.unlockKey(Key.T);
-        } else if (!speedrunKeyLocker.isKeyLocked(Key.T)) {
-            speedrunTimerVisible = !speedrunTimerVisible;
-            speedrunKeyLocker.lockKey(Key.T);
-        }
-        if (currentLevel == 1 && playLevelScreenState == PlayLevelScreenState.RUNNING
-                && levelTitleTimer < LEVEL_TITLE_HOLD_FRAMES + LEVEL_TITLE_FADE_FRAMES) {
-            levelTitleTimer++;
-        }
-        switch (playLevelScreenState) {
-            case LEVEL_INTRO:
-                spawnIntroTimer++;
-                if (spawnIntroTimer >= SPAWN_INTRO_FRAMES) {
-                    playLevelScreenState = PlayLevelScreenState.RUNNING;
-                    speedrunTimer.start();
-                }
-                break;
-            case RUNNING:
-                player.update();
-                map.update(player);
-                break;
-            case LEVEL_COMPLETED:
-                if (levelCompletedStateChangeStart) {
-                    screenTimer = 130;
-                    levelCompletedStateChangeStart = false;
-                } else {
-                    levelClearedScreen.update();
-                    screenTimer--;
-                    if (screenTimer == 0) {
-                        if (currentLevel < 6) {
-                            currentLevel++;
-                            loadLevel();
-                        } else {
-                            goBackToMenu();
-                        }
-                    }
-                }
-                break;
-            case LEVEL_LOSE:
-                levelLoseScreen.update();
-                break;
-        }
-    }
   public void update() {
     if (playLevelScreenState == PlayLevelScreenState.DEATH_CUTSCENE) {
       deathCutsceneScreen.update();
