@@ -3,10 +3,10 @@ package Utils;
 import java.awt.Color;
 
 public enum SpeedrunRank {
-    S("S", "Savage!", "< 3:00", new Color(255, 215, 0), "Savage.wav"),
-    A("A", "Apocolyptic!", "< 4:00", new Color(216, 115, 255), "A rank.wav"),
-    B("B", "Bad Ass!", "< 5:00", new Color(96, 180, 255), "BadAss.wav"),
-    C("C", "Crazy!", "5:00+", new Color(180, 190, 205), "Crazy.wav");
+    S("S", "Savage!", "< 3:00", new Color(255, 215, 0), "Savage.wav", "S.png"),
+    A("A", "Apocolyptic!", "< 4:00", new Color(216, 115, 255), "A rank.wav", "A.png"),
+    B("B", "Bad Ass!", "< 5:00", new Color(96, 180, 255), "BadAss.wav", "B.png"),
+    C("C", "Crazy!", "5:00+", new Color(180, 190, 205), "Crazy.wav", "C.png");
 
     public static final long S_MAX_EXCLUSIVE_MILLIS = 180_000L;
     public static final long A_MAX_EXCLUSIVE_MILLIS = 240_000L;
@@ -17,13 +17,16 @@ public enum SpeedrunRank {
     private final String thresholdLabel;
     private final Color accentColor;
     private final String soundFileName;
+    private final String imageFileName;
 
-    SpeedrunRank(String letter, String title, String thresholdLabel, Color accentColor, String soundFileName) {
+    SpeedrunRank(String letter, String title, String thresholdLabel, Color accentColor,
+            String soundFileName, String imageFileName) {
         this.letter = letter;
         this.title = title;
         this.thresholdLabel = thresholdLabel;
         this.accentColor = accentColor;
         this.soundFileName = soundFileName;
+        this.imageFileName = imageFileName;
     }
 
     public static SpeedrunRank fromElapsedMillis(long elapsedMillis) {
@@ -58,5 +61,9 @@ public enum SpeedrunRank {
 
     public String getSoundFileName() {
         return soundFileName;
+    }
+
+    public String getImageFileName() {
+        return imageFileName;
     }
 }

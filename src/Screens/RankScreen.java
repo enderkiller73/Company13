@@ -1,5 +1,6 @@
 package Screens;
 
+import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
@@ -10,6 +11,7 @@ import Engine.SoundEffectPlayer;
 import Game.ScreenCoordinator;
 import Utils.SpeedrunRank;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.Color;
@@ -17,6 +19,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 // End-of-run screen showing the player's final speedrun time and rank.
@@ -37,11 +41,14 @@ public class RankScreen extends Screen implements AutoCloseable {
     private static final Font TIER_TIME_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 14);
     private static final Font PROMPT_FONT = new Font("Georgia", Font.PLAIN, 18);
 
+    private static final int RANK_IMAGE_MAX_HEIGHT = 128;
+
     private final ScreenCoordinator screenCoordinator;
     private final Runnable returnToMenu;
     private final SpeedrunRank rank;
     private final String formattedTime;
     private final KeyLocker keyLocker = new KeyLocker();
+    private BufferedImage rankImage;
     private SoundEffectPlayer rankSound;
     private boolean returned;
 
@@ -67,7 +74,17 @@ public class RankScreen extends Screen implements AutoCloseable {
         keyLocker.lockKey(Key.SPACE);
         keyLocker.lockKey(Key.ENTER);
         keyLocker.lockKey(Key.ESC);
+        loadRankImage();
         playRankSound();
+    }
+
+    private void loadRankImage() {
+        try {
+            rankImage = ImageIO.read(new File(Config.IMAGES_PATH, rank.getImageFileName()));
+        } catch (IOException e) {
+            rankImage = null;
+            System.err.println("Unable to load rank image (" + rank.getImageFileName() + "): " + e.getMessage());
+        }
     }
 
     private void playRankSound() {
@@ -146,10 +163,9 @@ public class RankScreen extends Screen implements AutoCloseable {
         drawCentered(graphicsHandler, "FINAL RANK", SUBHEADER_FONT,
                 MUTED_TEXT_COLOR, screenWidth, cardY + 94);
 
-        drawCenteredOutlined(graphicsHandler, rank.getLetter(), RANK_LETTER_FONT,
-                rank.getAccentColor(), Color.BLACK, 4.0f, screenWidth, cardY + 206);
+        drawRankBadge(graphicsHandler, screenWidth, cardY + 104);
         drawCentered(graphicsHandler, rank.getTitle(), RANK_TITLE_FONT,
-                rank.getAccentColor(), screenWidth, cardY + 248);
+                rank.getAccentColor(), screenWidth, cardY + 258);
 
         drawCentered(graphicsHandler, "Final Time: " + formattedTime, TIME_FONT,
                 Color.WHITE, screenWidth, cardY + 305);
@@ -158,6 +174,24 @@ public class RankScreen extends Screen implements AutoCloseable {
 
         drawCentered(graphicsHandler, "Press SPACE or ENTER to return to menu", PROMPT_FONT,
                 MUTED_TEXT_COLOR, screenWidth, cardY + cardHeight - 36);
+    }
+
+    private void drawRankBadge(GraphicsHandler graphicsHandler, int screenWidth, int topY) {
+        if (rankImage == null) {
+            drawCenteredOutlined(graphicsHandler, rank.getLetter(), RANK_LETTER_FONT,
+                    rank.getAccentColor(), Color.BLACK, 4.0f, screenWidth, topY + 102);
+            return;
+        }
+        double scale = Math.min(1.0, RANK_IMAGE_MAX_HEIGHT / (double) rankImage.getHeight());
+        int drawWidth = (int) Math.round(rankImage.getWidth() * scale);
+        int drawHeight = (int) Math.round(rankImage.getHeight() * scale);
+        int x = (screenWidth - drawWidth) / 2;
+        int y = topY + (RANK_IMAGE_MAX_HEIGHT - drawHeight) / 2;
+
+        Graphics2D imageG = (Graphics2D) graphicsHandler.getGraphics().create();
+        imageG.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        imageG.drawImage(rankImage, x, y, drawWidth, drawHeight, null);
+        imageG.dispose();
     }
 
     private void drawTierRow(GraphicsHandler graphicsHandler, int screenWidth, int topY) {

@@ -11,6 +11,7 @@ import java.awt.*;
 public class Config {
     public static final int TARGET_FPS = 60;
     public static final String RESOURCES_PATH = "Resources/";
+    public static final String IMAGES_PATH = "Images/";
     public static final String MAP_FILES_PATH = "MapFiles/";
     public static final String MUSIC_PATH = "Music/";
     public static final String SOUND_EFFECTS_PATH = "SoundEffects/";
