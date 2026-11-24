@@ -121,8 +121,8 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
         return new Level_Four();
       case 5:
         return new Level_Five();
-      // case 6:
-      // return new Level_Six();
+      case 6:
+        return new Level_Six();
       // case 7:
       // return new Level_Seven();
       // case 8:
@@ -173,7 +173,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
           levelClearedScreen.update();
           screenTimer--;
           if (screenTimer == 0) {
-            if (currentLevel < 5) {
+            if (currentLevel < 6) {
               currentLevel++;
               loadLevel();
             } else {
