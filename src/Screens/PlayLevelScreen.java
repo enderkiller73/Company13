@@ -28,7 +28,7 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
   private static final int SPAWN_INTRO_FRAMES = 150;
   private static final int SPOTLIGHT_HOLD_FRAMES = 45;
   private static final float SPAWN_START_ZOOM = 2.6f;
-  private static final String LEVEL_TITLE_TEXT = "haunted hill's";
+  private static final String LEVEL_TITLE_TEXT = "Haunted Hills";
   private static final Font LEVEL_TITLE_FONT = new Font("Georgia", Font.BOLD, 28);
   private static final int LEVEL_TITLE_HOLD_FRAMES = 60;
   private static final int LEVEL_TITLE_FADE_FRAMES = 30;
@@ -323,9 +323,9 @@ public class PlayLevelScreen extends Screen implements PlayerListener {
     if (playLevelScreenState != PlayLevelScreenState.RUNNING) {
       return;
     }
-    int randomthingyfrfr = (int) (Math.random() * 1000) + 1;
+    int randomthingyfrfr = (int) (Math.random() * 100) + 1;
     System.out.print(randomthingyfrfr);
-    if (randomthingyfrfr == 1000) {
+    if (randomthingyfrfr == 100) {
       speedrunTimer.finish();
       playLevelScreenState = PlayLevelScreenState.DEATH_CUTSCENE;
       deathCutsceneScreen = new DeathCutsceneScreen(screenCoordinator, this::goBackToMenu);
