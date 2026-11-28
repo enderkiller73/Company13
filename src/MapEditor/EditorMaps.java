@@ -20,6 +20,7 @@ public class EditorMaps {
             // add("Level_Nine");
             // add("Level_Ten");
             // add("DemoLevelOneMap");
+            add("SecretLevel_One");
         }};
     }
 
@@ -51,6 +52,8 @@ public class EditorMaps {
             //     return new Level_Ten();
             // case "DemoLevelOneMap":
             //     return new DemoLevelOneMap();
+            case "SecretLevel_One":
+                return new SecretLevel_One();
             default:
                 throw new RuntimeException("Unrecognized map name");
         }
